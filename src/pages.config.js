@@ -57,6 +57,14 @@ import SupplierJobs from './pages/SupplierJobs';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminSuppliers from './pages/AdminSuppliers';
 import AdminBookings from './pages/AdminBookings';
+import AdminExtras from './pages/AdminExtras';
+import AdminSupport from './pages/AdminSupport';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import Support from './pages/Support';
+import SupplierProfile from './pages/SupplierProfile';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +79,14 @@ export const PAGES = {
     "AdminDashboard": AdminDashboard,
     "AdminSuppliers": AdminSuppliers,
     "AdminBookings": AdminBookings,
+    "AdminExtras": AdminExtras,
+    "AdminSupport": AdminSupport,
+    "Profile": Profile,
+    "Settings": Settings,
+    "Terms": Terms,
+    "Privacy": Privacy,
+    "Support": Support,
+    "SupplierProfile": SupplierProfile,
 }
 
 export const pagesConfig = {
