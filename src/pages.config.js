@@ -49,12 +49,28 @@
  */
 import Home from './pages/Home';
 import CreateMove from './pages/CreateMove';
+import MyMoves from './pages/MyMoves';
+import BookingDetails from './pages/BookingDetails';
+import SupplierOnboarding from './pages/SupplierOnboarding';
+import SupplierDashboard from './pages/SupplierDashboard';
+import SupplierJobs from './pages/SupplierJobs';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminSuppliers from './pages/AdminSuppliers';
+import AdminBookings from './pages/AdminBookings';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Home": Home,
     "CreateMove": CreateMove,
+    "MyMoves": MyMoves,
+    "BookingDetails": BookingDetails,
+    "SupplierOnboarding": SupplierOnboarding,
+    "SupplierDashboard": SupplierDashboard,
+    "SupplierJobs": SupplierJobs,
+    "AdminDashboard": AdminDashboard,
+    "AdminSuppliers": AdminSuppliers,
+    "AdminBookings": AdminBookings,
 }
 
 export const pagesConfig = {
