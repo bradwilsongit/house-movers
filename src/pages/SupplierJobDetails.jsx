@@ -1,0 +1,592 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { base44 } from '@/api/base44Client';
+import { createPageUrl } from '@/utils';
+import { format } from 'date-fns';
+import { 
+  Truck, Calendar, MapPin, Phone, User, Clock, Package,
+  CheckCircle2, AlertCircle, ChevronRight, Camera, Plus,
+  Play, Flag
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
+
+const statusConfig = {
+  pending_deposit: { label: 'Awaiting Payment', color: 'bg-gray-100 text-gray-700', next: null },
+  confirmed: { label: 'Confirmed', color: 'bg-blue-100 text-blue-700', next: 'driver_assigned' },
+  driver_assigned: { label: 'Ready', color: 'bg-emerald-100 text-emerald-700', next: 'on_route' },
+  on_route: { label: 'On Route', color: 'bg-blue-100 text-blue-700', next: 'arrived' },
+  arrived: { label: 'Arrived', color: 'bg-amber-100 text-amber-700', next: 'loading' },
+  loading: { label: 'Loading', color: 'bg-amber-100 text-amber-700', next: 'in_transit' },
+  in_transit: { label: 'In Transit', color: 'bg-blue-100 text-blue-700', next: 'unloading' },
+  unloading: { label: 'Unloading', color: 'bg-amber-100 text-amber-700', next: 'completed' },
+  completed: { label: 'Completed', color: 'bg-emerald-100 text-emerald-700', next: null },
+  cancelled: { label: 'Cancelled', color: 'bg-red-100 text-red-700', next: null },
+};
+
+export default function SupplierJobDetails() {
+  const [booking, setBooking] = useState(null);
+  const [moveRequest, setMoveRequest] = useState(null);
+  const [inventoryItems, setInventoryItems] = useState([]);
+  const [packagingOrder, setPackagingOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
+  
+  const [driverDialog, setDriverDialog] = useState(false);
+  const [driverForm, setDriverForm] = useState({
+    driver_name: '',
+    driver_phone: '',
+    vehicle_details: '',
+  });
+
+  const [extraDialog, setExtraDialog] = useState(false);
+  const [extraForm, setExtraForm] = useState({
+    request_type: '',
+    description: '',
+    amount: '',
+  });
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const bookingId = params.get('id');
+
+      if (!bookingId) return;
+
+      const bookings = await base44.entities.Booking.filter({ id: bookingId });
+      if (bookings.length === 0) return;
+
+      const bookingData = bookings[0];
+      setBooking(bookingData);
+      setDriverForm({
+        driver_name: bookingData.driver_name || '',
+        driver_phone: bookingData.driver_phone || '',
+        vehicle_details: bookingData.vehicle_details || '',
+      });
+
+      // Load related data
+      const [moveRequests, items, packaging] = await Promise.all([
+        base44.entities.MoveRequest.filter({ id: bookingData.move_request_id }),
+        base44.entities.InventoryItem.filter({ move_request_id: bookingData.move_request_id }),
+        base44.entities.PackagingOrder.filter({ move_request_id: bookingData.move_request_id }),
+      ]);
+
+      if (moveRequests.length > 0) setMoveRequest(moveRequests[0]);
+      setInventoryItems(items);
+      if (packaging.length > 0) setPackagingOrder(packaging[0]);
+    } catch (e) {
+      console.error('Error loading data:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateStatus = async (newStatus) => {
+    setProcessing(true);
+    try {
+      const updateData = { status: newStatus };
+      
+      if (newStatus === 'arrived') {
+        updateData.arrived_at = new Date().toISOString();
+      }
+      if (newStatus === 'completed') {
+        updateData.completed_at = new Date().toISOString();
+      }
+
+      await base44.entities.Booking.update(booking.id, updateData);
+      setBooking({ ...booking, ...updateData });
+    } catch (e) {
+      console.error('Error updating status:', e);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleSaveDriverDetails = async () => {
+    setProcessing(true);
+    try {
+      await base44.entities.Booking.update(booking.id, {
+        ...driverForm,
+        status: 'driver_assigned',
+      });
+      setBooking({ ...booking, ...driverForm, status: 'driver_assigned' });
+      setDriverDialog(false);
+    } catch (e) {
+      console.error('Error saving driver details:', e);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleSubmitExtra = async () => {
+    setProcessing(true);
+    try {
+      const user = await base44.auth.me();
+      await base44.entities.ExtraRequest.create({
+        booking_id: booking.id,
+        supplier_id: user.supplier_id,
+        request_type: extraForm.request_type,
+        description: extraForm.description,
+        amount: parseFloat(extraForm.amount),
+        status: 'pending',
+      });
+      setExtraDialog(false);
+      setExtraForm({ request_type: '', description: '', amount: '' });
+    } catch (e) {
+      console.error('Error submitting extra request:', e);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Skeleton className="h-8 w-48 mb-6" />
+          <Skeleton className="h-64 rounded-xl mb-6" />
+          <Skeleton className="h-48 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!booking) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-gray-500">Job not found</p>
+          <Button asChild className="mt-4">
+            <Link to={createPageUrl('SupplierJobs')}>Back to Jobs</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const status = statusConfig[booking.status] || statusConfig.confirmed;
+  const canUpdateStatus = status.next && booking.deposit_paid;
+  const needsDriverDetails = booking.status === 'confirmed' && !booking.driver_name;
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+              <Link to={createPageUrl('SupplierJobs')} className="hover:text-black">
+                Jobs
+              </Link>
+              <ChevronRight className="w-4 h-4" />
+              <span>Job Details</span>
+            </div>
+            <h1 className="text-2xl font-bold">
+              {booking.booking_reference}
+            </h1>
+          </div>
+          <Badge className={status.color}>
+            {status.label}
+          </Badge>
+        </div>
+
+        {/* Alert for driver details */}
+        {needsDriverDetails && (
+          <Card className="bg-amber-50 border-amber-200 mb-6">
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-amber-600" />
+                  <div>
+                    <p className="font-medium text-amber-900">Driver Details Required</p>
+                    <p className="text-sm text-amber-700">
+                      Please assign a driver before the move date
+                    </p>
+                  </div>
+                </div>
+                <Button onClick={() => setDriverDialog(true)} className="bg-amber-600 hover:bg-amber-700">
+                  Assign Driver
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Move Details */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Move Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="font-medium">
+                      {booking.move_date 
+                        ? format(new Date(booking.move_date), 'EEEE, MMMM d, yyyy')
+                        : 'Date TBD'}
+                    </p>
+                    <p className="text-sm text-gray-500 capitalize">{booking.time_window} window</p>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-emerald-600 text-xs font-medium">A</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Pickup</p>
+                      <p className="font-medium">{moveRequest?.pickup_address}</p>
+                      <p className="text-sm text-gray-500">
+                        {moveRequest?.pickup_city} {moveRequest?.pickup_postal_code}
+                      </p>
+                      {moveRequest?.pickup_access && (
+                        <div className="text-sm text-gray-500 mt-1">
+                          Floor {moveRequest.pickup_access.floor || 'Ground'} • 
+                          {moveRequest.pickup_access.has_lift ? ' Has lift' : ' No lift'} •
+                          {moveRequest.pickup_access.parking_available ? ' Parking' : ' No parking'}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-blue-600 text-xs font-medium">B</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Dropoff</p>
+                      <p className="font-medium">{moveRequest?.dropoff_address}</p>
+                      <p className="text-sm text-gray-500">
+                        {moveRequest?.dropoff_city} {moveRequest?.dropoff_postal_code}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {moveRequest?.notes && (
+                  <>
+                    <Separator />
+                    <div>
+                      <p className="text-sm font-medium text-gray-500 mb-1">Customer Notes</p>
+                      <p className="text-sm">{moveRequest.notes}</p>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Inventory */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  Inventory ({inventoryItems.reduce((sum, i) => sum + i.quantity, 0)} items)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {inventoryItems.map(item => (
+                    <div key={item.id} className="flex items-center justify-between py-2 border-b last:border-0">
+                      <div className="flex items-center gap-3">
+                        <span>{item.item_name}</span>
+                        {item.is_fragile && (
+                          <Badge variant="outline" className="text-amber-600 text-xs">Fragile</Badge>
+                        )}
+                        {item.needs_dismantling && (
+                          <Badge variant="outline" className="text-xs">Dismantle</Badge>
+                        )}
+                      </div>
+                      <span className="text-gray-500">x{item.quantity}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Packaging Checklist */}
+            {packagingOrder && packagingOrder.items?.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Package className="w-5 h-5" />
+                    Packaging Checklist
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-500 mb-3">
+                    Bring these items to the job:
+                  </p>
+                  <div className="space-y-2">
+                    {packagingOrder.items.map((item, idx) => (
+                      <div key={idx} className="flex items-center justify-between py-2 border-b last:border-0">
+                        <span>{item.name}</span>
+                        <span className="font-medium">x{item.quantity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Driver Details */}
+            {booking.driver_name && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Assigned Driver</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                      <User className="w-6 h-6 text-gray-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium">{booking.driver_name}</p>
+                      <p className="text-sm text-gray-500">{booking.driver_phone}</p>
+                      <p className="text-sm text-gray-500">{booking.vehicle_details}</p>
+                    </div>
+                    <Button variant="outline" className="ml-auto" onClick={() => setDriverDialog(true)}>
+                      Edit
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Payment */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Payment</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between text-lg">
+                  <span className="font-semibold">Total</span>
+                  <span className="font-bold">R{booking.total_amount?.toLocaleString()}</span>
+                </div>
+
+                <div className="space-y-2 pt-2 border-t">
+                  <div className="flex justify-between text-sm">
+                    <span className={cn(
+                      "flex items-center gap-2",
+                      booking.deposit_paid ? "text-emerald-600" : "text-gray-500"
+                    )}>
+                      {booking.deposit_paid ? (
+                        <CheckCircle2 className="w-4 h-4" />
+                      ) : (
+                        <Clock className="w-4 h-4" />
+                      )}
+                      Deposit
+                    </span>
+                    <span>R{booking.deposit_amount?.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className={cn(
+                      "flex items-center gap-2",
+                      booking.balance_paid ? "text-emerald-600" : "text-gray-500"
+                    )}>
+                      {booking.balance_paid ? (
+                        <CheckCircle2 className="w-4 h-4" />
+                      ) : (
+                        <Clock className="w-4 h-4" />
+                      )}
+                      Balance
+                    </span>
+                    <span>R{booking.balance_amount?.toLocaleString()}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Actions */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {!booking.driver_name && booking.status === 'confirmed' && (
+                  <Button className="w-full" onClick={() => setDriverDialog(true)}>
+                    <User className="w-4 h-4 mr-2" />
+                    Assign Driver
+                  </Button>
+                )}
+
+                {canUpdateStatus && (
+                  <Button 
+                    className="w-full bg-black text-white hover:bg-gray-800"
+                    onClick={() => handleUpdateStatus(status.next)}
+                    disabled={processing}
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    Mark as {statusConfig[status.next]?.label}
+                  </Button>
+                )}
+
+                {['arrived', 'loading', 'in_transit', 'unloading'].includes(booking.status) && (
+                  <Button variant="outline" className="w-full" onClick={() => setExtraDialog(true)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Request Extra
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Driver Details Dialog */}
+        <Dialog open={driverDialog} onOpenChange={setDriverDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Assign Driver</DialogTitle>
+              <DialogDescription>
+                Enter the driver and vehicle details for this job
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="driver_name">Driver Name</Label>
+                <Input
+                  id="driver_name"
+                  value={driverForm.driver_name}
+                  onChange={(e) => setDriverForm({ ...driverForm, driver_name: e.target.value })}
+                  placeholder="John Smith"
+                  className="mt-1.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="driver_phone">Driver Phone</Label>
+                <Input
+                  id="driver_phone"
+                  value={driverForm.driver_phone}
+                  onChange={(e) => setDriverForm({ ...driverForm, driver_phone: e.target.value })}
+                  placeholder="072 123 4567"
+                  className="mt-1.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="vehicle_details">Vehicle Details</Label>
+                <Input
+                  id="vehicle_details"
+                  value={driverForm.vehicle_details}
+                  onChange={(e) => setDriverForm({ ...driverForm, vehicle_details: e.target.value })}
+                  placeholder="White 4-ton Truck, ABC 123 GP"
+                  className="mt-1.5"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDriverDialog(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSaveDriverDetails}
+                disabled={processing || !driverForm.driver_name || !driverForm.driver_phone}
+                className="bg-black text-white hover:bg-gray-800"
+              >
+                {processing ? 'Saving...' : 'Save'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Extra Request Dialog */}
+        <Dialog open={extraDialog} onOpenChange={setExtraDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Request Extra Charge</DialogTitle>
+              <DialogDescription>
+                This request will be sent to House Moves for authorisation
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Request Type</Label>
+                <Select
+                  value={extraForm.request_type}
+                  onValueChange={(v) => setExtraForm({ ...extraForm, request_type: v })}
+                >
+                  <SelectTrigger className="mt-1.5">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="additional_materials">Additional Materials</SelectItem>
+                    <SelectItem value="additional_trip">Additional Trip</SelectItem>
+                    <SelectItem value="additional_service">Additional Service</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="extra_description">Description</Label>
+                <Textarea
+                  id="extra_description"
+                  value={extraForm.description}
+                  onChange={(e) => setExtraForm({ ...extraForm, description: e.target.value })}
+                  placeholder="Describe the extra charge..."
+                  className="mt-1.5"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label htmlFor="extra_amount">Amount (R)</Label>
+                <Input
+                  id="extra_amount"
+                  type="number"
+                  value={extraForm.amount}
+                  onChange={(e) => setExtraForm({ ...extraForm, amount: e.target.value })}
+                  placeholder="500"
+                  className="mt-1.5"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setExtraDialog(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSubmitExtra}
+                disabled={processing || !extraForm.request_type || !extraForm.description || !extraForm.amount}
+                className="bg-black text-white hover:bg-gray-800"
+              >
+                {processing ? 'Submitting...' : 'Submit Request'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </div>
+  );
+}

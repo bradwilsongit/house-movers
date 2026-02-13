@@ -65,6 +65,7 @@ import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import Support from './pages/Support';
 import SupplierProfile from './pages/SupplierProfile';
+import SupplierJobDetails from './pages/SupplierJobDetails';
 import __Layout from './Layout.jsx';
 
 
@@ -87,6 +88,7 @@ export const PAGES = {
     "Privacy": Privacy,
     "Support": Support,
     "SupplierProfile": SupplierProfile,
+    "SupplierJobDetails": SupplierJobDetails,
 }
 
 export const pagesConfig = {
