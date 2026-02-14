@@ -68,6 +68,8 @@ import SupplierProfile from './pages/SupplierProfile';
 import Support from './pages/Support';
 import Terms from './pages/Terms';
 import AdminCommission from './pages/AdminCommission';
+import Payment from './pages/Payment';
+import PayFastITN from './pages/PayFastITN';
 import __Layout from './Layout.jsx';
 
 
@@ -93,6 +95,8 @@ export const PAGES = {
     "Support": Support,
     "Terms": Terms,
     "AdminCommission": AdminCommission,
+    "Payment": Payment,
+    "PayFastITN": PayFastITN,
 }
 
 export const pagesConfig = {

@@ -47,6 +47,7 @@ export default function CreateMove() {
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [supplier, setSupplier] = useState(null);
   const [moveRequestId, setMoveRequestId] = useState(null);
+  const [commissionRate, setCommissionRate] = useState(10);
 
   useEffect(() => {
     checkAuth();
@@ -70,6 +71,16 @@ export default function CreateMove() {
     }
     const userData = await base44.auth.me();
     setUser(userData);
+    
+    // Load commission rate from settings
+    try {
+      const settings = await base44.entities.AppSettings.list();
+      if (settings.length > 0) {
+        setCommissionRate(settings[0].commission_rate || 10);
+      }
+    } catch (e) {
+      console.error('Error loading settings:', e);
+    }
   };
 
   const loadSupplier = async (supplierId) => {
@@ -242,6 +253,14 @@ export default function CreateMove() {
   const handleConfirmBooking = async () => {
     setLoading(true);
     try {
+      // Calculate pricing with commission
+      const distanceKm = moveDetails.distance_km || 0;
+      const supplierKmRate = supplier?.pricing?.rate_per_km || 15;
+      const supplierBasePrice = distanceKm * supplierKmRate;
+      const commissionAmount = (supplierBasePrice * commissionRate) / 100;
+      const movePrice = supplierBasePrice + commissionAmount;
+      const totalAmount = movePrice + (packagingOrder.total_amount || 0);
+
       // Update move request with selected quote
       await base44.entities.MoveRequest.update(moveRequestId, {
         selected_quote_id: selectedQuoteId,
@@ -256,24 +275,34 @@ export default function CreateMove() {
         status: 'selected',
       });
 
-      // Create booking
+      // Create booking with commission details
       const bookingRef = `HM${Date.now().toString(36).toUpperCase()}`;
       const booking = await base44.entities.Booking.create({
         move_request_id: moveRequestId,
         quote_id: selectedQuoteId,
         supplier_id: selectedQuote.supplier_id,
         customer_id: user?.id,
-        status: 'pending_deposit',
+        status: 'pending_payment',
         booking_reference: bookingRef,
         move_date: moveDetails.move_date,
         time_window: moveDetails.time_window,
-        total_amount: selectedQuote.total_price + (packagingOrder.total_amount || 0),
-        deposit_amount: selectedQuote.total_price * 0.5,
-        balance_amount: selectedQuote.total_price * 0.5,
+        distance_km: distanceKm,
+        supplier_base_price: supplierBasePrice,
+        commission_rate: commissionRate,
+        commission_amount: commissionAmount,
+        total_amount: totalAmount,
+        payment_status: 'pending',
       });
 
-      // Navigate to booking page
-      navigate(createPageUrl('BookingDetails') + `?id=${booking.id}`);
+      // Log payment initiation
+      await base44.entities.PaymentLog.create({
+        booking_id: booking.id,
+        amount: totalAmount,
+        status: 'initiated',
+      });
+
+      // Navigate to payment page
+      navigate(createPageUrl('Payment') + `?booking_id=${booking.id}`);
     } catch (e) {
       console.error('Error creating booking:', e);
     } finally {
@@ -328,6 +357,7 @@ export default function CreateMove() {
             selectedQuote={selectedQuote}
             packagingOrder={packagingOrder}
             supplier={supplier}
+            commissionRate={commissionRate}
             onConfirm={handleConfirmBooking}
             onBack={prevStep}
             loading={loading}
