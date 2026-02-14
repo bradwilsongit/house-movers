@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { MapPin, Calendar, Clock, Building2, Truck, Loader2, Route } from 'lucide-react';
+import { MapPin, Calendar, Clock, Building2, Truck, Loader2, Route, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,24 +8,62 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import GooglePlacesAutocomplete from './GooglePlacesAutocomplete';
 
 export default function MoveDetailsForm({ data, onChange, onNext }) {
   const [calculatingDistance, setCalculatingDistance] = useState(false);
   const [distanceError, setDistanceError] = useState(null);
+  const [apiKey, setApiKey] = useState(null);
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    loadApiKey();
+  }, []);
+
+  const loadApiKey = async () => {
+    try {
+      const settings = await base44.entities.AppSettings.list();
+      if (settings.length > 0 && settings[0].google_maps_api_key) {
+        setApiKey(settings[0].google_maps_api_key);
+      }
+    } catch (e) {
+      console.error('Error loading API key:', e);
+    }
+  };
 
   const handleChange = (field, value) => {
     onChange({ ...data, [field]: value });
   };
 
+  const handlePickupChange = (placeData) => {
+    onChange({
+      ...data,
+      pickup_address: placeData.address,
+      pickup_city: placeData.city,
+      pickup_postal_code: placeData.postal_code,
+      pickup_place_id: placeData.place_id,
+      pickup_lat: placeData.lat,
+      pickup_lng: placeData.lng,
+    });
+    setErrors({ ...errors, pickup: null });
+  };
+
+  const handleDropoffChange = (placeData) => {
+    onChange({
+      ...data,
+      dropoff_address: placeData.address,
+      dropoff_city: placeData.city,
+      dropoff_postal_code: placeData.postal_code,
+      dropoff_place_id: placeData.place_id,
+      dropoff_lat: placeData.lat,
+      dropoff_lng: placeData.lng,
+    });
+    setErrors({ ...errors, dropoff: null });
+  };
+
   const calculateDistance = async () => {
-    // Validate places are selected
     if (!data.pickup_place_id || !data.dropoff_place_id) {
       setDistanceError('Please select both pickup and dropoff addresses from the Google suggestions');
       return false;
@@ -44,7 +82,6 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
         throw new Error('Google Maps API key not configured. Contact administrator.');
       }
 
-      // Use Distance Matrix API with lat/lng for accuracy
       const origins = `${data.pickup_lat},${data.pickup_lng}`;
       const destinations = `${data.dropoff_lat},${data.dropoff_lng}`;
       
@@ -62,7 +99,6 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
       
       console.log('Distance Matrix Response:', result);
       
-      // Handle API errors
       if (result.status === 'REQUEST_DENIED') {
         throw new Error(`Google API Error: ${result.error_message || 'REQUEST_DENIED - Check API key and enabled APIs (Distance Matrix API must be enabled)'}`);
       }
@@ -82,8 +118,8 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
       }
       
       if (element.status === 'OK') {
-        const distanceKm = element.distance.value / 1000; // Meters to kilometers
-        const durationMinutes = Math.ceil(element.duration.value / 60); // Seconds to minutes
+        const distanceKm = element.distance.value / 1000;
+        const durationMinutes = Math.ceil(element.duration.value / 60);
 
         console.log('Distance Calculated:', { distanceKm, durationMinutes });
 
@@ -142,34 +178,57 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
     { value: 'full_day', label: 'Full Day', time: 'Flexible timing' },
   ];
 
-  const isValid = data.pickup_address && data.dropoff_address && data.move_date && data.move_type;
-
   const handleNext = async () => {
-    if (isValid && !data.distance_km) {
-      await calculateDistance();
+    const newErrors = {};
+
+    if (!data.move_type) newErrors.move_type = 'Select move type';
+    if (!data.pickup_place_id) newErrors.pickup = 'Select pickup address from dropdown';
+    if (!data.dropoff_place_id) newErrors.dropoff = 'Select dropoff address from dropdown';
+    if (!data.move_date) newErrors.move_date = 'Select move date';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
+
+    const success = await calculateDistance();
+    
+    if (!success) {
+      return;
+    }
+
+    if (!data.distance_km || data.distance_km <= 0) {
+      setDistanceError('Distance must be greater than 0. Please reselect addresses.');
+      return;
+    }
+    
     onNext();
   };
 
   return (
     <div className="space-y-8">
       {data.distance_km && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center gap-3">
-          <Route className="w-5 h-5 text-blue-600" />
-          <div>
-            <p className="font-medium text-blue-900">Distance Calculated</p>
-            <p className="text-sm text-blue-700">
-              {data.distance_km.toFixed(1)} km • Estimated {Math.floor(data.distance_duration_minutes / 60)}h {data.distance_duration_minutes % 60}m travel time
+        <Alert className="border-green-200 bg-green-50">
+          <Route className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-green-900">
+            <strong>Distance: {data.distance_km.toFixed(1)} km</strong>
+            <p className="text-sm mt-1">
+              Estimated travel time: {Math.floor(data.distance_duration_minutes / 60)}h {data.distance_duration_minutes % 60}m
             </p>
-          </div>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
       
       {distanceError && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
-          {distanceError}
-        </div>
+        <Alert className="border-red-200 bg-red-50">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-900">
+            <strong>Distance Calculation Failed</strong>
+            <p className="text-sm mt-1">{distanceError}</p>
+          </AlertDescription>
+        </Alert>
       )}
+
       {/* Move Type */}
       <Card>
         <CardHeader>
@@ -209,7 +268,6 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Pickup Address */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
               <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center">
@@ -217,43 +275,31 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
               </div>
               Pickup Location
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="md:col-span-2">
-                <Label htmlFor="pickup_address">Street Address</Label>
-                <Input
-                  id="pickup_address"
-                  placeholder="123 Main Street"
-                  value={data.pickup_address || ''}
-                  onChange={(e) => handleChange('pickup_address', e.target.value)}
-                  className="mt-1.5"
-                />
+            <GooglePlacesAutocomplete
+              label="Pickup Address"
+              value={data.pickup_address}
+              onChange={handlePickupChange}
+              placeholder="Start typing your pickup address..."
+              apiKey={apiKey}
+              error={errors.pickup}
+            />
+            {data.pickup_city && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>City</Label>
+                  <Input value={data.pickup_city} disabled className="bg-gray-50 mt-1.5" />
+                </div>
+                <div>
+                  <Label>Postal Code</Label>
+                  <Input value={data.pickup_postal_code || 'N/A'} disabled className="bg-gray-50 mt-1.5" />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="pickup_city">City</Label>
-                <Input
-                  id="pickup_city"
-                  placeholder="Cape Town"
-                  value={data.pickup_city || ''}
-                  onChange={(e) => handleChange('pickup_city', e.target.value)}
-                  className="mt-1.5"
-                />
-              </div>
-              <div>
-                <Label htmlFor="pickup_postal_code">Postal Code</Label>
-                <Input
-                  id="pickup_postal_code"
-                  placeholder="8001"
-                  value={data.pickup_postal_code || ''}
-                  onChange={(e) => handleChange('pickup_postal_code', e.target.value)}
-                  className="mt-1.5"
-                />
-              </div>
-            </div>
+            )}
 
             {/* Pickup Access Details */}
             <div className="p-4 bg-gray-50 rounded-xl space-y-4">
               <p className="text-sm font-medium">Access Details</p>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label>Floor</Label>
                   <Select
@@ -320,7 +366,6 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
 
           <div className="h-px bg-gray-200" />
 
-          {/* Dropoff Address */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
               <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
@@ -328,43 +373,31 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
               </div>
               Dropoff Location
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="md:col-span-2">
-                <Label htmlFor="dropoff_address">Street Address</Label>
-                <Input
-                  id="dropoff_address"
-                  placeholder="456 Oak Avenue"
-                  value={data.dropoff_address || ''}
-                  onChange={(e) => handleChange('dropoff_address', e.target.value)}
-                  className="mt-1.5"
-                />
+            <GooglePlacesAutocomplete
+              label="Dropoff Address"
+              value={data.dropoff_address}
+              onChange={handleDropoffChange}
+              placeholder="Start typing your dropoff address..."
+              apiKey={apiKey}
+              error={errors.dropoff}
+            />
+            {data.dropoff_city && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>City</Label>
+                  <Input value={data.dropoff_city} disabled className="bg-gray-50 mt-1.5" />
+                </div>
+                <div>
+                  <Label>Postal Code</Label>
+                  <Input value={data.dropoff_postal_code || 'N/A'} disabled className="bg-gray-50 mt-1.5" />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="dropoff_city">City</Label>
-                <Input
-                  id="dropoff_city"
-                  placeholder="Johannesburg"
-                  value={data.dropoff_city || ''}
-                  onChange={(e) => handleChange('dropoff_city', e.target.value)}
-                  className="mt-1.5"
-                />
-              </div>
-              <div>
-                <Label htmlFor="dropoff_postal_code">Postal Code</Label>
-                <Input
-                  id="dropoff_postal_code"
-                  placeholder="2001"
-                  value={data.dropoff_postal_code || ''}
-                  onChange={(e) => handleChange('dropoff_postal_code', e.target.value)}
-                  className="mt-1.5"
-                />
-              </div>
-            </div>
+            )}
 
             {/* Dropoff Access Details */}
             <div className="p-4 bg-gray-50 rounded-xl space-y-4">
               <p className="text-sm font-medium">Access Details</p>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label>Floor</Label>
                   <Select
@@ -550,7 +583,7 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
       <div className="flex justify-end pt-6">
         <Button 
           onClick={handleNext} 
-          disabled={!isValid || calculatingDistance}
+          disabled={calculatingDistance}
           className="bg-black text-white hover:bg-gray-800"
         >
           {calculatingDistance ? (
