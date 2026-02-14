@@ -14,7 +14,9 @@ export default function QuoteComparison({
   selectedQuoteId,
   onSelect,
   onNext, 
-  onBack 
+  onBack,
+  packagingOrder,
+  commissionRate = 10
 }) {
   const [suppliers, setSuppliers] = useState({});
   const [loading, setLoading] = useState(true);
@@ -73,8 +75,27 @@ export default function QuoteComparison({
     );
   }
 
-  const sortedQuotes = [...quotes].sort((a, b) => a.total_price - b.total_price);
-  const lowestPrice = sortedQuotes[0]?.total_price;
+  // Calculate actual prices based on move details and supplier rates
+  const calculateQuotePrice = (quote) => {
+    const distanceKm = moveRequest?.distance_km || 0;
+    const supplier = suppliers[quote.supplier_id];
+    const supplierKmRate = supplier?.pricing?.rate_per_km || 0;
+    
+    const supplierBasePrice = distanceKm * supplierKmRate;
+    const commissionAmount = (supplierBasePrice * commissionRate) / 100;
+    const movePrice = supplierBasePrice + commissionAmount;
+    const packagingTotal = packagingOrder?.total_amount || 0;
+    
+    return movePrice + packagingTotal;
+  };
+
+  const quotesWithPrices = quotes.map(quote => ({
+    ...quote,
+    calculated_price: calculateQuotePrice(quote)
+  }));
+
+  const sortedQuotes = [...quotesWithPrices].sort((a, b) => a.calculated_price - b.calculated_price);
+  const lowestPrice = sortedQuotes[0]?.calculated_price;
 
   return (
     <div className="space-y-6">
@@ -163,7 +184,7 @@ export default function QuoteComparison({
 
                           <div className="text-right">
                             <p className="text-3xl font-bold">
-                              R{quote.total_price?.toLocaleString()}
+                              R{quote.calculated_price?.toLocaleString()}
                             </p>
                             <p className="text-sm text-gray-500">total estimate</p>
                           </div>
