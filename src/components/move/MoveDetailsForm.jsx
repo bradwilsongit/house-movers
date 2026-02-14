@@ -226,6 +226,17 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
   ];
 
   const handleNext = async () => {
+    console.log('[MoveDetailsForm] Validating form data:', {
+      move_type: data.move_type,
+      pickup_place_id: data.pickup_place_id,
+      pickup_lat: data.pickup_lat,
+      pickup_lng: data.pickup_lng,
+      dropoff_place_id: data.dropoff_place_id,
+      dropoff_lat: data.dropoff_lat,
+      dropoff_lng: data.dropoff_lng,
+      move_date: data.move_date,
+    });
+    
     const newErrors = {};
 
     if (!data.move_type) newErrors.move_type = 'Select move type';
@@ -241,7 +252,7 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
     if (!data.move_date) newErrors.move_date = 'Select move date';
 
     if (Object.keys(newErrors).length > 0) {
-      console.log('[MoveDetailsForm] Validation errors:', newErrors);
+      console.log('[MoveDetailsForm] ❌ Validation errors:', newErrors);
       setErrors(newErrors);
       return;
     }
@@ -260,6 +271,12 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
     console.log('[MoveDetailsForm] ✓ Validation passed, proceeding to next step');
     onNext();
   };
+  
+  // Check if minimum required fields are filled
+  const canContinue = data.move_type && 
+                      data.pickup_place_id && 
+                      data.dropoff_place_id && 
+                      data.move_date;
 
   return (
     <div className="space-y-8">

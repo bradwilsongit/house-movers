@@ -87,27 +87,24 @@ export default function GooglePlacesAutocomplete({
     };
   }, [apiKey]);
 
-  const handlePlaceChange = async () => {
-    console.log('[GooglePlaces] ✓ gmp-placeselect event fired for', label);
+  const handlePlaceChange = async (event) => {
+    console.log('[GooglePlaces] ✓ gmp-placeselect event fired for', label, event);
     
-    // Get the place from the autocomplete element
-    const autocompleteElement = autocompleteRef.current;
-    if (!autocompleteElement) {
-      console.error('[GooglePlaces] No autocomplete element ref');
-      return;
-    }
-
-    console.log('[GooglePlaces] Getting place from element.value...');
-    const place = autocompleteElement.value;
+    // Get the place from the event
+    const place = event?.place;
     
     if (!place) {
-      console.error('[GooglePlaces] No place value on element');
-      console.log('[GooglePlaces] Element:', autocompleteElement);
-      console.log('[GooglePlaces] Element properties:', Object.keys(autocompleteElement));
-      return;
+      console.error('[GooglePlaces] No place in event, trying element.value...');
+      const autocompleteElement = autocompleteRef.current;
+      if (!autocompleteElement?.value) {
+        console.error('[GooglePlaces] No place found in event or element.value');
+        return;
+      }
+      // Fallback to element.value if event.place not available
+      const place = autocompleteElement.value;
     }
 
-    console.log('[GooglePlaces] ✓ Place object retrieved:', place);
+    console.log('[GooglePlaces] ✓ Place object retrieved from event.place:', place);
 
     // Fetch all required fields
     console.log('[GooglePlaces] Fetching place fields...');
@@ -151,14 +148,15 @@ export default function GooglePlacesAutocomplete({
 
     const placeData = {
       address: place.formattedAddress || place.displayName,
-      place_id: place.id,
+      place_id: place.id || place.placeId,
       lat: typeof place.location.lat === 'function' ? place.location.lat() : place.location.lat,
       lng: typeof place.location.lng === 'function' ? place.location.lng() : place.location.lng,
       city: addressComponents.city || '',
       postal_code: addressComponents.postal_code || ''
     };
 
-    console.log('[GooglePlaces] ✓ Calling onChange with place data:', placeData);
+    console.log('[GooglePlaces] ✓ Prepared place data:', placeData);
+    console.log('[GooglePlaces] → Calling parent onChange with:', placeData);
     onChange(placeData);
     console.log('[GooglePlaces] ✓ onChange called successfully for', label);
   };
