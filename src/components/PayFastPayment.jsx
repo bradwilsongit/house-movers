@@ -7,7 +7,7 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (booking && settings && formRef.current && !error) {
+    if (booking && settings && formRef.current && !error && signature) {
       // Validate settings
       if (!settings.payfast_merchant_id || !settings.payfast_merchant_key) {
         setError('PayFast credentials not configured. Please contact administrator.');
@@ -22,7 +22,7 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
         formRef.current?.submit();
       }, 1500);
     }
-  }, [booking, settings, onPaymentInitiated, error]);
+  }, [booking, settings, onPaymentInitiated, error, signature]);
 
   if (!booking) return null;
   
