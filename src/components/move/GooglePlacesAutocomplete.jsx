@@ -57,14 +57,26 @@ export default function GooglePlacesAutocomplete({
     initializeAutocomplete();
 
     return () => {
-      // Cleanup
-      if (autocompleteRef.current && containerRef.current) {
+      // Cleanup listener and element
+      console.log('[GooglePlaces] Cleaning up', label);
+      if (listenerRef.current && autocompleteRef.current) {
         try {
-          containerRef.current.innerHTML = '';
+          autocompleteRef.current.removeEventListener('gmp-placeselect', listenerRef.current);
+          console.log('[GooglePlaces] ✓ Event listener removed');
         } catch (e) {
-          console.error('[GooglePlaces] Cleanup error:', e);
+          console.error('[GooglePlaces] Listener cleanup error:', e);
         }
       }
+      if (containerRef.current) {
+        try {
+          containerRef.current.innerHTML = '';
+          console.log('[GooglePlaces] ✓ Container cleared');
+        } catch (e) {
+          console.error('[GooglePlaces] Container cleanup error:', e);
+        }
+      }
+      autocompleteRef.current = null;
+      listenerRef.current = null;
     };
   }, [apiKey]);
 
