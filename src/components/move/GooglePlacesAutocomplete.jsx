@@ -67,19 +67,40 @@ export default function GooglePlacesAutocomplete({
     };
   }, [apiKey]);
 
-  const handlePlaceChange = async (event) => {
-    console.log('[GooglePlaces] gmp-placeselect event fired for', label);
-    console.log('[GooglePlaces] Event detail:', event.detail);
+  const handlePlaceChange = async () => {
+    console.log('[GooglePlaces] ✓ gmp-placeselect event fired for', label);
     
-    const place = event.detail?.place;
+    // Get the place from the autocomplete element
+    const autocompleteElement = autocompleteRef.current;
+    if (!autocompleteElement) {
+      console.error('[GooglePlaces] No autocomplete element ref');
+      return;
+    }
+
+    console.log('[GooglePlaces] Getting place from element...');
+    const place = autocompleteElement.value;
     
     if (!place) {
-      console.error('[GooglePlaces] No place in event detail');
+      console.error('[GooglePlaces] No place value on element');
       return;
     }
 
     console.log('[GooglePlaces] Place object:', place);
-    console.log('[GooglePlaces] Place properties:', {
+    console.log('[GooglePlaces] Available methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(place)));
+
+    // Fetch all required fields
+    console.log('[GooglePlaces] Fetching place fields...');
+    try {
+      await place.fetchFields({
+        fields: ['location', 'formattedAddress', 'addressComponents', 'displayName', 'id']
+      });
+      console.log('[GooglePlaces] ✓ Fields fetched successfully');
+    } catch (e) {
+      console.error('[GooglePlaces] Failed to fetch fields:', e);
+      return;
+    }
+
+    console.log('[GooglePlaces] Place after fetch:', {
       id: place.id,
       displayName: place.displayName,
       formattedAddress: place.formattedAddress,
@@ -87,20 +108,8 @@ export default function GooglePlacesAutocomplete({
       addressComponents: place.addressComponents
     });
 
-    // PlaceAutocompleteElement might need to fetch additional details
-    if (!place.location && place.fetchFields) {
-      console.log('[GooglePlaces] Fetching additional place fields...');
-      try {
-        await place.fetchFields({
-          fields: ['location', 'formattedAddress', 'addressComponents', 'displayName']
-        });
-      } catch (e) {
-        console.error('[GooglePlaces] Failed to fetch additional fields:', e);
-      }
-    }
-
     if (!place.location) {
-      console.error('[GooglePlaces] Place has no location data');
+      console.error('[GooglePlaces] Place still has no location after fetch');
       return;
     }
 
