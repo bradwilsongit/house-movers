@@ -30,11 +30,28 @@ export default function GooglePlacesAutocomplete({
 
   const initializeAutocomplete = async () => {
     try {
+      console.log('[GooglePlaces] Starting initialization with API key:', apiKey?.substring(0, 10) + '...');
+      
       await loadGoogleMapsAPI(apiKey);
       
-      if (!inputRef.current || !window.google?.maps?.places) {
-        throw new Error('Google Maps Places library not available');
+      console.log('[GooglePlaces] Script loaded, checking Places availability...');
+      
+      if (!window.google?.maps?.places?.Autocomplete) {
+        const errorMsg = !window.google 
+          ? 'Google Maps not loaded'
+          : !window.google.maps 
+          ? 'Google Maps API not initialized'
+          : 'Places library not loaded - ensure Places API is enabled in Google Cloud Console';
+        
+        console.error('[GooglePlaces] Error:', errorMsg);
+        throw new Error(errorMsg);
       }
+
+      if (!inputRef.current) {
+        throw new Error('Input element not available');
+      }
+
+      console.log('[GooglePlaces] Initializing Autocomplete...');
 
       // Initialize autocomplete
       autocompleteRef.current = new window.google.maps.places.Autocomplete(
@@ -47,10 +64,12 @@ export default function GooglePlacesAutocomplete({
       );
 
       autocompleteRef.current.addListener('place_changed', handlePlaceSelect);
+      
+      console.log('[GooglePlaces] Autocomplete initialized successfully');
       setLoading(false);
       setScriptError(null);
     } catch (error) {
-      console.error('Error initializing Google Places:', error);
+      console.error('[GooglePlaces] Initialization error:', error);
       setScriptError(error.message || 'Failed to initialize address autocomplete');
       setLoading(false);
     }
