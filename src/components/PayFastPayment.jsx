@@ -63,9 +63,9 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
   const notify_url = `${window.location.origin}/api/payfast-itn`;
 
   // Step 1: Build form parameters (what gets submitted to PayFast)
-  // IMPORTANT: merchant_key is NOT submitted, only used for signature
   const formParams = {
     merchant_id,
+    merchant_key,  // PayFast requires this in submission
     return_url,
     cancel_url,
     notify_url,
@@ -80,11 +80,8 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     custom_str2: booking.booking_reference,
   };
 
-  // Step 2: Build signature parameters (includes merchant_key for hashing only)
-  const signatureParams = {
-    ...formParams,
-    merchant_key,  // Used for signature generation, NOT submitted
-  };
+  // Step 2: Use same params for signature generation
+  const signatureParams = formParams;
 
   // Step 3: Generate signature
   const generateSignature = () => {
@@ -143,7 +140,7 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     signature: signature,
     isValid: /^[a-f0-9]{32}$/.test(signature),
     hasPassphrase: !!settings.payfast_passphrase,
-    merchantKeyInPayload: 'merchant_key' in finalPayload ? '✗ YES (ERROR)' : '✓ NO (CORRECT)',
+    merchantKeyInPayload: 'merchant_key' in finalPayload ? '✓ YES' : '✗ NO',
     passphraseInPayload: 'passphrase' in finalPayload ? '✗ YES (ERROR)' : '✓ NO (CORRECT)'
   };
 
