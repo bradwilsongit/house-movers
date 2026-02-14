@@ -1,5 +1,5 @@
-import React from 'react';
-import { MapPin, Calendar, Clock, Building2, Truck } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, Calendar, Clock, Building2, Truck, Loader2, Route } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,8 +16,53 @@ import {
 } from '@/components/ui/select';
 
 export default function MoveDetailsForm({ data, onChange, onNext }) {
+  const [calculatingDistance, setCalculatingDistance] = useState(false);
+  const [distanceError, setDistanceError] = useState(null);
+
   const handleChange = (field, value) => {
     onChange({ ...data, [field]: value });
+  };
+
+  const calculateDistance = async () => {
+    if (!data.pickup_address || !data.dropoff_address) return;
+
+    setCalculatingDistance(true);
+    setDistanceError(null);
+
+    try {
+      // This will be called when moving to next step
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(
+          `${data.pickup_address}, ${data.pickup_city || ''}, South Africa`
+        )}&destinations=${encodeURIComponent(
+          `${data.dropoff_address}, ${data.dropoff_city || ''}, South Africa`
+        )}&key=${window.GOOGLE_MAPS_KEY || ''}`,
+        { mode: 'cors' }
+      );
+
+      if (!response.ok) throw new Error('Failed to calculate distance');
+
+      const result = await response.json();
+      
+      if (result.rows?.[0]?.elements?.[0]?.status === 'OK') {
+        const element = result.rows[0].elements[0];
+        const distanceKm = element.distance.value / 1000;
+        const durationMinutes = Math.ceil(element.duration.value / 60);
+
+        onChange({
+          ...data,
+          distance_km: distanceKm,
+          distance_duration_minutes: durationMinutes,
+        });
+      } else {
+        throw new Error('Could not calculate distance');
+      }
+    } catch (error) {
+      console.error('Distance calculation error:', error);
+      setDistanceError('Unable to calculate distance. Please verify addresses.');
+    } finally {
+      setCalculatingDistance(false);
+    }
   };
 
   const handleAccessChange = (type, field, value) => {
@@ -46,8 +91,32 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
 
   const isValid = data.pickup_address && data.dropoff_address && data.move_date && data.move_type;
 
+  const handleNext = async () => {
+    if (isValid && !data.distance_km) {
+      await calculateDistance();
+    }
+    onNext();
+  };
+
   return (
     <div className="space-y-8">
+      {data.distance_km && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center gap-3">
+          <Route className="w-5 h-5 text-blue-600" />
+          <div>
+            <p className="font-medium text-blue-900">Distance Calculated</p>
+            <p className="text-sm text-blue-700">
+              {data.distance_km.toFixed(1)} km • Estimated {Math.floor(data.distance_duration_minutes / 60)}h {data.distance_duration_minutes % 60}m travel time
+            </p>
+          </div>
+        </div>
+      )}
+      
+      {distanceError && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
+          {distanceError}
+        </div>
+      )}
       {/* Move Type */}
       <Card>
         <CardHeader>
@@ -427,11 +496,18 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
       {/* Navigation */}
       <div className="flex justify-end pt-6">
         <Button 
-          onClick={onNext} 
-          disabled={!isValid}
+          onClick={handleNext} 
+          disabled={!isValid || calculatingDistance}
           className="bg-black text-white hover:bg-gray-800"
         >
-          Continue to Inventory
+          {calculatingDistance ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Calculating Distance...
+            </>
+          ) : (
+            'Continue to Inventory'
+          )}
         </Button>
       </div>
     </div>
