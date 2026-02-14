@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MapPin, Loader2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { loadGoogleMapsAPI } from './googleMapsLoader';
 
 export default function GooglePlacesAutocomplete({ 
   label, 
@@ -24,55 +25,34 @@ export default function GooglePlacesAutocomplete({
       return;
     }
 
-    // Check if Google Maps script is already loaded
-    if (window.google?.maps?.places) {
-      initAutocomplete();
-      return;
-    }
-
-    // Load Google Maps script
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initGoogleMaps`;
-    script.async = true;
-    script.defer = true;
-
-    window.initGoogleMaps = () => {
-      setLoading(false);
-      initAutocomplete();
-    };
-
-    script.onerror = () => {
-      setScriptError('Failed to load Google Maps. Check API key and enabled APIs.');
-      setLoading(false);
-    };
-
-    document.head.appendChild(script);
-
-    return () => {
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-      delete window.initGoogleMaps;
-    };
+    initializeAutocomplete();
   }, [apiKey]);
 
-  const initAutocomplete = () => {
-    if (!inputRef.current || !window.google?.maps?.places) return;
-
+  const initializeAutocomplete = async () => {
     try {
+      await loadGoogleMapsAPI(apiKey);
+      
+      if (!inputRef.current || !window.google?.maps?.places) {
+        throw new Error('Google Maps Places library not available');
+      }
+
+      // Initialize autocomplete
       autocompleteRef.current = new window.google.maps.places.Autocomplete(
         inputRef.current,
         {
-          componentRestrictions: { country: 'za' }, // South Africa only
+          componentRestrictions: { country: 'za' },
           fields: ['place_id', 'formatted_address', 'address_components', 'geometry'],
           types: ['address']
         }
       );
 
       autocompleteRef.current.addListener('place_changed', handlePlaceSelect);
-    } catch (e) {
-      console.error('Error initializing autocomplete:', e);
-      setScriptError('Error initializing address autocomplete');
+      setLoading(false);
+      setScriptError(null);
+    } catch (error) {
+      console.error('Error initializing Google Places:', error);
+      setScriptError(error.message || 'Failed to initialize address autocomplete');
+      setLoading(false);
     }
   };
 
@@ -80,7 +60,7 @@ export default function GooglePlacesAutocomplete({
     const place = autocompleteRef.current.getPlace();
 
     if (!place.place_id) {
-      console.error('No place selected');
+      console.error('No place selected or invalid selection');
       return;
     }
 
@@ -143,9 +123,11 @@ export default function GooglePlacesAutocomplete({
       {error && (
         <p className="text-sm text-red-600">{error}</p>
       )}
-      <p className="text-xs text-gray-500">
-        Start typing and select from the dropdown
-      </p>
+      {!loading && !error && (
+        <p className="text-xs text-gray-500">
+          Start typing and select from the dropdown
+        </p>
+      )}
     </div>
   );
 }
