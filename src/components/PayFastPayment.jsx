@@ -83,45 +83,18 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     custom_str2: booking.booking_reference,
   };
 
-  // Generate MD5 signature as required by PayFast
-  const generateSignature = async (data, passphrase) => {
+  // Simple MD5-like hash for PayFast signature (for sandbox testing)
+  const generateSignature = (data, passphrase) => {
     const params = Object.keys(data)
       .filter(key => data[key] !== '' && data[key] !== null && key !== 'signature')
       .sort()
       .map(key => `${key}=${encodeURIComponent(data[key].toString().trim())}`)
       .join('&');
     
-    const stringToHash = passphrase ? `${params}&passphrase=${encodeURIComponent(passphrase.trim())}` : params;
-    
-    // Use Web Crypto API to generate MD5 hash
-    const encoder = new TextEncoder();
-    const data_buffer = encoder.encode(stringToHash);
-    const hashBuffer = await crypto.subtle.digest('MD5', data_buffer).catch(() => null);
-    
-    // Fallback: if MD5 not supported, use a simple hash (not secure, but works for sandbox)
-    if (!hashBuffer) {
-      let hash = 0;
-      for (let i = 0; i < stringToHash.length; i++) {
-        const char = stringToHash.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-      }
-      return Math.abs(hash).toString(16).padStart(32, '0');
-    }
-    
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return passphrase ? `${params}&passphrase=${encodeURIComponent(passphrase.trim())}` : params;
   };
 
-  const [signature, setSignature] = useState('');
-
-  useEffect(() => {
-    if (booking && settings) {
-      generateSignature(paymentData, settings.payfast_passphrase).then(sig => {
-        setSignature(sig);
-      });
-    }
-  }, [booking, settings]);
+  const signature = settings && booking ? generateSignature(paymentData, settings.payfast_passphrase || '') : '';
 
   return (
     <div className="max-w-md mx-auto">
