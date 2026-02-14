@@ -88,7 +88,7 @@ export default function GooglePlacesAutocomplete({
   }, [apiKey]);
 
   const handlePlaceChange = async (event) => {
-    console.log('[GooglePlaces] gmp-placeselect fired for', label, event);
+    console.log('[GooglePlaces] ✅ gmp-placeselect fired for', label, event);
     
     const place = event.place;
     if (!place) {
@@ -103,6 +103,13 @@ export default function GooglePlacesAutocomplete({
         fields: ['id', 'formattedAddress', 'location', 'addressComponents']
       });
       console.log('[GooglePlaces] ✓ Fields fetched successfully');
+      console.log('[GooglePlaces] Fetched data:', {
+        id: place.id,
+        formattedAddress: place.formattedAddress,
+        hasLocation: !!place.location,
+        lat: place.location?.lat?.(),
+        lng: place.location?.lng?.()
+      });
     } catch (e) {
       console.error('[GooglePlaces] ✗ Failed to fetch fields:', e);
       return;
@@ -132,9 +139,8 @@ export default function GooglePlacesAutocomplete({
       postal_code: postal_code
     };
 
-    console.log('[GooglePlaces] → Calling parent onChange with:', payload);
+    console.log('[GooglePlaces] ✅ calling parent onChange(payload):', payload);
     onChange(payload);
-    console.log('[GooglePlaces] ✓ Parent onChange called for', label);
   };
 
   const initializeAutocomplete = async () => {
@@ -168,6 +174,8 @@ export default function GooglePlacesAutocomplete({
         componentRestrictions: { country: 'za' }
       });
 
+      console.log('[GooglePlaces] Created PlaceAutocompleteElement:', autocomplete);
+
       autocomplete.id = `place-autocomplete-${label.replace(/\s+/g, '-').toLowerCase()}`;
       autocomplete.style.width = '100%';
       
@@ -178,12 +186,17 @@ export default function GooglePlacesAutocomplete({
       // Store reference
       autocompleteRef.current = autocomplete;
       
-      // Listen for place selection and store listener ref for cleanup
+      // IMPORTANT: attach to `autocomplete` element itself, not container
       listenerRef.current = handlePlaceChange;
       autocomplete.addEventListener('gmp-placeselect', handlePlaceChange);
       
       console.log('[GooglePlaces] ✓ Widget initialized successfully for', label);
-      console.log('[GooglePlaces] Event listener attached, element ID:', autocomplete.id);
+      console.log('[GooglePlaces] ✓ Event listener attached to element ID:', autocomplete.id);
+      
+      // Global diagnostic listener
+      document.addEventListener('gmp-placeselect', (e) => {
+        console.log('[GLOBAL] gmp-placeselect captured for', label, e);
+      }, true);
       setLoading(false);
       setScriptError(null);
     } catch (error) {

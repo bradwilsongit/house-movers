@@ -84,7 +84,7 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
   };
 
   const handleDropoffChange = (placeData) => {
-    console.log('[MoveDetailsForm] Dropoff place selected:', placeData);
+    console.log('[MoveDetailsForm] ✅ Dropoff received:', placeData);
     onChange(prev => ({
       ...prev,
       dropoff_address: placeData.address,
