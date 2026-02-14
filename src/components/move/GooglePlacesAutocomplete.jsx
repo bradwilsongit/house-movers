@@ -14,6 +14,7 @@ export default function GooglePlacesAutocomplete({
 }) {
   const containerRef = useRef(null);
   const autocompleteRef = useRef(null);
+  const listenerRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [scriptError, setScriptError] = useState(null);
   const initAttempted = useRef(false);
