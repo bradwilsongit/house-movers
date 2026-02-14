@@ -130,8 +130,7 @@ export default function GooglePlacesAutocomplete({
 
       // Create the new Places widget
       const autocomplete = new PlaceAutocompleteElement({
-        componentRestrictions: { country: 'za' },
-        fields: ['id', 'displayName', 'formattedAddress', 'addressComponents', 'location']
+        componentRestrictions: { country: 'za' }
       });
 
       autocomplete.id = `place-autocomplete-${label.replace(/\s+/g, '-').toLowerCase()}`;
