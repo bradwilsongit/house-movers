@@ -12,16 +12,22 @@ export default function BookingConfirmation({
   selectedQuote,
   packagingOrder,
   supplier,
+  commissionRate = 10,
   onConfirm, 
   onBack,
   loading 
 }) {
   const [tcAccepted, setTcAccepted] = useState(false);
 
-  const depositAmount = selectedQuote?.total_price ? selectedQuote.total_price * 0.5 : 0;
-  const balanceAmount = selectedQuote?.total_price ? selectedQuote.total_price * 0.5 : 0;
+  // Calculate pricing with commission
+  const distanceKm = moveRequest?.distance_km || 0;
+  const supplierKmRate = supplier?.pricing?.rate_per_km || 0;
+  const supplierBasePrice = distanceKm * supplierKmRate;
+  const commissionAmount = (supplierBasePrice * commissionRate) / 100;
+  const movePrice = supplierBasePrice + commissionAmount;
+  
   const packagingTotal = packagingOrder?.total_amount || 0;
-  const grandTotal = (selectedQuote?.total_price || 0) + packagingTotal;
+  const grandTotal = movePrice + packagingTotal;
 
   return (
     <div className="space-y-6">
@@ -117,13 +123,26 @@ export default function BookingConfirmation({
         <CardContent className="space-y-4">
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-gray-600">Moving Service</span>
-              <span className="font-medium">R{selectedQuote?.total_price?.toLocaleString()}</span>
+              <span className="text-gray-600">Distance</span>
+              <span className="font-medium">{distanceKm.toFixed(1)} km</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Supplier Base Price</span>
+              <span className="font-medium">R{supplierBasePrice.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">Platform Fee ({commissionRate}%)</span>
+              <span className="text-gray-500">R{commissionAmount.toFixed(2)}</span>
+            </div>
+            <Separator />
+            <div className="flex justify-between">
+              <span className="text-gray-600 font-medium">Moving Service</span>
+              <span className="font-semibold">R{movePrice.toFixed(2)}</span>
             </div>
             {packagingTotal > 0 && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Packaging Materials</span>
-                <span className="font-medium">R{packagingTotal.toLocaleString()}</span>
+                <span className="font-medium">R{packagingTotal.toFixed(2)}</span>
               </div>
             )}
           </div>
@@ -131,34 +150,18 @@ export default function BookingConfirmation({
           <Separator />
 
           <div className="flex justify-between text-lg">
-            <span className="font-semibold">Total</span>
-            <span className="font-bold">R{grandTotal.toLocaleString()}</span>
+            <span className="font-semibold">Total Amount</span>
+            <span className="font-bold">R{grandTotal.toFixed(2)}</span>
           </div>
 
-          <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-            <div className="flex justify-between text-emerald-700">
-              <span className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                Deposit (pay now)
-              </span>
-              <span className="font-semibold">R{depositAmount.toLocaleString()}</span>
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-blue-900">Pay Full Amount Now</span>
+              <span className="font-bold text-blue-900 text-lg">R{grandTotal.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-gray-500">
-              <span className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-gray-300" />
-                Balance (on arrival)
-              </span>
-              <span>R{balanceAmount.toLocaleString()}</span>
-            </div>
-            {packagingTotal > 0 && (
-              <div className="flex justify-between text-gray-500">
-                <span className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-gray-300" />
-                  Packaging (with deposit)
-                </span>
-                <span>Included</span>
-              </div>
-            )}
+            <p className="text-sm text-blue-700 mt-2">
+              Single payment for your complete move - no additional charges on arrival
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -227,7 +230,7 @@ export default function BookingConfirmation({
             </span>
           ) : (
             <>
-              Pay Deposit R{(depositAmount + packagingTotal).toLocaleString()}
+              Proceed to Payment R{grandTotal.toFixed(2)}
             </>
           )}
         </Button>
