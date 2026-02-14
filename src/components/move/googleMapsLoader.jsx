@@ -40,12 +40,21 @@ export const loadGoogleMapsAPI = async (apiKey) => {
       script.onload = async () => {
         console.log('[GoogleMapsLoader] ✓ Base script loaded successfully');
         try {
-          console.log('[GoogleMapsLoader] Importing Places library via importLibrary...');
+          console.log('[GoogleMapsLoader] Waiting for google.maps.importLibrary...');
           
-          if (!window.google?.maps?.importLibrary) {
-            throw new Error('google.maps.importLibrary not available - script loaded but API not initialized');
+          // Wait for google.maps.importLibrary to be available (with retry)
+          let retries = 0;
+          while (!window.google?.maps?.importLibrary && retries < 10) {
+            console.log('[GoogleMapsLoader] importLibrary not ready, waiting... (attempt', retries + 1, ')');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            retries++;
           }
 
+          if (!window.google?.maps?.importLibrary) {
+            throw new Error('google.maps.importLibrary not available after waiting - API not initialized');
+          }
+
+          console.log('[GoogleMapsLoader] importLibrary ready, importing Places...');
           const { PlaceAutocompleteElement } = await window.google.maps.importLibrary("places");
           
           if (!PlaceAutocompleteElement) {
