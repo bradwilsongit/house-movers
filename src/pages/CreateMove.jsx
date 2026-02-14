@@ -373,6 +373,8 @@ export default function CreateMove() {
             onSelect={handleQuoteSelect}
             onNext={nextStep}
             onBack={prevStep}
+            packagingOrder={packagingOrder}
+            commissionRate={commissionRate}
           />
         );
       case 4:
