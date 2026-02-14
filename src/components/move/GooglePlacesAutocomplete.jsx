@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { MapPin, Loader2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { loadGoogleMapsAPI } from './googleMapsLoader';
 
 export default function GooglePlacesAutocomplete({ 
   label, 
@@ -12,15 +12,42 @@ export default function GooglePlacesAutocomplete({
   apiKey,
   error 
 }) {
-  const containerRef = useRef(null);
+  const inputRef = useRef(null);
   const autocompleteRef = useRef(null);
-  const listenerRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [scriptError, setScriptError] = useState(null);
+  const [inputValue, setInputValue] = useState(value || '');
   const initAttempted = useRef(false);
 
+  // Global debug listeners (run once)
   useEffect(() => {
-    // Distinguish between loading (null) and misconfigured (undefined/empty string)
+    if (!window.__gmpPlaceselectDebug) {
+      window.__gmpPlaceselectDebug = true;
+      
+      document.addEventListener(
+        "gmp-placeselect",
+        (e) => console.log("[GLOBAL] ✅ gmp-placeselect captured", e),
+        true
+      );
+      
+      window.addEventListener(
+        "gmp-placeselect",
+        (e) => console.log("[WINDOW] ✅ gmp-placeselect captured", e),
+        true
+      );
+      
+      console.log('[GooglePlaces] Global debug listeners installed');
+    }
+  }, []);
+
+  // Update input value when prop changes
+  useEffect(() => {
+    if (value !== inputValue) {
+      setInputValue(value || '');
+    }
+  }, [value]);
+
+  useEffect(() => {
     if (apiKey === null) {
       console.log('[GooglePlaces] API key still loading for', label);
       setLoading(true);
@@ -35,7 +62,6 @@ export default function GooglePlacesAutocomplete({
       return;
     }
 
-    // If we previously had no key but now have one, reset initAttempted
     if (apiKey && scriptError === 'Google Maps API key not configured') {
       console.log('[GooglePlaces] API key now available for', label, '- resetting state');
       initAttempted.current = false;
@@ -48,98 +74,63 @@ export default function GooglePlacesAutocomplete({
       return;
     }
 
-    // Wait for container to be ready
-    if (!containerRef.current) {
-      console.log('[GooglePlaces] Container not ready for', label, '- will retry');
-      const timer = setTimeout(() => {
-        if (containerRef.current && !initAttempted.current && apiKey) {
-          console.log('[GooglePlaces] Container now ready, initializing', label);
-          initializeAutocomplete();
-        }
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-
-    console.log('[GooglePlaces] Container ready, initializing', label);
-    initializeAutocomplete();
-
-    return () => {
-      // Cleanup listener and element
-      console.log('[GooglePlaces] Cleaning up', label);
-      if (listenerRef.current && autocompleteRef.current) {
-        try {
-          autocompleteRef.current.removeEventListener('gmp-placeselect', listenerRef.current);
-          console.log('[GooglePlaces] ✓ Event listener removed');
-        } catch (e) {
-          console.error('[GooglePlaces] Listener cleanup error:', e);
-        }
-      }
-      if (containerRef.current) {
-        try {
-          containerRef.current.innerHTML = '';
-          console.log('[GooglePlaces] ✓ Container cleared');
-        } catch (e) {
-          console.error('[GooglePlaces] Container cleanup error:', e);
-        }
-      }
-      autocompleteRef.current = null;
-      listenerRef.current = null;
-    };
-  }, [apiKey]);
-
-  const handlePlaceChange = async (event) => {
-    console.log('[GooglePlaces] ✅ gmp-placeselect fired for', label, event);
-    
-    const place = event.place;
-    if (!place) {
-      console.warn('[GooglePlaces] placeselect fired but event.place missing', event);
+    if (!inputRef.current) {
+      console.log('[GooglePlaces] Input ref not ready for', label);
       return;
     }
 
-    console.log('[GooglePlaces] Place object received:', place);
+    console.log('[GooglePlaces] Input ready, initializing classic Autocomplete for', label);
+    initializeAutocomplete();
 
-    try {
-      await place.fetchFields({
-        fields: ['id', 'formattedAddress', 'location', 'addressComponents']
-      });
-      console.log('[GooglePlaces] ✓ Fields fetched successfully');
-      console.log('[GooglePlaces] Fetched data:', {
-        id: place.id,
-        formattedAddress: place.formattedAddress,
-        hasLocation: !!place.location,
-        lat: place.location?.lat?.(),
-        lng: place.location?.lng?.()
-      });
-    } catch (e) {
-      console.error('[GooglePlaces] ✗ Failed to fetch fields:', e);
+    return () => {
+      console.log('[GooglePlaces] Cleaning up', label);
+      if (autocompleteRef.current) {
+        try {
+          window.google?.maps?.event?.clearInstanceListeners(autocompleteRef.current);
+          console.log('[GooglePlaces] ✓ Listeners cleared');
+        } catch (e) {
+          console.error('[GooglePlaces] Cleanup error:', e);
+        }
+      }
+      autocompleteRef.current = null;
+    };
+  }, [apiKey]);
+
+  const handlePlaceChange = () => {
+    const place = autocompleteRef.current.getPlace();
+    console.log('[GooglePlaces] ✅ place_changed fired for', label, ':', place);
+
+    if (!place?.place_id) {
+      console.warn('[GooglePlaces] No place_id in selected place');
       return;
     }
 
     // Extract address components
     let city = '';
     let postal_code = '';
-    if (place.addressComponents) {
-      place.addressComponents.forEach(component => {
+    if (place.address_components) {
+      place.address_components.forEach(component => {
         const types = component.types || [];
         if (types.includes('locality')) {
-          city = component.longText || component.shortText;
+          city = component.long_name || component.short_name;
         }
         if (types.includes('postal_code')) {
-          postal_code = component.longText || component.shortText;
+          postal_code = component.long_name || component.short_name;
         }
       });
     }
 
     const payload = {
-      address: place.formattedAddress || '',
-      place_id: place.id || null,
-      lat: place.location?.lat?.() ?? null,
-      lng: place.location?.lng?.() ?? null,
+      address: place.formatted_address || '',
+      place_id: place.place_id,
+      lat: place.geometry?.location?.lat?.() ?? null,
+      lng: place.geometry?.location?.lng?.() ?? null,
       city: city,
       postal_code: postal_code
     };
 
     console.log('[GooglePlaces] ✅ calling parent onChange(payload):', payload);
+    setInputValue(payload.address);
     onChange(payload);
   };
 
@@ -229,9 +220,14 @@ export default function GooglePlacesAutocomplete({
         <div className="absolute left-3 top-3 z-10 pointer-events-none">
           <MapPin className="w-4 h-4 text-gray-400" />
         </div>
-        <div 
-          ref={containerRef}
-          className="relative [&_input]:pl-10 [&_input]:h-9 [&_input]:w-full [&_input]:rounded-md [&_input]:border [&_input]:border-gray-200 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2 [&_input]:text-sm [&_input]:placeholder:text-gray-500 [&_input]:focus-visible:outline-none [&_input]:focus-visible:ring-1 [&_input]:focus-visible:ring-gray-400"
+        <Input
+          ref={inputRef}
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder={placeholder || 'Start typing address...'}
+          className="pl-10"
+          disabled={loading || !!scriptError}
         />
         {loading && (
           <div className="absolute right-3 top-3 z-10">
