@@ -23,11 +23,11 @@ export default function BookingConfirmation({
   const distanceKm = moveRequest?.distance_km || 0;
   const supplierKmRate = supplier?.pricing?.rate_per_km || 0;
   const supplierBasePrice = distanceKm * supplierKmRate;
-  const commissionAmount = (supplierBasePrice * commissionRate) / 100;
-  const movePrice = supplierBasePrice + commissionAmount;
   
   const packagingTotal = packagingOrder?.total_amount || 0;
-  const grandTotal = movePrice + packagingTotal;
+  const subtotal = supplierBasePrice + packagingTotal;
+  const commissionAmount = (subtotal * commissionRate) / 100;
+  const grandTotal = subtotal + commissionAmount;
 
   return (
     <div className="space-y-6">
@@ -130,21 +130,17 @@ export default function BookingConfirmation({
               <span className="text-gray-600">Supplier Base Price</span>
               <span className="font-medium">R{supplierBasePrice.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Platform Fee ({commissionRate}%)</span>
-              <span className="text-gray-500">R{commissionAmount.toFixed(2)}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">Moving Service</span>
-              <span className="font-semibold">R{movePrice.toFixed(2)}</span>
-            </div>
             {packagingTotal > 0 && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Packaging Materials</span>
                 <span className="font-medium">R{packagingTotal.toFixed(2)}</span>
               </div>
             )}
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">Platform Fee ({commissionRate}%)</span>
+              <span className="text-gray-500">R{commissionAmount.toFixed(2)}</span>
+            </div>
+            <Separator />
           </div>
 
           <Separator />
