@@ -1,72 +1,73 @@
-// Singleton loader for Google Maps API
+// Singleton loader for Google Maps API using new importLibrary approach
 let isLoading = false;
 let isLoaded = false;
 let loadPromise = null;
+let placesLibrary = null;
 
-export const loadGoogleMapsAPI = (apiKey) => {
-  // If already loaded and Places is available, return resolved promise
-  if (isLoaded && window.google?.maps?.places?.Autocomplete) {
-    return Promise.resolve();
+export const loadGoogleMapsAPI = async (apiKey) => {
+  // If already loaded, return the places library
+  if (isLoaded && placesLibrary) {
+    return placesLibrary;
   }
 
-  // If currently loading, return existing promise
+  // If currently loading, wait for existing promise
   if (isLoading && loadPromise) {
     return loadPromise;
   }
 
-  // Check if already loaded but we haven't set our flag
-  if (window.google?.maps?.places?.Autocomplete) {
-    isLoaded = true;
-    return Promise.resolve();
-  }
-
-  // Start loading
-  isLoading = true;
+  // Check if script already loaded
+  const existingScript = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]');
   
-  loadPromise = new Promise((resolve, reject) => {
-    // Remove any existing scripts to prevent duplicates
-    const existingScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
-    existingScripts.forEach(script => script.remove());
-
-    // Create unique callback name
-    const callbackName = 'initGoogleMaps_' + Date.now();
+  if (!existingScript) {
+    // Load the base script (only once)
+    isLoading = true;
     
-    window[callbackName] = () => {
-      // Wait a bit for Places library to be fully available
-      const checkPlaces = setInterval(() => {
-        if (window.google?.maps?.places?.Autocomplete) {
-          clearInterval(checkPlaces);
+    loadPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async`;
+      script.async = true;
+      script.defer = true;
+
+      script.onload = async () => {
+        try {
+          console.log('[GoogleMaps] Base script loaded, importing Places library...');
+          // Import the Places library using new approach
+          const { PlaceAutocompleteElement } = await window.google.maps.importLibrary("places");
+          placesLibrary = { PlaceAutocompleteElement };
           isLoaded = true;
           isLoading = false;
-          delete window[callbackName];
-          resolve();
-        }
-      }, 50);
-
-      // Timeout after 5 seconds
-      setTimeout(() => {
-        clearInterval(checkPlaces);
-        if (!isLoaded) {
+          console.log('[GoogleMaps] Places library loaded successfully');
+          resolve(placesLibrary);
+        } catch (error) {
           isLoading = false;
-          delete window[callbackName];
-          reject(new Error('Places library failed to load - check API key has Places API enabled and billing is active'));
+          console.error('[GoogleMaps] Failed to import Places library:', error);
+          reject(new Error('Failed to import Places library - ensure Places API is enabled'));
         }
-      }, 5000);
-    };
+      };
 
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=${callbackName}`;
-    script.async = true;
-    script.defer = true;
+      script.onerror = () => {
+        isLoading = false;
+        console.error('[GoogleMaps] Script load failed');
+        reject(new Error('Failed to load Google Maps - check API key and billing'));
+      };
 
-    script.onerror = () => {
-      isLoading = false;
-      delete window[callbackName];
-      reject(new Error('Failed to load Google Maps script - check API key and network connection'));
-    };
+      document.head.appendChild(script);
+    });
 
-    document.head.appendChild(script);
-  });
-
-  return loadPromise;
+    return loadPromise;
+  } else {
+    // Script already exists, just import the library
+    if (window.google?.maps?.importLibrary) {
+      try {
+        const { PlaceAutocompleteElement } = await window.google.maps.importLibrary("places");
+        placesLibrary = { PlaceAutocompleteElement };
+        isLoaded = true;
+        return placesLibrary;
+      } catch (error) {
+        throw new Error('Failed to import Places library - ensure Places API is enabled');
+      }
+    } else {
+      throw new Error('Google Maps API not properly initialized');
+    }
+  }
 };
