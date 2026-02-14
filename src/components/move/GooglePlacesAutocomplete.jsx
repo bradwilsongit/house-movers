@@ -170,7 +170,11 @@ export default function GooglePlacesAutocomplete({
       containerRef.current.appendChild(autocomplete);
       
       // Listen for place selection
-      autocomplete.addEventListener('gmp-placeselect', handlePlaceChange);
+      const boundHandler = handlePlaceChange.bind(this);
+      autocomplete.addEventListener('gmp-placeselect', boundHandler);
+      
+      // Store the handler for cleanup
+      autocompleteRef.current = { element: autocomplete, handler: boundHandler };
       
       autocompleteRef.current = autocomplete;
       
