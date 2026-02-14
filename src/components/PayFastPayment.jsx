@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
+import md5 from 'js-md5';
 
 export default function PayFastPayment({ booking, settings, onPaymentInitiated }) {
   const formRef = useRef(null);
@@ -59,6 +60,13 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
   const cancel_url = `${window.location.origin}/payment-cancelled?booking_id=${booking.id}`;
   const notify_url = `${window.location.origin}/api/payfast-itn`;
 
+  // RFC3986 URL encoding (more strict than encodeURIComponent)
+  const rfc3986Encode = (str) => {
+    return encodeURIComponent(str).replace(/[!'()*]/g, c => 
+      "%" + c.charCodeAt(0).toString(16).toUpperCase()
+    );
+  };
+
   // Generate payment data
   const paymentData = {
     merchant_id,
@@ -83,15 +91,41 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     custom_str2: booking.booking_reference,
   };
 
-  // Generate signature string for PayFast
-  const params = Object.keys(paymentData)
-    .filter(key => paymentData[key] !== '' && paymentData[key] !== null)
-    .sort()
-    .map(key => `${key}=${encodeURIComponent(paymentData[key].toString().trim())}`)
-    .join('&');
-  
+  // Generate PayFast signature (32-char lowercase MD5 hex)
+  const generatePayFastSignature = (params, passphrase) => {
+    // Remove empty values
+    const cleanedParams = {};
+    Object.keys(params).forEach(key => {
+      if (params[key] !== null && params[key] !== undefined && params[key] !== '') {
+        cleanedParams[key] = params[key];
+      }
+    });
+
+    // Sort keys alphabetically
+    const sortedKeys = Object.keys(cleanedParams).sort();
+
+    // Build parameter string with RFC3986 encoding
+    let paramString = sortedKeys
+      .map(key => `${key}=${rfc3986Encode(String(cleanedParams[key]))}`)
+      .join('&');
+
+    // Append passphrase if provided
+    if (passphrase && passphrase.trim()) {
+      paramString += `&passphrase=${rfc3986Encode(passphrase.trim())}`;
+    }
+
+    // Generate MD5 hash
+    const sig = md5(paramString);
+
+    console.log('[PayFast] String to hash:', paramString);
+    console.log('[PayFast] Generated signature:', sig);
+    console.log('[PayFast] Signature validation:', /^[a-f0-9]{32}$/.test(sig) ? '✓ Valid' : '✗ Invalid');
+
+    return sig;
+  };
+
   const passphrase = settings.payfast_passphrase || '';
-  const signature = passphrase ? `${params}&passphrase=${encodeURIComponent(passphrase.trim())}` : params;
+  const signature = generatePayFastSignature(paymentData, passphrase);
 
   return (
     <div className="max-w-md mx-auto">
