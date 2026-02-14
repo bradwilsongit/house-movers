@@ -272,9 +272,9 @@ export default function Home() {
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               Ready to make your move?
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto mb-8">
-              Join thousands of satisfied customers who trust House Moves 
-              for their residential and office relocations.
+            <p className="text-gray-400 max-w-2xl mx-auto mb-8">Join thousands of satisfied customers who trust House Movers for their residential and office relocations.
+
+
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
