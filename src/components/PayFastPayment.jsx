@@ -66,50 +66,48 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
 
   // Helper: PHP urlencode equivalent (spaces as "+", not "%20")
   const pfUrlEncode = (val) => {
-    return encodeURIComponent(String(val).trim()).replace(/%20/g, '+');
+    return encodeURIComponent(String(val).trim())
+      .replace(/%20/g, '+')
+      .replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase())
+      .replace(/%[0-9a-f]{2}/gi, (m) => m.toUpperCase());
   };
 
-  // Helper: Generate MD5 signature
-  const generateSignature = (data, passphrase) => {
-    // Clone and remove fields that must NOT be hashed
-    const clean = { ...data };
-    delete clean.signature;
-    delete clean.passphrase; // CRITICAL: never hash passphrase as a normal field
-    
-    // Remove empty fields
-    Object.keys(clean).forEach(key => {
-      if (clean[key] === '' || clean[key] === null || clean[key] === undefined) {
-        delete clean[key];
-      }
-    });
+  // Helper: Build clean fields (remove empty) and generate signature
+  const buildPayfastFieldsAndSignature = (data, passphrase) => {
+    // Remove empty/null/undefined fields
+    const cleanFields = Object.fromEntries(
+      Object.entries(data).filter(
+        ([_, v]) => v !== null && v !== undefined && String(v).trim() !== ''
+      )
+    );
 
-    // Sort and build param string with PHP urlencode (spaces as "+")
-    const paramString = Object.keys(clean)
-      .sort()
-      .map(k => `${k}=${pfUrlEncode(clean[k])}`)
+    // Sort keys and build param string with PHP urlencode
+    const keys = Object.keys(cleanFields).sort();
+    const paramString = keys
+      .map(k => `${k}=${pfUrlEncode(String(cleanFields[k]).trim())}`)
       .join('&');
 
-    // Append passphrase ONLY to hash string (if set in PayFast dashboard)
-    const stringToHash = passphrase
-      ? `${paramString}&passphrase=${pfUrlEncode(passphrase.trim())}`
+    // Append passphrase ONLY to hash string (never as a posted field)
+    const stringToHash = passphrase && String(passphrase).trim() !== ''
+      ? `${paramString}&passphrase=${pfUrlEncode(String(passphrase).trim())}`
       : paramString;
 
     // Generate MD5 hash (32 lowercase hex characters)
-    const hash = md5(stringToHash);
+    const signature = md5(stringToHash);
 
     console.log('[PayFast] ========================================');
-    console.log('[PayFast] Fields hashed:', Object.keys(clean).sort().join(', '));
+    console.log('[PayFast] Fields to hash & POST:', keys.join(', '));
     console.log('[PayFast] String to hash:', stringToHash);
-    console.log('[PayFast] Generated signature:', hash);
-    console.log('[PayFast] Signature length:', hash.length);
-    console.log('[PayFast] Valid format:', /^[a-f0-9]{32}$/.test(hash) ? '✓ YES' : '✗ NO');
+    console.log('[PayFast] Generated signature:', signature);
+    console.log('[PayFast] Signature length:', signature.length);
+    console.log('[PayFast] Valid format:', /^[a-f0-9]{32}$/.test(signature) ? '✓ YES' : '✗ NO');
     console.log('[PayFast] ========================================');
 
-    return hash;
+    return { fields: cleanFields, signature };
   };
 
   // Build payment data
-  const paymentData = {
+  const paymentDataRaw = {
     merchant_id,
     merchant_key,
     return_url,
@@ -128,17 +126,16 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
 
   // Generate signature (passphrase used ONLY for hashing, never submitted)
   const passphrase = settings.payfast_passphrase || '';
-  const signature = generateSignature(paymentData, passphrase);
+  const { fields: paymentData, signature } = buildPayfastFieldsAndSignature(paymentDataRaw, passphrase);
 
   // Log final payload
   console.log('[PayFast] ========================================');
-  console.log('[PayFast] FORM VALUES (raw, not encoded):');
-  console.log('[PayFast] cancel_url:', paymentData.cancel_url);
-  console.log('[PayFast] return_url:', paymentData.return_url);
-  console.log('[PayFast] item_description:', paymentData.item_description);
-  console.log('[PayFast] passphrase in paymentData:', 'passphrase' in paymentData ? '✗ YES (ERROR!)' : '✓ NO (CORRECT)');
-  console.log('[PayFast] Final signature:', signature);
-  console.log('[PayFast] Signature length:', signature.length, signature.length === 32 ? '✓ PASS' : '✗ FAIL');
+  console.log('[PayFast] FORM VALUES (raw, NOT urlencoded):');
+  console.log('[PayFast] Fields count:', Object.keys(paymentData).length);
+  Object.entries(paymentData).forEach(([k, v]) => {
+    console.log(`[PayFast]   ${k}: ${v}`);
+  });
+  console.log('[PayFast] passphrase in form data:', 'passphrase' in paymentData ? '✗ YES (ERROR!)' : '✓ NO (CORRECT)');
   console.log('[PayFast] ========================================');
 
   // Debug info
@@ -228,16 +225,14 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
             method="post"
             className="hidden"
           >
-            {Object.entries(paymentData)
-              .filter(([_, v]) => v !== '' && v !== null && v !== undefined)
-              .map(([key, value]) => (
-                <input
-                  key={key}
-                  type="hidden"
-                  name={key}
-                  value={value}
-                />
-              ))}
+            {Object.entries(paymentData).map(([key, value]) => (
+              <input
+                key={key}
+                type="hidden"
+                name={key}
+                value={value}
+              />
+            ))}
             <input type="hidden" name="signature" value={signature} />
           </form>
 
