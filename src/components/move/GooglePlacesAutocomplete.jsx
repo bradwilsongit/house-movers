@@ -77,16 +77,17 @@ export default function GooglePlacesAutocomplete({
       return;
     }
 
-    console.log('[GooglePlaces] Getting place from element...');
+    console.log('[GooglePlaces] Getting place from element.value...');
     const place = autocompleteElement.value;
     
     if (!place) {
       console.error('[GooglePlaces] No place value on element');
+      console.log('[GooglePlaces] Element:', autocompleteElement);
+      console.log('[GooglePlaces] Element properties:', Object.keys(autocompleteElement));
       return;
     }
 
-    console.log('[GooglePlaces] Place object:', place);
-    console.log('[GooglePlaces] Available methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(place)));
+    console.log('[GooglePlaces] ✓ Place object retrieved:', place);
 
     // Fetch all required fields
     console.log('[GooglePlaces] Fetching place fields...');
@@ -96,20 +97,21 @@ export default function GooglePlacesAutocomplete({
       });
       console.log('[GooglePlaces] ✓ Fields fetched successfully');
     } catch (e) {
-      console.error('[GooglePlaces] Failed to fetch fields:', e);
+      console.error('[GooglePlaces] ✗ Failed to fetch fields:', e);
       return;
     }
 
-    console.log('[GooglePlaces] Place after fetch:', {
+    console.log('[GooglePlaces] Place data after fetch:', {
       id: place.id,
       displayName: place.displayName,
       formattedAddress: place.formattedAddress,
       hasLocation: !!place.location,
-      addressComponents: place.addressComponents
+      lat: place.location?.lat?.(),
+      lng: place.location?.lng?.()
     });
 
     if (!place.location) {
-      console.error('[GooglePlaces] Place still has no location after fetch');
+      console.error('[GooglePlaces] ✗ Place has no location after fetch');
       return;
     }
 
@@ -136,8 +138,9 @@ export default function GooglePlacesAutocomplete({
       postal_code: addressComponents.postal_code || ''
     };
 
-    console.log('[GooglePlaces] ✓ Parsed place data for', label, ':', placeData);
+    console.log('[GooglePlaces] ✓ Calling onChange with place data:', placeData);
     onChange(placeData);
+    console.log('[GooglePlaces] ✓ onChange called successfully for', label);
   };
 
   const initializeAutocomplete = async () => {
