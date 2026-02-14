@@ -17,6 +17,7 @@ export default function GooglePlacesAutocomplete({
   const autocompleteRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [scriptError, setScriptError] = useState(null);
+  const initAttempted = useRef(false);
 
   useEffect(() => {
     if (!apiKey) {
@@ -25,12 +26,39 @@ export default function GooglePlacesAutocomplete({
       return;
     }
 
-    initializeAutocomplete();
-  }, [apiKey]);
+    // Wait for input to be mounted
+    if (!inputRef.current) {
+      console.log('[GooglePlaces] Input ref not ready, waiting...');
+      const timer = setTimeout(() => {
+        if (inputRef.current && !initAttempted.current) {
+          initializeAutocomplete();
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+
+    if (!initAttempted.current) {
+      initializeAutocomplete();
+    }
+  }, [apiKey, inputRef.current]);
 
   const initializeAutocomplete = async () => {
+    if (initAttempted.current) {
+      console.log('[GooglePlaces] Already attempted initialization');
+      return;
+    }
+
+    initAttempted.current = true;
+
     try {
-      console.log('[GooglePlaces] Starting initialization with API key:', apiKey?.substring(0, 10) + '...');
+      console.log('[GooglePlaces] Starting initialization for', label);
+      
+      if (!inputRef.current) {
+        console.error('[GooglePlaces] Input ref is null for', label);
+        throw new Error('Input element not available - DOM not ready');
+      }
+
+      console.log('[GooglePlaces] Input element found, loading Google Maps API...');
       
       await loadGoogleMapsAPI(apiKey);
       
@@ -47,11 +75,7 @@ export default function GooglePlacesAutocomplete({
         throw new Error(errorMsg);
       }
 
-      if (!inputRef.current) {
-        throw new Error('Input element not available');
-      }
-
-      console.log('[GooglePlaces] Initializing Autocomplete...');
+      console.log('[GooglePlaces] Initializing Autocomplete for', label);
 
       // Initialize autocomplete
       autocompleteRef.current = new window.google.maps.places.Autocomplete(
@@ -65,13 +89,14 @@ export default function GooglePlacesAutocomplete({
 
       autocompleteRef.current.addListener('place_changed', handlePlaceSelect);
       
-      console.log('[GooglePlaces] Autocomplete initialized successfully');
+      console.log('[GooglePlaces] Autocomplete initialized successfully for', label);
       setLoading(false);
       setScriptError(null);
     } catch (error) {
-      console.error('[GooglePlaces] Initialization error:', error);
+      console.error('[GooglePlaces] Initialization error for', label, ':', error);
       setScriptError(error.message || 'Failed to initialize address autocomplete');
       setLoading(false);
+      initAttempted.current = false; // Allow retry
     }
   };
 
@@ -121,14 +146,23 @@ export default function GooglePlacesAutocomplete({
     );
   }
 
+  const handleInputMount = (element) => {
+    if (element && !inputRef.current) {
+      console.log('[GooglePlaces] Input mounted for', label);
+      inputRef.current = element;
+      if (apiKey && !initAttempted.current) {
+        initializeAutocomplete();
+      }
+    }
+  };
+
   return (
     <div className="space-y-2">
-      <Label htmlFor={label}>{label}</Label>
+      <Label>{label}</Label>
       <div className="relative">
         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <Input
-          ref={inputRef}
-          id={label}
+          ref={handleInputMount}
           type="text"
           placeholder={placeholder}
           defaultValue={value}
