@@ -62,11 +62,19 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
   const cancel_url = `${window.location.origin}/payment-cancelled?booking_id=${booking.id}`;
   const notify_url = `${window.location.origin}/api/payfast-itn`;
 
-  // RFC3986 URL encoding (more strict than encodeURIComponent)
-  const rfc3986Encode = (str) => {
-    return encodeURIComponent(str).replace(/[!'()*]/g, c => 
-      "%" + c.charCodeAt(0).toString(16).toUpperCase()
-    );
+  // PHP urlencode equivalent (used by PayFast)
+  // Encodes everything except: A-Z a-z 0-9 - _ . ~
+  const urlencode = (str) => {
+    return encodeURIComponent(str)
+      .replace(/!/g, '%21')
+      .replace(/'/g, '%27')
+      .replace(/\(/g, '%28')
+      .replace(/\)/g, '%29')
+      .replace(/\*/g, '%2A')
+      .replace(/~/g, '~')  // ~ should NOT be encoded for PHP compatibility
+      .replace(/-/g, '-')  // - should NOT be encoded
+      .replace(/_/g, '_')  // _ should NOT be encoded
+      .replace(/\./g, '.'); // . should NOT be encoded
   };
 
   // Generate payment data
@@ -106,14 +114,14 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     // Sort keys alphabetically
     const sortedKeys = Object.keys(cleanedParams).sort();
 
-    // Build parameter string with RFC3986 encoding
+    // Build parameter string with standard URL encoding
     let paramString = sortedKeys
-      .map(key => `${key}=${rfc3986Encode(String(cleanedParams[key]))}`)
+      .map(key => `${key}=${urlencode(String(cleanedParams[key]).trim())}`)
       .join('&');
 
     // Append passphrase if provided
     if (passphrase && passphrase.trim()) {
-      paramString += `&passphrase=${rfc3986Encode(passphrase.trim())}`;
+      paramString += `&passphrase=${urlencode(passphrase.trim())}`;
     }
 
     // Generate MD5 hash
