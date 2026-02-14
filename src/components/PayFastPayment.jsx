@@ -69,6 +69,11 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     );
   };
 
+  // Helper: PHP urlencode equivalent (spaces as "+", not "%20")
+  const pfUrlEncode = (val) => {
+    return encodeURIComponent(String(val).trim()).replace(/%20/g, '+');
+  };
+
   // Helper: Generate MD5 signature
   const generateSignature = (data, passphrase) => {
     // Convert to entries and trim
@@ -76,14 +81,14 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
       .map(([k, v]) => [k, String(v).trim()])
       .sort(([a], [b]) => a.localeCompare(b));
 
-    // Build parameter string
+    // Build parameter string with PHP urlencode (spaces as "+")
     const paramString = entries
-      .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+      .map(([k, v]) => `${k}=${pfUrlEncode(v)}`)
       .join('&');
 
     // Append passphrase only for hashing (never submitted as field)
     const stringToHash = passphrase
-      ? `${paramString}&passphrase=${encodeURIComponent(passphrase.trim())}`
+      ? `${paramString}&passphrase=${pfUrlEncode(passphrase.trim())}`
       : paramString;
 
     // Generate MD5 hash (32 lowercase hex characters)
