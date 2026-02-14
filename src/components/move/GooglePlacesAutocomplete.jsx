@@ -169,16 +169,17 @@ export default function GooglePlacesAutocomplete({
       containerRef.current.innerHTML = '';
       containerRef.current.appendChild(autocomplete);
       
-      // Listen for place selection
-      const boundHandler = handlePlaceChange.bind(this);
-      autocomplete.addEventListener('gmp-placeselect', boundHandler);
-      
-      // Store the handler for cleanup
-      autocompleteRef.current = { element: autocomplete, handler: boundHandler };
-      
+      // Store reference
       autocompleteRef.current = autocomplete;
       
+      // Listen for place selection - capture the event
+      autocomplete.addEventListener('gmp-placeselect', async (event) => {
+        console.log('[GooglePlaces] ✓ gmp-placeselect event fired for', label);
+        await handlePlaceChange(event);
+      });
+      
       console.log('[GooglePlaces] ✓ Widget initialized successfully for', label);
+      console.log('[GooglePlaces] Event listener attached, element ID:', autocomplete.id);
       setLoading(false);
       setScriptError(null);
     } catch (error) {
