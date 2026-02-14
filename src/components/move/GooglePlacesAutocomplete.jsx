@@ -197,7 +197,8 @@ export default function GooglePlacesAutocomplete({
       // Store reference
       autocompleteRef.current = autocomplete;
       
-      // Listen for place selection
+      // Listen for place selection and store listener ref for cleanup
+      listenerRef.current = handlePlaceChange;
       autocomplete.addEventListener('gmp-placeselect', handlePlaceChange);
       
       console.log('[GooglePlaces] ✓ Widget initialized successfully for', label);
