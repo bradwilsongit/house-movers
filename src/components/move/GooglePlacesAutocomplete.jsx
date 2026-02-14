@@ -20,15 +20,30 @@ export default function GooglePlacesAutocomplete({
 
   useEffect(() => {
     if (!apiKey) {
+      console.log('[GooglePlaces] No API key provided to', label);
       setScriptError('Google Maps API key not configured');
       setLoading(false);
       return;
     }
 
-    if (!containerRef.current || initAttempted.current) {
+    if (initAttempted.current) {
+      console.log('[GooglePlaces] Already attempted init for', label);
       return;
     }
 
+    // Wait for container to be ready
+    if (!containerRef.current) {
+      console.log('[GooglePlaces] Container not ready for', label, '- will retry');
+      const timer = setTimeout(() => {
+        if (containerRef.current && !initAttempted.current) {
+          console.log('[GooglePlaces] Container now ready, initializing', label);
+          initializeAutocomplete();
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+
+    console.log('[GooglePlaces] Container ready, initializing', label);
     initializeAutocomplete();
 
     return () => {
@@ -41,7 +56,7 @@ export default function GooglePlacesAutocomplete({
         }
       }
     };
-  }, [apiKey]);
+  }, [apiKey, containerRef.current]);
 
   const handlePlaceChange = (event) => {
     const place = event.detail.place;
@@ -80,21 +95,29 @@ export default function GooglePlacesAutocomplete({
 
   const initializeAutocomplete = async () => {
     if (initAttempted.current) {
+      console.log('[GooglePlaces] Init already attempted for', label);
       return;
     }
 
     initAttempted.current = true;
+    console.log('[GooglePlaces] === Starting initialization for', label, '===');
 
     try {
-      console.log('[GooglePlaces] Initializing widget for', label);
-      
       if (!containerRef.current) {
-        throw new Error('Container not ready');
+        console.error('[GooglePlaces] Container ref is null for', label);
+        throw new Error('Container not ready - DOM element missing');
       }
 
+      console.log('[GooglePlaces] Container ref OK, loading Google Maps API...');
+      console.log('[GooglePlaces] API Key:', apiKey?.substring(0, 10) + '...' + apiKey?.slice(-4));
+      
       const { PlaceAutocompleteElement } = await loadGoogleMapsAPI(apiKey);
       
-      console.log('[GooglePlaces] Creating PlaceAutocompleteElement...');
+      if (!PlaceAutocompleteElement) {
+        throw new Error('PlaceAutocompleteElement not available after library load');
+      }
+
+      console.log('[GooglePlaces] PlaceAutocompleteElement available, creating widget for', label);
 
       // Create the new Places widget
       const autocomplete = new PlaceAutocompleteElement({
@@ -103,11 +126,9 @@ export default function GooglePlacesAutocomplete({
       });
 
       autocomplete.id = `place-autocomplete-${label.replace(/\s+/g, '-').toLowerCase()}`;
-      
-      // Style the widget to match our design
       autocomplete.style.width = '100%';
       
-      // Clear container and append widget
+      // Clear and append
       containerRef.current.innerHTML = '';
       containerRef.current.appendChild(autocomplete);
       
@@ -116,14 +137,15 @@ export default function GooglePlacesAutocomplete({
       
       autocompleteRef.current = autocomplete;
       
-      console.log('[GooglePlaces] Widget initialized successfully for', label);
+      console.log('[GooglePlaces] ✓ Widget initialized successfully for', label);
       setLoading(false);
       setScriptError(null);
     } catch (error) {
-      console.error('[GooglePlaces] Initialization error for', label, ':', error);
+      console.error('[GooglePlaces] ✗ Initialization failed for', label, ':', error);
+      console.error('[GooglePlaces] Error stack:', error.stack);
       setScriptError(error.message || 'Failed to load address autocomplete');
       setLoading(false);
-      initAttempted.current = false;
+      initAttempted.current = false; // Allow retry
     }
   };
 
