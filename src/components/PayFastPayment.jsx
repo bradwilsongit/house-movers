@@ -83,18 +83,15 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     custom_str2: booking.booking_reference,
   };
 
-  // Simple MD5-like hash for PayFast signature (for sandbox testing)
-  const generateSignature = (data, passphrase) => {
-    const params = Object.keys(data)
-      .filter(key => data[key] !== '' && data[key] !== null && key !== 'signature')
-      .sort()
-      .map(key => `${key}=${encodeURIComponent(data[key].toString().trim())}`)
-      .join('&');
-    
-    return passphrase ? `${params}&passphrase=${encodeURIComponent(passphrase.trim())}` : params;
-  };
-
-  const signature = settings && booking ? generateSignature(paymentData, settings.payfast_passphrase || '') : '';
+  // Generate signature string for PayFast
+  const params = Object.keys(paymentData)
+    .filter(key => paymentData[key] !== '' && paymentData[key] !== null)
+    .sort()
+    .map(key => `${key}=${encodeURIComponent(paymentData[key].toString().trim())}`)
+    .join('&');
+  
+  const passphrase = settings.payfast_passphrase || '';
+  const signature = passphrase ? `${params}&passphrase=${encodeURIComponent(passphrase.trim())}` : params;
 
   return (
     <div className="max-w-md mx-auto">
