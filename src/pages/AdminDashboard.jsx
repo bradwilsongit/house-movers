@@ -90,7 +90,13 @@ export default function AdminDashboard() {
             <Button asChild variant="outline" size="sm">
               <Link to={createPageUrl('AdminCommission')}>
                 <Percent className="w-4 h-4 mr-2" />
-                Commission Settings
+                Commission
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link to={createPageUrl('AdminPayFast')}>
+                <DollarSign className="w-4 h-4 mr-2" />
+                PayFast
               </Link>
             </Button>
             <div className="flex items-center gap-2 text-sm text-gray-500">

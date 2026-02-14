@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { base44 } from '@/api/base44Client';
 import { MapPin, Calendar, Clock, Building2, Truck, Loader2, Route } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,42 +25,63 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
   };
 
   const calculateDistance = async () => {
-    if (!data.pickup_address || !data.dropoff_address) return;
+    if (!data.pickup_address || !data.dropoff_address) {
+      setDistanceError('Please enter both pickup and dropoff addresses');
+      return;
+    }
 
     setCalculatingDistance(true);
     setDistanceError(null);
 
     try {
-      // This will be called when moving to next step
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(
-          `${data.pickup_address}, ${data.pickup_city || ''}, South Africa`
-        )}&destinations=${encodeURIComponent(
-          `${data.dropoff_address}, ${data.dropoff_city || ''}, South Africa`
-        )}&key=${window.GOOGLE_MAPS_KEY || ''}`,
-        { mode: 'cors' }
-      );
+      // Load Google Maps API key from settings
+      const settings = await base44.entities.AppSettings.list();
+      const apiKey = settings[0]?.google_maps_api_key;
+      
+      if (!apiKey) {
+        throw new Error('Google Maps API key not configured. Please contact administrator.');
+      }
 
-      if (!response.ok) throw new Error('Failed to calculate distance');
+      // Use Distance Matrix API for accurate road distance
+      const origin = `${data.pickup_address}, ${data.pickup_city || ''}, South Africa`;
+      const destination = `${data.dropoff_address}, ${data.dropoff_city || ''}, South Africa`;
+      
+      // Use CORS proxy or make the call through a backend
+      // For now, using a simple fetch approach (Note: may need backend proxy for production)
+      const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(destination)}&units=metric&key=${apiKey}`;
+      
+      // Note: Direct browser calls to Google Maps API may be blocked by CORS
+      // In production, this should go through a backend endpoint
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        throw new Error('Failed to calculate distance. API request failed.');
+      }
 
       const result = await response.json();
       
+      if (result.status === 'REQUEST_DENIED') {
+        throw new Error('Google Maps API request denied. Check API key and enabled APIs.');
+      }
+      
       if (result.rows?.[0]?.elements?.[0]?.status === 'OK') {
         const element = result.rows[0].elements[0];
-        const distanceKm = element.distance.value / 1000;
-        const durationMinutes = Math.ceil(element.duration.value / 60);
+        const distanceKm = element.distance.value / 1000; // Convert meters to kilometers
+        const durationMinutes = Math.ceil(element.duration.value / 60); // Convert seconds to minutes
 
         onChange({
           ...data,
           distance_km: distanceKm,
           distance_duration_minutes: durationMinutes,
         });
+      } else if (result.rows?.[0]?.elements?.[0]?.status === 'ZERO_RESULTS') {
+        throw new Error('No route found between these addresses. Please verify addresses.');
       } else {
-        throw new Error('Could not calculate distance');
+        throw new Error('Could not calculate distance. Please check addresses are valid.');
       }
     } catch (error) {
       console.error('Distance calculation error:', error);
-      setDistanceError('Unable to calculate distance. Please verify addresses.');
+      setDistanceError(error.message || 'Unable to calculate distance. Please verify addresses and try again.');
     } finally {
       setCalculatingDistance(false);
     }

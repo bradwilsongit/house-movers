@@ -1,30 +1,63 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
 
-export default function PayFastPayment({ booking, onPaymentInitiated }) {
+export default function PayFastPayment({ booking, settings, onPaymentInitiated }) {
   const formRef = useRef(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (booking && formRef.current) {
+    if (booking && settings && formRef.current && !error) {
+      // Validate settings
+      if (!settings.payfast_merchant_id || !settings.payfast_merchant_key) {
+        setError('PayFast credentials not configured. Please contact administrator.');
+        return;
+      }
+
       // Log payment initiation
       onPaymentInitiated?.();
       
       // Auto-submit after short delay
       setTimeout(() => {
         formRef.current?.submit();
-      }, 1000);
+      }, 1500);
     }
-  }, [booking, onPaymentInitiated]);
+  }, [booking, settings, onPaymentInitiated, error]);
 
   if (!booking) return null;
+  
+  if (!settings) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center">
+          <p className="text-red-600">PayFast configuration not loaded</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
-  // PayFast sandbox credentials
-  const merchant_id = '10000100'; // PayFast test merchant ID
-  const merchant_key = '46f0cd694581a'; // PayFast test merchant key
-  const return_url = `${window.location.origin}/booking-details?id=${booking.id}`;
-  const cancel_url = `${window.location.origin}/booking-details?id=${booking.id}&payment=cancelled`;
-  const notify_url = `${window.location.origin}/api/payfast-itn`; // This requires backend function
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center">
+          <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+          <p className="text-red-600 font-medium">{error}</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Use configured PayFast credentials
+  const merchant_id = settings.payfast_merchant_id;
+  const merchant_key = settings.payfast_merchant_key;
+  const environment = settings.payfast_environment || 'sandbox';
+  const payfast_url = environment === 'live' 
+    ? 'https://www.payfast.co.za/eng/process'
+    : 'https://sandbox.payfast.co.za/eng/process';
+    
+  const return_url = `${window.location.origin}/payment-return?booking_id=${booking.id}`;
+  const cancel_url = `${window.location.origin}/payment-cancelled?booking_id=${booking.id}`;
+  const notify_url = `${window.location.origin}/api/payfast-itn`;
 
   // Generate payment data
   const paymentData = {
@@ -90,7 +123,7 @@ export default function PayFastPayment({ booking, onPaymentInitiated }) {
           {/* PayFast Payment Form */}
           <form
             ref={formRef}
-            action="https://sandbox.payfast.co.za/eng/process"
+            action={payfast_url}
             method="post"
             className="hidden"
           >

@@ -9,6 +9,7 @@ import { AlertCircle } from 'lucide-react';
 export default function Payment() {
   const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
+  const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -33,6 +34,15 @@ export default function Payment() {
     }
 
     try {
+      // Load PayFast settings first
+      const settingsData = await base44.entities.AppSettings.list();
+      if (settingsData.length === 0 || !settingsData[0].payfast_merchant_id) {
+        setError('PayFast payment is not configured. Please contact administrator.');
+        setLoading(false);
+        return;
+      }
+      setSettings(settingsData[0]);
+
       const bookings = await base44.entities.Booking.filter({ id: bookingId });
       if (bookings.length === 0) {
         setError('Booking not found');
@@ -40,6 +50,12 @@ export default function Payment() {
       }
 
       const bookingData = bookings[0];
+      
+      // Validate booking has required data
+      if (!bookingData.total_amount || bookingData.total_amount <= 0) {
+        setError('Invalid booking amount. Please contact support.');
+        return;
+      }
       
       // Get customer details
       const user = await base44.auth.me();
@@ -140,7 +156,8 @@ export default function Payment() {
         </div>
 
         <PayFastPayment 
-          booking={booking} 
+          booking={booking}
+          settings={settings}
           onPaymentInitiated={handlePaymentInitiated}
         />
 

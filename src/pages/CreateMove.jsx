@@ -253,13 +253,38 @@ export default function CreateMove() {
   const handleConfirmBooking = async () => {
     setLoading(true);
     try {
+      // Validate all required fields for pricing
+      const distanceKm = moveDetails.distance_km;
+      if (!distanceKm || distanceKm <= 0) {
+        alert('Distance calculation failed. Please go back and verify addresses.');
+        setLoading(false);
+        return;
+      }
+
+      const supplierKmRate = supplier?.pricing?.rate_per_km;
+      if (!supplierKmRate || supplierKmRate <= 0) {
+        alert('Supplier pricing not configured. Please select a different mover.');
+        setLoading(false);
+        return;
+      }
+
+      if (!commissionRate || commissionRate < 0) {
+        alert('Commission rate not configured. Please contact administrator.');
+        setLoading(false);
+        return;
+      }
+
       // Calculate pricing with commission
-      const distanceKm = moveDetails.distance_km || 0;
-      const supplierKmRate = supplier?.pricing?.rate_per_km || 15;
       const supplierBasePrice = distanceKm * supplierKmRate;
       const commissionAmount = (supplierBasePrice * commissionRate) / 100;
       const movePrice = supplierBasePrice + commissionAmount;
       const totalAmount = movePrice + (packagingOrder.total_amount || 0);
+
+      if (totalAmount <= 0) {
+        alert('Invalid booking total. Please try again.');
+        setLoading(false);
+        return;
+      }
 
       // Update move request with selected quote
       await base44.entities.MoveRequest.update(moveRequestId, {
