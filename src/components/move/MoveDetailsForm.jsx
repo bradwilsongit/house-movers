@@ -17,6 +17,8 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
   const [distanceError, setDistanceError] = useState(null);
   const [apiKey, setApiKey] = useState(null);
   const [errors, setErrors] = useState({});
+  const [loadingKey, setLoadingKey] = useState(true);
+  const [keyError, setKeyError] = useState(null);
 
   useEffect(() => {
     loadApiKey();
@@ -24,12 +26,29 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
 
   const loadApiKey = async () => {
     try {
+      console.log('[MoveDetailsForm] Fetching Google Maps API key from AppSettings...');
       const settings = await base44.entities.AppSettings.list();
+      
+      console.log('[MoveDetailsForm] Settings fetched:', {
+        count: settings.length,
+        hasKey: settings.length > 0 && !!settings[0].google_maps_api_key,
+        keyPrefix: settings[0]?.google_maps_api_key?.substring(0, 10)
+      });
+
       if (settings.length > 0 && settings[0].google_maps_api_key) {
         setApiKey(settings[0].google_maps_api_key);
+        setKeyError(null);
+        console.log('[MoveDetailsForm] ✓ API key loaded successfully');
+      } else {
+        const error = 'Google Maps API key not configured in Admin settings';
+        console.error('[MoveDetailsForm] ✗', error);
+        setKeyError(error);
       }
     } catch (e) {
-      console.error('Error loading API key:', e);
+      console.error('[MoveDetailsForm] Error loading API key:', e);
+      setKeyError(`Failed to load settings: ${e.message}`);
+    } finally {
+      setLoadingKey(false);
     }
   };
 
@@ -207,6 +226,38 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
 
   return (
     <div className="space-y-8">
+      {/* Debug Info (temporary) */}
+      {loadingKey && (
+        <Alert className="border-blue-200 bg-blue-50">
+          <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />
+          <AlertDescription className="text-blue-900">
+            Loading Google Maps configuration...
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {keyError && (
+        <Alert className="border-red-200 bg-red-50">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-900">
+            <strong>Configuration Error</strong>
+            <p className="text-sm mt-1">{keyError}</p>
+            <p className="text-xs mt-2 text-red-700">
+              Admin: Configure Google Maps API key in Settings → Branding & API Keys
+            </p>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {!loadingKey && !keyError && apiKey && (
+        <Alert className="border-emerald-200 bg-emerald-50">
+          <AlertCircle className="h-4 w-4 text-emerald-600" />
+          <AlertDescription className="text-emerald-900 text-xs">
+            ✓ Google Maps configured (Key: {apiKey.substring(0, 8)}...{apiKey.slice(-4)})
+          </AlertDescription>
+        </Alert>
+      )}
+
       {data.distance_km && (
         <Alert className="border-green-200 bg-green-50">
           <Route className="h-4 w-4 text-green-600" />
