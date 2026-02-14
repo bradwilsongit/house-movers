@@ -25,65 +25,96 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
   };
 
   const calculateDistance = async () => {
-    if (!data.pickup_address || !data.dropoff_address) {
-      setDistanceError('Please enter both pickup and dropoff addresses');
-      return;
+    // Validate places are selected
+    if (!data.pickup_place_id || !data.dropoff_place_id) {
+      setDistanceError('Please select both pickup and dropoff addresses from the Google suggestions');
+      return false;
+    }
+
+    if (!data.pickup_lat || !data.pickup_lng || !data.dropoff_lat || !data.dropoff_lng) {
+      setDistanceError('Address coordinates missing. Please reselect addresses from dropdown.');
+      return false;
     }
 
     setCalculatingDistance(true);
     setDistanceError(null);
 
     try {
-      // Load Google Maps API key from settings
-      const settings = await base44.entities.AppSettings.list();
-      const apiKey = settings[0]?.google_maps_api_key;
-      
       if (!apiKey) {
-        throw new Error('Google Maps API key not configured. Please contact administrator.');
+        throw new Error('Google Maps API key not configured. Contact administrator.');
       }
 
-      // Use Distance Matrix API for accurate road distance
-      const origin = `${data.pickup_address}, ${data.pickup_city || ''}, South Africa`;
-      const destination = `${data.dropoff_address}, ${data.dropoff_city || ''}, South Africa`;
+      // Use Distance Matrix API with lat/lng for accuracy
+      const origins = `${data.pickup_lat},${data.pickup_lng}`;
+      const destinations = `${data.dropoff_lat},${data.dropoff_lng}`;
       
-      // Use CORS proxy or make the call through a backend
-      // For now, using a simple fetch approach (Note: may need backend proxy for production)
-      const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(destination)}&units=metric&key=${apiKey}`;
+      const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origins}&destinations=${destinations}&units=metric&key=${apiKey}`;
       
-      // Note: Direct browser calls to Google Maps API may be blocked by CORS
-      // In production, this should go through a backend endpoint
+      console.log('Distance Matrix Request:', { origins, destinations });
+      
       const response = await fetch(url);
       
       if (!response.ok) {
-        throw new Error('Failed to calculate distance. API request failed.');
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
       const result = await response.json();
       
+      console.log('Distance Matrix Response:', result);
+      
+      // Handle API errors
       if (result.status === 'REQUEST_DENIED') {
-        throw new Error('Google Maps API request denied. Check API key and enabled APIs.');
+        throw new Error(`Google API Error: ${result.error_message || 'REQUEST_DENIED - Check API key and enabled APIs (Distance Matrix API must be enabled)'}`);
       }
       
-      if (result.rows?.[0]?.elements?.[0]?.status === 'OK') {
-        const element = result.rows[0].elements[0];
-        const distanceKm = element.distance.value / 1000; // Convert meters to kilometers
-        const durationMinutes = Math.ceil(element.duration.value / 60); // Convert seconds to minutes
+      if (result.status === 'OVER_QUERY_LIMIT') {
+        throw new Error('Google API quota exceeded. Please try again later or contact administrator.');
+      }
+      
+      if (result.status === 'INVALID_REQUEST') {
+        throw new Error('Invalid request to Google API. Please reselect addresses.');
+      }
+
+      const element = result.rows?.[0]?.elements?.[0];
+      
+      if (!element) {
+        throw new Error('No distance data returned from Google API');
+      }
+      
+      if (element.status === 'OK') {
+        const distanceKm = element.distance.value / 1000; // Meters to kilometers
+        const durationMinutes = Math.ceil(element.duration.value / 60); // Seconds to minutes
+
+        console.log('Distance Calculated:', { distanceKm, durationMinutes });
 
         onChange({
           ...data,
           distance_km: distanceKm,
           distance_duration_minutes: durationMinutes,
+          distance_calculation_status: 'OK',
         });
-      } else if (result.rows?.[0]?.elements?.[0]?.status === 'ZERO_RESULTS') {
-        throw new Error('No route found between these addresses. Please verify addresses.');
+
+        setCalculatingDistance(false);
+        return true;
+      } else if (element.status === 'ZERO_RESULTS') {
+        throw new Error('No route found between these locations. Please verify addresses.');
+      } else if (element.status === 'NOT_FOUND') {
+        throw new Error('One or both addresses could not be geocoded. Please reselect from dropdown.');
       } else {
-        throw new Error('Could not calculate distance. Please check addresses are valid.');
+        throw new Error(`Distance calculation failed: ${element.status}`);
       }
     } catch (error) {
       console.error('Distance calculation error:', error);
-      setDistanceError(error.message || 'Unable to calculate distance. Please verify addresses and try again.');
-    } finally {
+      const errorMsg = error.message || 'Unable to calculate distance. Please try again.';
+      setDistanceError(errorMsg);
+      
+      onChange({
+        ...data,
+        distance_calculation_status: errorMsg,
+      });
+      
       setCalculatingDistance(false);
+      return false;
     }
   };
 
