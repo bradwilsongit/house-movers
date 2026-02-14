@@ -262,11 +262,6 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
     if (!success) {
       return;
     }
-
-    if (!data.distance_km || data.distance_km <= 0) {
-      setDistanceError('Distance must be greater than 0. Please reselect addresses.');
-      return;
-    }
     
     console.log('[MoveDetailsForm] ✓ Validation passed, proceeding to next step');
     onNext();
