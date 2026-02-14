@@ -3,10 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
-import { 
-  Truck, Shield, Clock, Star, ArrowRight, CheckCircle2, 
-  Package, Users, MapPin, Calendar
-} from 'lucide-react';
+import {
+  Truck, Shield, Clock, Star, ArrowRight, CheckCircle2,
+  Package, Users, MapPin, Calendar } from
+'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -36,50 +36,50 @@ export default function Home() {
   };
 
   const features = [
-    {
-      icon: Shield,
-      title: 'Vetted Movers',
-      description: 'Every moving company on our platform is thoroughly vetted and insured.'
-    },
-    {
-      icon: Clock,
-      title: 'Real-time Tracking',
-      description: 'Track your move from pickup to delivery with live status updates.'
-    },
-    {
-      icon: Star,
-      title: 'Quality Guaranteed',
-      description: 'Customer ratings and reviews ensure consistent quality service.'
-    },
-    {
-      icon: Package,
-      title: 'Transparent Pricing',
-      description: 'No hidden fees. Pay only for what you need, when you need it.'
-    }
-  ];
+  {
+    icon: Shield,
+    title: 'Vetted Movers',
+    description: 'Every moving company on our platform is thoroughly vetted and insured.'
+  },
+  {
+    icon: Clock,
+    title: 'Real-time Tracking',
+    description: 'Track your move from pickup to delivery with live status updates.'
+  },
+  {
+    icon: Star,
+    title: 'Quality Guaranteed',
+    description: 'Customer ratings and reviews ensure consistent quality service.'
+  },
+  {
+    icon: Package,
+    title: 'Transparent Pricing',
+    description: 'No hidden fees. Pay only for what you need, when you need it.'
+  }];
+
 
   const steps = [
-    {
-      number: '01',
-      title: 'List Your Items',
-      description: 'Use our smart inventory wizard to catalog everything you need to move.'
-    },
-    {
-      number: '02',
-      title: 'Get Quotes',
-      description: 'Receive competitive quotes from verified moving companies.'
-    },
-    {
-      number: '03',
-      title: 'Book & Pay',
-      description: 'Choose your mover, pay a deposit, and secure your move date.'
-    },
-    {
-      number: '04',
-      title: 'Move Day',
-      description: 'Track your move in real-time and pay the balance on arrival.'
-    }
-  ];
+  {
+    number: '01',
+    title: 'List Your Items',
+    description: 'Use our smart inventory wizard to catalog everything you need to move.'
+  },
+  {
+    number: '02',
+    title: 'Get Quotes',
+    description: 'Receive competitive quotes from verified moving companies.'
+  },
+  {
+    number: '03',
+    title: 'Book & Pay',
+    description: 'Choose your mover, pay a deposit, and secure your move date.'
+  },
+  {
+    number: '04',
+    title: 'Move Day',
+    description: 'Track your move in real-time and pay the balance on arrival.'
+  }];
+
 
   return (
     <div className="bg-white">
@@ -93,8 +93,8 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
+              transition={{ duration: 0.6 }}>
+
               <div className="inline-flex items-center gap-2 bg-black/5 rounded-full px-4 py-1.5 mb-6">
                 <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                 <span className="text-sm font-medium">Trusted by 10,000+ customers</span>
@@ -111,20 +111,20 @@ export default function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-black text-white hover:bg-gray-800 h-14 px-8 text-base"
-                  onClick={handleGetStarted}
-                >
+                  onClick={handleGetStarted}>
+
                   Plan Your Move
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
+                <Button
+                  size="lg"
+                  variant="outline"
                   className="h-14 px-8 text-base"
-                  asChild
-                >
+                  asChild>
+
                   <Link to={createPageUrl('SupplierOnboarding')}>
                     Join as a Mover
                   </Link>
@@ -153,15 +153,15 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative hidden lg:block"
-            >
+              className="relative hidden lg:block">
+
               <div className="absolute -inset-4 bg-gradient-to-tr from-gray-100 to-white rounded-3xl" />
               <div className="relative bg-white rounded-2xl shadow-2xl shadow-gray-200/50 p-6 border border-gray-100">
-                <img 
+                <img
                   src="https://images.unsplash.com/photo-1600518464441-9154a4dea21b?w=800&h=600&fit=crop"
                   alt="Moving truck"
-                  className="rounded-xl w-full h-72 object-cover"
-                />
+                  className="rounded-xl w-full h-72 object-cover" />
+
                 <div className="mt-6 space-y-4">
                   <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                     <div className="flex items-center gap-3">
@@ -194,14 +194,14 @@ export default function Home() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
+            {features.map((feature, index) =>
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              viewport={{ once: true }}>
+
                 <Card className="h-full border-0 shadow-sm hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
                     <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center mb-4">
@@ -212,7 +212,7 @@ export default function Home() {
                   </CardContent>
                 </Card>
               </motion.div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -228,31 +228,31 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {steps.map((step, index) => (
-              <motion.div
-                key={step.number}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="relative"
-              >
-                {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-8 left-full w-full h-px bg-gray-200 -translate-x-1/2" />
-                )}
+            {steps.map((step, index) =>
+            <motion.div
+              key={step.number}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="relative">
+
+                {index < steps.length - 1 &&
+              <div className="hidden lg:block absolute top-8 left-full w-full h-px bg-gray-200 -translate-x-1/2" />
+              }
                 <div className="text-5xl font-bold text-gray-100 mb-4">{step.number}</div>
                 <h3 className="font-semibold text-lg mb-2">{step.title}</h3>
                 <p className="text-gray-600 text-sm">{step.description}</p>
               </motion.div>
-            ))}
+            )}
           </div>
 
           <div className="text-center mt-12">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-black text-white hover:bg-gray-800"
-              onClick={handleGetStarted}
-            >
+              onClick={handleGetStarted}>
+
               Start Your Move
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
@@ -267,8 +267,8 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
+            viewport={{ once: true }}>
+
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               Ready to make your move?
             </h2>
@@ -277,28 +277,28 @@ export default function Home() {
               for their residential and office relocations.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-white text-black hover:bg-gray-100 h-14 px-8"
-                onClick={handleGetStarted}
-              >
+                onClick={handleGetStarted}>
+
                 Get Started Free
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
+              <Button
+                size="lg"
+                variant="outline"
                 className="h-14 px-8 border-gray-700 text-white hover:bg-gray-900"
-                asChild
-              >
-                <Link to={createPageUrl('SupplierOnboarding')}>
-                  Partner With Us
+                asChild>
+
+                <Link to={createPageUrl('SupplierOnboarding')} className="bg-slate-50 text-slate-950 px-8 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-14 border-gray-700 hover:bg-gray-900">Partner With Us
+
                 </Link>
               </Button>
             </div>
           </motion.div>
         </div>
       </section>
-    </div>
-  );
+    </div>);
+
 }
