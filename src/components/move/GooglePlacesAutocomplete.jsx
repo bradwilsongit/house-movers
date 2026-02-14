@@ -141,61 +141,69 @@ export default function GooglePlacesAutocomplete({
     }
 
     initAttempted.current = true;
-    console.log('[GooglePlaces] === Starting initialization for', label, '===');
+    console.log('[GooglePlaces] === Starting classic Autocomplete initialization for', label, '===');
 
     try {
-      if (!containerRef.current) {
-        console.error('[GooglePlaces] Container ref is null for', label);
-        throw new Error('Container not ready - DOM element missing');
+      if (!inputRef.current) {
+        console.error('[GooglePlaces] Input ref is null for', label);
+        throw new Error('Input element not ready');
       }
 
-      console.log('[GooglePlaces] Container ref OK, loading Google Maps API...');
-      console.log('[GooglePlaces] API Key:', apiKey?.substring(0, 10) + '...' + apiKey?.slice(-4));
+      console.log('[GooglePlaces] Loading Google Maps API...');
       
-      const { PlaceAutocompleteElement } = await loadGoogleMapsAPI(apiKey);
-      
-      if (!PlaceAutocompleteElement) {
-        throw new Error('PlaceAutocompleteElement not available after library load');
+      // Load Google Maps JavaScript API
+      if (!window.google?.maps?.places) {
+        await new Promise((resolve, reject) => {
+          if (document.querySelector(`script[src*="maps.googleapis.com"]`)) {
+            // Already loading or loaded
+            const checkInterval = setInterval(() => {
+              if (window.google?.maps?.places) {
+                clearInterval(checkInterval);
+                resolve();
+              }
+            }, 100);
+            setTimeout(() => {
+              clearInterval(checkInterval);
+              if (!window.google?.maps?.places) {
+                reject(new Error('Google Maps API load timeout'));
+              }
+            }, 10000);
+            return;
+          }
+
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async`;
+          script.async = true;
+          script.defer = true;
+          script.onload = resolve;
+          script.onerror = () => reject(new Error('Failed to load Google Maps API'));
+          document.head.appendChild(script);
+        });
       }
 
-      console.log('[GooglePlaces] PlaceAutocompleteElement available, creating widget for', label);
+      console.log('[GooglePlaces] Google Maps API loaded, creating Autocomplete for', label);
 
-      // Create the new Places widget
-      const autocomplete = new PlaceAutocompleteElement({
-        componentRestrictions: { country: 'za' }
+      // Create classic Autocomplete
+      const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
+        componentRestrictions: { country: 'za' },
+        fields: ['place_id', 'formatted_address', 'address_components', 'geometry'],
+        types: ['address']
       });
 
-      console.log('[GooglePlaces] Created PlaceAutocompleteElement:', autocomplete);
-
-      autocomplete.id = `place-autocomplete-${label.replace(/\s+/g, '-').toLowerCase()}`;
-      autocomplete.style.width = '100%';
-      
-      // Clear and append
-      containerRef.current.innerHTML = '';
-      containerRef.current.appendChild(autocomplete);
-      
-      // Store reference
       autocompleteRef.current = autocomplete;
+
+      // Listen for place_changed event
+      autocomplete.addListener('place_changed', handlePlaceChange);
+
+      console.log('[GooglePlaces] ✓ Classic Autocomplete initialized for', label);
       
-      // IMPORTANT: attach to `autocomplete` element itself, not container
-      listenerRef.current = handlePlaceChange;
-      autocomplete.addEventListener('gmp-placeselect', handlePlaceChange);
-      
-      console.log('[GooglePlaces] ✓ Widget initialized successfully for', label);
-      console.log('[GooglePlaces] ✓ Event listener attached to element ID:', autocomplete.id);
-      
-      // Global diagnostic listener
-      document.addEventListener('gmp-placeselect', (e) => {
-        console.log('[GLOBAL] gmp-placeselect captured for', label, e);
-      }, true);
       setLoading(false);
       setScriptError(null);
     } catch (error) {
       console.error('[GooglePlaces] ✗ Initialization failed for', label, ':', error);
-      console.error('[GooglePlaces] Error stack:', error.stack);
       setScriptError(error.message || 'Failed to load address autocomplete');
       setLoading(false);
-      initAttempted.current = false; // Allow retry
+      initAttempted.current = false;
     }
   };
 
