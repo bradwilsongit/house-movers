@@ -130,16 +130,19 @@ export default function Layout({ children, currentPageName }) {
                 <img 
                   src={appSettings.logo_url} 
                   alt="Logo" 
-                  className="h-10 object-contain"
+                  className="object-contain"
+                  style={{ height: `${appSettings.logo_height || 40}px` }}
                 />
               ) : (
                 <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
                   <Truck className="w-5 h-5 text-white" />
                 </div>
               )}
-              <span className="font-semibold text-xl tracking-tight">
-                {appSettings?.company_name || 'House Moves'}
-              </span>
+              {appSettings?.company_name && (
+                <span className="font-semibold text-xl tracking-tight">
+                  {appSettings.company_name}
+                </span>
+              )}
             </a>
 
             {/* Desktop Navigation */}
@@ -269,14 +272,17 @@ export default function Layout({ children, currentPageName }) {
                 <img 
                   src={appSettings.logo_url} 
                   alt="Logo" 
-                  className="h-8 object-contain"
+                  className="object-contain"
+                  style={{ height: `${(appSettings.logo_height || 40) * 0.8}px` }}
                 />
               ) : (
                 <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
                   <Truck className="w-4 h-4 text-white" />
                 </div>
               )}
-              <span className="font-medium">{appSettings?.company_name || 'House Moves'}</span>
+              {appSettings?.company_name && (
+                <span className="font-medium">{appSettings.company_name}</span>
+              )}
             </div>
             <div className="flex items-center gap-6 text-sm text-gray-500">
               <Link to={createPageUrl('Terms')} className="hover:text-black transition-colors">

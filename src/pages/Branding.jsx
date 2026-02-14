@@ -15,7 +15,8 @@ export default function Branding() {
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     logo_url: '',
-    company_name: 'House Moves',
+    company_name: '',
+    logo_height: 40,
   });
 
   useEffect(() => {
@@ -30,7 +31,8 @@ export default function Branding() {
         setSettings(allSettings[0]);
         setFormData({
           logo_url: allSettings[0].logo_url || '',
-          company_name: allSettings[0].company_name || 'House Moves',
+          company_name: allSettings[0].company_name || '',
+          logo_height: allSettings[0].logo_height || 40,
         });
       }
     } catch (e) {
@@ -188,23 +190,47 @@ export default function Branding() {
         </Card>
 
         {/* Company Name */}
-        <Card>
+        <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-lg">Company Name</CardTitle>
           </CardHeader>
           <CardContent>
             <div>
-              <Label htmlFor="company_name">Name displayed in header</Label>
+              <Label htmlFor="company_name">Name displayed in header (optional)</Label>
               <Input
                 id="company_name"
                 value={formData.company_name}
                 onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-                placeholder="House Moves"
+                placeholder="Leave blank to show only logo"
                 className="mt-1.5"
               />
             </div>
           </CardContent>
         </Card>
+
+        {/* Logo Size */}
+        {formData.logo_url && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Logo Size</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div>
+                <Label htmlFor="logo_height">Logo height (pixels)</Label>
+                <Input
+                  id="logo_height"
+                  type="number"
+                  value={formData.logo_height}
+                  onChange={(e) => setFormData({ ...formData, logo_height: parseInt(e.target.value) || 40 })}
+                  min="20"
+                  max="100"
+                  className="mt-1.5 w-32"
+                />
+                <p className="text-xs text-gray-500 mt-1">Recommended: 40-60px</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Preview */}
         <Card className="bg-gray-100 border-0">
@@ -218,18 +244,21 @@ export default function Branding() {
                   <img 
                     src={formData.logo_url} 
                     alt="Logo" 
-                    className="h-10 object-contain"
+                    className="object-contain"
+                    style={{ height: `${formData.logo_height}px` }}
                   />
                 ) : (
                   <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
                     <span className="text-white font-bold">
-                      {formData.company_name.charAt(0)}
+                      {formData.company_name?.charAt(0) || 'H'}
                     </span>
                   </div>
                 )}
-                <span className="font-semibold text-xl tracking-tight">
-                  {formData.company_name}
-                </span>
+                {formData.company_name && (
+                  <span className="font-semibold text-xl tracking-tight">
+                    {formData.company_name}
+                  </span>
+                )}
               </div>
             </div>
           </CardContent>
