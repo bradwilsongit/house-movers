@@ -20,9 +20,16 @@ export default function GooglePlacesAutocomplete({
   const initAttempted = useRef(false);
 
   useEffect(() => {
-    // Reset state when apiKey changes
-    if (!apiKey) {
-      console.log('[GooglePlaces] No API key provided to', label);
+    // Distinguish between loading (null) and misconfigured (undefined/empty string)
+    if (apiKey === null) {
+      console.log('[GooglePlaces] API key still loading for', label);
+      setLoading(true);
+      setScriptError(null);
+      return;
+    }
+    
+    if (apiKey === undefined || apiKey === '') {
+      console.log('[GooglePlaces] No API key configured for', label);
       setScriptError('Google Maps API key not configured');
       setLoading(false);
       return;

@@ -53,13 +53,13 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
   };
 
   const handleChange = (field, value) => {
-    onChange({ ...data, [field]: value });
+    onChange(prev => ({ ...prev, [field]: value }));
   };
 
   const handlePickupChange = (placeData) => {
     console.log('[MoveDetailsForm] Pickup place selected:', placeData);
-    onChange({
-      ...data,
+    onChange(prev => ({
+      ...prev,
       pickup_address: placeData.address,
       pickup_city: placeData.city,
       pickup_postal_code: placeData.postal_code,
@@ -70,14 +70,23 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
       distance_km: null,
       distance_duration_minutes: null,
       distance_calculation_status: null,
-    });
-    setErrors({ ...errors, pickup: null });
+    }));
+    setErrors(prev => ({ ...prev, pickup: null }));
+    
+    // Debug log to verify state update
+    setTimeout(() => {
+      console.log('[MoveDetailsForm] State after pickup update should contain:', {
+        pickup_place_id: placeData.place_id,
+        pickup_lat: placeData.lat,
+        pickup_lng: placeData.lng
+      });
+    }, 0);
   };
 
   const handleDropoffChange = (placeData) => {
     console.log('[MoveDetailsForm] Dropoff place selected:', placeData);
-    onChange({
-      ...data,
+    onChange(prev => ({
+      ...prev,
       dropoff_address: placeData.address,
       dropoff_city: placeData.city,
       dropoff_postal_code: placeData.postal_code,
@@ -88,8 +97,17 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
       distance_km: null,
       distance_duration_minutes: null,
       distance_calculation_status: null,
-    });
-    setErrors({ ...errors, dropoff: null });
+    }));
+    setErrors(prev => ({ ...prev, dropoff: null }));
+    
+    // Debug log to verify state update
+    setTimeout(() => {
+      console.log('[MoveDetailsForm] State after dropoff update should contain:', {
+        dropoff_place_id: placeData.place_id,
+        dropoff_lat: placeData.lat,
+        dropoff_lng: placeData.lng
+      });
+    }, 0);
   };
 
   const calculateDistance = async () => {
@@ -152,12 +170,12 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
 
         console.log('Distance Calculated:', { distanceKm, durationMinutes });
 
-        onChange({
-          ...data,
+        onChange(prev => ({
+          ...prev,
           distance_km: distanceKm,
           distance_duration_minutes: durationMinutes,
           distance_calculation_status: 'OK',
-        });
+        }));
 
         setCalculatingDistance(false);
         return true;
@@ -173,10 +191,10 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
       const errorMsg = error.message || 'Unable to calculate distance. Please try again.';
       setDistanceError(errorMsg);
       
-      onChange({
-        ...data,
+      onChange(prev => ({
+        ...prev,
         distance_calculation_status: errorMsg,
-      });
+      }));
       
       setCalculatingDistance(false);
       return false;
@@ -185,13 +203,13 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
 
   const handleAccessChange = (type, field, value) => {
     const accessKey = type === 'pickup' ? 'pickup_access' : 'dropoff_access';
-    onChange({
-      ...data,
+    onChange(prev => ({
+      ...prev,
       [accessKey]: {
-        ...data[accessKey],
+        ...prev[accessKey],
         [field]: value
       }
-    });
+    }));
   };
 
   const moveTypes = [
