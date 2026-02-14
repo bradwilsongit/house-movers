@@ -10,9 +10,13 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
 
   useEffect(() => {
     if (booking && settings && formRef.current && !error) {
-      // Validate settings
-      if (!settings.payfast_merchant_id || !settings.payfast_merchant_key) {
-        setError('PayFast credentials not configured. Please contact administrator.');
+      // Validate settings based on environment
+      const env = settings.payfast_environment || 'sandbox';
+      const merchantIdKey = `payfast_${env}_merchant_id`;
+      const merchantKeyKey = `payfast_${env}_merchant_key`;
+      
+      if (!settings[merchantIdKey] || !settings[merchantKeyKey]) {
+        setError(`PayFast ${env} credentials not configured. Please contact administrator.`);
         return;
       }
 
@@ -50,10 +54,18 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     );
   }
 
-  // Use configured PayFast credentials
-  const merchant_id = settings.payfast_merchant_id;
-  const merchant_key = settings.payfast_merchant_key;
+  // Use configured PayFast credentials based on environment
   const environment = settings.payfast_environment || 'sandbox';
+  const merchant_id = environment === 'live' 
+    ? settings.payfast_live_merchant_id 
+    : settings.payfast_sandbox_merchant_id;
+  const merchant_key = environment === 'live' 
+    ? settings.payfast_live_merchant_key 
+    : settings.payfast_sandbox_merchant_key;
+  const passphrase = environment === 'live' 
+    ? settings.payfast_live_passphrase 
+    : settings.payfast_sandbox_passphrase;
+  
   const payfast_url = environment === 'live' 
     ? 'https://www.payfast.co.za/eng/process'
     : 'https://sandbox.payfast.co.za/eng/process';
@@ -126,7 +138,6 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
   };
 
   // Generate signature (passphrase used ONLY for hashing, never submitted)
-  const passphrase = settings.payfast_passphrase || '';
   const { fields: paymentData, signature } = buildPayfastFieldsAndSignature(paymentDataRaw, passphrase);
 
   // Log final payload
