@@ -67,38 +67,67 @@ export default function GooglePlacesAutocomplete({
     };
   }, [apiKey]);
 
-  const handlePlaceChange = (event) => {
-    const place = event.detail.place;
+  const handlePlaceChange = async (event) => {
+    console.log('[GooglePlaces] gmp-placeselect event fired for', label);
+    console.log('[GooglePlaces] Event detail:', event.detail);
     
-    console.log('[GooglePlaces] Place selected:', place);
+    const place = event.detail?.place;
+    
+    if (!place) {
+      console.error('[GooglePlaces] No place in event detail');
+      return;
+    }
 
-    if (!place || !place.location) {
-      console.error('[GooglePlaces] Invalid place data');
+    console.log('[GooglePlaces] Place object:', place);
+    console.log('[GooglePlaces] Place properties:', {
+      id: place.id,
+      displayName: place.displayName,
+      formattedAddress: place.formattedAddress,
+      hasLocation: !!place.location,
+      addressComponents: place.addressComponents
+    });
+
+    // PlaceAutocompleteElement might need to fetch additional details
+    if (!place.location && place.fetchFields) {
+      console.log('[GooglePlaces] Fetching additional place fields...');
+      try {
+        await place.fetchFields({
+          fields: ['location', 'formattedAddress', 'addressComponents', 'displayName']
+        });
+      } catch (e) {
+        console.error('[GooglePlaces] Failed to fetch additional fields:', e);
+      }
+    }
+
+    if (!place.location) {
+      console.error('[GooglePlaces] Place has no location data');
       return;
     }
 
     // Extract address components
     const addressComponents = {};
-    place.addressComponents?.forEach(component => {
-      const types = component.types || [];
-      if (types.includes('locality')) {
-        addressComponents.city = component.longText || component.shortText;
-      }
-      if (types.includes('postal_code')) {
-        addressComponents.postal_code = component.longText || component.shortText;
-      }
-    });
+    if (place.addressComponents) {
+      place.addressComponents.forEach(component => {
+        const types = component.types || [];
+        if (types.includes('locality')) {
+          addressComponents.city = component.longText || component.shortText;
+        }
+        if (types.includes('postal_code')) {
+          addressComponents.postal_code = component.longText || component.shortText;
+        }
+      });
+    }
 
     const placeData = {
       address: place.formattedAddress || place.displayName,
       place_id: place.id,
-      lat: place.location.lat(),
-      lng: place.location.lng(),
+      lat: typeof place.location.lat === 'function' ? place.location.lat() : place.location.lat,
+      lng: typeof place.location.lng === 'function' ? place.location.lng() : place.location.lng,
       city: addressComponents.city || '',
       postal_code: addressComponents.postal_code || ''
     };
 
-    console.log('[GooglePlaces] Parsed place data:', placeData);
+    console.log('[GooglePlaces] ✓ Parsed place data for', label, ':', placeData);
     onChange(placeData);
   };
 
