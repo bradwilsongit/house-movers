@@ -62,12 +62,7 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
   const cancel_url = `${window.location.origin}/payment-cancelled?booking_id=${booking.id}`;
   const notify_url = `${window.location.origin}/api/payfast-itn`;
 
-  // Helper: Filter out empty values
-  const buildSubmittedData = (data) => {
-    return Object.fromEntries(
-      Object.entries(data).filter(([_, v]) => v !== '' && v !== null && v !== undefined)
-    );
-  };
+
 
   // Helper: PHP urlencode equivalent (spaces as "+", not "%20")
   const pfUrlEncode = (val) => {
@@ -76,17 +71,25 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
 
   // Helper: Generate MD5 signature
   const generateSignature = (data, passphrase) => {
-    // Convert to entries and trim
-    const entries = Object.entries(data)
-      .map(([k, v]) => [k, String(v).trim()])
-      .sort(([a], [b]) => a.localeCompare(b));
+    // Clone and remove fields that must NOT be hashed
+    const clean = { ...data };
+    delete clean.signature;
+    delete clean.passphrase; // CRITICAL: never hash passphrase as a normal field
+    
+    // Remove empty fields
+    Object.keys(clean).forEach(key => {
+      if (clean[key] === '' || clean[key] === null || clean[key] === undefined) {
+        delete clean[key];
+      }
+    });
 
-    // Build parameter string with PHP urlencode (spaces as "+")
-    const paramString = entries
-      .map(([k, v]) => `${k}=${pfUrlEncode(v)}`)
+    // Sort and build param string with PHP urlencode (spaces as "+")
+    const paramString = Object.keys(clean)
+      .sort()
+      .map(k => `${k}=${pfUrlEncode(clean[k])}`)
       .join('&');
 
-    // Append passphrase only for hashing (never submitted as field)
+    // Append passphrase ONLY to hash string (if set in PayFast dashboard)
     const stringToHash = passphrase
       ? `${paramString}&passphrase=${pfUrlEncode(passphrase.trim())}`
       : paramString;
@@ -95,6 +98,7 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     const hash = md5(stringToHash);
 
     console.log('[PayFast] ========================================');
+    console.log('[PayFast] Fields hashed:', Object.keys(clean).sort().join(', '));
     console.log('[PayFast] String to hash:', stringToHash);
     console.log('[PayFast] Generated signature:', hash);
     console.log('[PayFast] Signature length:', hash.length);
@@ -122,25 +126,28 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     custom_str2: booking.booking_reference,
   };
 
-  // Filter to only non-empty fields (what actually gets submitted)
-  const submittedData = buildSubmittedData(paymentData);
-
-  // Generate signature from the exact same fields
-  const signature = generateSignature(submittedData, settings.payfast_passphrase || '');
+  // Generate signature (passphrase used ONLY for hashing, never submitted)
+  const passphrase = settings.payfast_passphrase || '';
+  const signature = generateSignature(paymentData, passphrase);
 
   // Log final payload
-  console.log('[PayFast] Submitted fields:', Object.keys(submittedData));
+  console.log('[PayFast] ========================================');
+  console.log('[PayFast] FORM VALUES (raw, not encoded):');
+  console.log('[PayFast] cancel_url:', paymentData.cancel_url);
+  console.log('[PayFast] return_url:', paymentData.return_url);
+  console.log('[PayFast] item_description:', paymentData.item_description);
+  console.log('[PayFast] passphrase in paymentData:', 'passphrase' in paymentData ? '✗ YES (ERROR!)' : '✓ NO (CORRECT)');
   console.log('[PayFast] Final signature:', signature);
-  console.log('[PayFast] Signature length check:', signature.length === 32 ? '✓ PASS' : '✗ FAIL');
+  console.log('[PayFast] Signature length:', signature.length, signature.length === 32 ? '✓ PASS' : '✗ FAIL');
+  console.log('[PayFast] ========================================');
 
   // Debug info
   const debugInfo = {
     signatureLength: signature.length,
     signature: signature,
     isValid: /^[a-f0-9]{32}$/.test(signature),
-    hasPassphrase: !!settings.payfast_passphrase,
-    submittedFieldCount: Object.keys(submittedData).length,
-    passphraseInPayload: 'passphrase' in submittedData ? '✗ YES (ERROR)' : '✓ NO (CORRECT)'
+    hasPassphrase: !!passphrase,
+    passphraseInPayload: 'passphrase' in paymentData ? '✗ YES (ERROR)' : '✓ NO (CORRECT)'
   };
 
   return (
@@ -182,14 +189,14 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
                 <div className="pt-2 border-t border-yellow-300">
                   <span className="text-gray-700 block mb-1">Amount:</span>
                   <div className="bg-white p-2 rounded border">
-                    R {submittedData.amount}
+                    R {paymentData.amount}
                   </div>
                 </div>
                 <div className="pt-2 border-t border-yellow-300">
                   <span className="text-gray-700 block mb-1">Payload Check:</span>
                   <div className="bg-white p-2 rounded border text-xs space-y-1">
-                    <div>Fields submitted: {debugInfo.submittedFieldCount}</div>
                     <div>passphrase in payload: {debugInfo.passphraseInPayload}</div>
+                    <div>Has passphrase for hash: {debugInfo.hasPassphrase ? '✓ YES' : '✗ NO'}</div>
                   </div>
                 </div>
               </div>
@@ -221,14 +228,16 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
             method="post"
             className="hidden"
           >
-            {Object.entries(submittedData).map(([key, value]) => (
-              <input
-                key={key}
-                type="hidden"
-                name={key}
-                value={value}
-              />
-            ))}
+            {Object.entries(paymentData)
+              .filter(([_, v]) => v !== '' && v !== null && v !== undefined)
+              .map(([key, value]) => (
+                <input
+                  key={key}
+                  type="hidden"
+                  name={key}
+                  value={value}
+                />
+              ))}
             <input type="hidden" name="signature" value={signature} />
           </form>
 
