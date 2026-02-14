@@ -298,15 +298,6 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
         </Alert>
       )}
 
-      {!loadingKey && !keyError && apiKey && (
-        <Alert className="border-emerald-200 bg-emerald-50">
-          <AlertCircle className="h-4 w-4 text-emerald-600" />
-          <AlertDescription className="text-emerald-900 text-xs">
-            ✓ Google Maps configured (Key: {apiKey.substring(0, 8)}...{apiKey.slice(-4)})
-          </AlertDescription>
-        </Alert>
-      )}
-
       {data.distance_km && (
         <Alert className="border-green-200 bg-green-50">
           <Route className="h-4 w-4 text-green-600" />
