@@ -88,29 +88,19 @@ export default function GooglePlacesAutocomplete({
   }, [apiKey]);
 
   const handlePlaceChange = async (event) => {
-    console.log('[GooglePlaces] ✓ gmp-placeselect event fired for', label, event);
+    console.log('[GooglePlaces] gmp-placeselect fired for', label, event);
     
-    // Get the place from the event
-    const place = event?.place;
-    
+    const place = event.place;
     if (!place) {
-      console.error('[GooglePlaces] No place in event, trying element.value...');
-      const autocompleteElement = autocompleteRef.current;
-      if (!autocompleteElement?.value) {
-        console.error('[GooglePlaces] No place found in event or element.value');
-        return;
-      }
-      // Fallback to element.value if event.place not available
-      const place = autocompleteElement.value;
+      console.warn('[GooglePlaces] placeselect fired but event.place missing', event);
+      return;
     }
 
-    console.log('[GooglePlaces] ✓ Place object retrieved from event.place:', place);
+    console.log('[GooglePlaces] Place object received:', place);
 
-    // Fetch all required fields
-    console.log('[GooglePlaces] Fetching place fields...');
     try {
       await place.fetchFields({
-        fields: ['location', 'formattedAddress', 'addressComponents', 'displayName', 'id']
+        fields: ['id', 'formattedAddress', 'location', 'addressComponents']
       });
       console.log('[GooglePlaces] ✓ Fields fetched successfully');
     } catch (e) {
@@ -118,47 +108,33 @@ export default function GooglePlacesAutocomplete({
       return;
     }
 
-    console.log('[GooglePlaces] Place data after fetch:', {
-      id: place.id,
-      displayName: place.displayName,
-      formattedAddress: place.formattedAddress,
-      hasLocation: !!place.location,
-      lat: place.location?.lat?.(),
-      lng: place.location?.lng?.()
-    });
-
-    if (!place.location) {
-      console.error('[GooglePlaces] ✗ Place has no location after fetch');
-      return;
-    }
-
     // Extract address components
-    const addressComponents = {};
+    let city = '';
+    let postal_code = '';
     if (place.addressComponents) {
       place.addressComponents.forEach(component => {
         const types = component.types || [];
         if (types.includes('locality')) {
-          addressComponents.city = component.longText || component.shortText;
+          city = component.longText || component.shortText;
         }
         if (types.includes('postal_code')) {
-          addressComponents.postal_code = component.longText || component.shortText;
+          postal_code = component.longText || component.shortText;
         }
       });
     }
 
-    const placeData = {
-      address: place.formattedAddress || place.displayName,
-      place_id: place.id || place.placeId,
-      lat: typeof place.location.lat === 'function' ? place.location.lat() : place.location.lat,
-      lng: typeof place.location.lng === 'function' ? place.location.lng() : place.location.lng,
-      city: addressComponents.city || '',
-      postal_code: addressComponents.postal_code || ''
+    const payload = {
+      address: place.formattedAddress || '',
+      place_id: place.id || null,
+      lat: place.location?.lat?.() ?? null,
+      lng: place.location?.lng?.() ?? null,
+      city: city,
+      postal_code: postal_code
     };
 
-    console.log('[GooglePlaces] ✓ Prepared place data:', placeData);
-    console.log('[GooglePlaces] → Calling parent onChange with:', placeData);
-    onChange(placeData);
-    console.log('[GooglePlaces] ✓ onChange called successfully for', label);
+    console.log('[GooglePlaces] → Calling parent onChange with:', payload);
+    onChange(payload);
+    console.log('[GooglePlaces] ✓ Parent onChange called for', label);
   };
 
   const initializeAutocomplete = async () => {
