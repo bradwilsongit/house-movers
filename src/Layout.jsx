@@ -21,10 +21,12 @@ export default function Layout({ children, currentPageName }) {
   const [userDetails, setUserDetails] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [appSettings, setAppSettings] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     loadUser();
+    loadAppSettings();
   }, []);
 
   const loadUser = async () => {
@@ -39,6 +41,17 @@ export default function Layout({ children, currentPageName }) {
       console.error(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadAppSettings = async () => {
+    try {
+      const settings = await base44.entities.AppSettings.list();
+      if (settings.length > 0) {
+        setAppSettings(settings[0]);
+      }
+    } catch (e) {
+      console.error('Error loading app settings:', e);
     }
   };
 
@@ -113,10 +126,20 @@ export default function Layout({ children, currentPageName }) {
               }}
               className="flex items-center gap-2 cursor-pointer"
             >
-              <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
-                <Truck className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-semibold text-xl tracking-tight">House Moves</span>
+              {appSettings?.logo_url ? (
+                <img 
+                  src={appSettings.logo_url} 
+                  alt="Logo" 
+                  className="h-10 object-contain"
+                />
+              ) : (
+                <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
+                  <Truck className="w-5 h-5 text-white" />
+                </div>
+              )}
+              <span className="font-semibold text-xl tracking-tight">
+                {appSettings?.company_name || 'House Moves'}
+              </span>
             </a>
 
             {/* Desktop Navigation */}
@@ -242,10 +265,18 @@ export default function Layout({ children, currentPageName }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-                <Truck className="w-4 h-4 text-white" />
-              </div>
-              <span className="font-medium">House Moves</span>
+              {appSettings?.logo_url ? (
+                <img 
+                  src={appSettings.logo_url} 
+                  alt="Logo" 
+                  className="h-8 object-contain"
+                />
+              ) : (
+                <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+                  <Truck className="w-4 h-4 text-white" />
+                </div>
+              )}
+              <span className="font-medium">{appSettings?.company_name || 'House Moves'}</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-gray-500">
               <Link to={createPageUrl('Terms')} className="hover:text-black transition-colors">

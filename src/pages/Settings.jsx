@@ -1,14 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { 
   User, Bell, Shield, CreditCard, HelpCircle, 
-  FileText, ChevronRight, LogOut
+  FileText, ChevronRight, LogOut, Palette
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { base44 } from '@/api/base44Client';
 
 export default function Settings() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  const loadUser = async () => {
+    try {
+      const isAuth = await base44.auth.isAuthenticated();
+      if (isAuth) {
+        const userData = await base44.auth.me();
+        setUser(userData);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const settingsGroups = [
     {
       title: 'Account',
@@ -33,6 +51,17 @@ export default function Settings() {
         },
       ]
     },
+    ...(user?.role === 'admin' ? [{
+      title: 'App Settings',
+      items: [
+        { 
+          icon: Palette, 
+          label: 'Branding', 
+          description: 'Customize logo and company name',
+          href: createPageUrl('Branding')
+        },
+      ]
+    }] : []),
     {
       title: 'Support',
       items: [
