@@ -62,57 +62,35 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
   const cancel_url = `${window.location.origin}/payment-cancelled?booking_id=${booking.id}`;
   const notify_url = `${window.location.origin}/api/payfast-itn`;
 
-  // Step 1: Build form parameters (what gets submitted to PayFast)
-  const formParams = {
-    merchant_id,
-    merchant_key,  // PayFast requires this in submission
-    return_url,
-    cancel_url,
-    notify_url,
-    name_first: booking.customer_name || 'Customer',
-    name_last: booking.customer_surname || '',
-    email_address: booking.customer_email || 'customer@example.com',
-    m_payment_id: booking.id,
-    amount: booking.total_amount.toFixed(2),
-    item_name: `Move Booking ${booking.booking_reference}`,
-    item_description: `Moving service from ${booking.pickup_address} to ${booking.dropoff_address}`,
-    custom_str1: booking.id,
-    custom_str2: booking.booking_reference,
+  // Helper: Filter out empty values
+  const buildSubmittedData = (data) => {
+    return Object.fromEntries(
+      Object.entries(data).filter(([_, v]) => v !== '' && v !== null && v !== undefined)
+    );
   };
 
-  // Step 2: Use same params for signature generation
-  const signatureParams = formParams;
-
-  // Step 3: Generate signature
-  const generateSignature = () => {
-    // Remove empty values
-    const cleaned = {};
-    Object.keys(signatureParams).forEach(key => {
-      const val = signatureParams[key];
-      if (val !== null && val !== undefined && val !== '') {
-        cleaned[key] = String(val).trim();
-      }
-    });
-
-    // Sort alphabetically
-    const sorted = Object.keys(cleaned).sort();
+  // Helper: Generate MD5 signature
+  const generateSignature = (data, passphrase) => {
+    // Convert to entries and trim
+    const entries = Object.entries(data)
+      .map(([k, v]) => [k, String(v).trim()])
+      .sort(([a], [b]) => a.localeCompare(b));
 
     // Build parameter string
-    let paramString = sorted
-      .map(key => `${key}=${encodeURIComponent(cleaned[key])}`)
+    const paramString = entries
+      .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
       .join('&');
 
-    // Add passphrase if exists
-    const passphrase = settings.payfast_passphrase || '';
-    if (passphrase) {
-      paramString += `&passphrase=${encodeURIComponent(passphrase.trim())}`;
-    }
+    // Append passphrase only for hashing (never submitted as field)
+    const stringToHash = passphrase
+      ? `${paramString}&passphrase=${encodeURIComponent(passphrase.trim())}`
+      : paramString;
 
-    // Generate MD5 hash
-    const hash = md5(paramString);
+    // Generate MD5 hash (32 lowercase hex characters)
+    const hash = md5(stringToHash);
 
     console.log('[PayFast] ========================================');
-    console.log('[PayFast] String to hash:', paramString);
+    console.log('[PayFast] String to hash:', stringToHash);
     console.log('[PayFast] Generated signature:', hash);
     console.log('[PayFast] Signature length:', hash.length);
     console.log('[PayFast] Valid format:', /^[a-f0-9]{32}$/.test(hash) ? '✓ YES' : '✗ NO');
@@ -121,18 +99,34 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     return hash;
   };
 
-  const signature = generateSignature();
-
-  // Step 4: Final payload to PayFast (formParams + signature)
-  const finalPayload = {
-    ...formParams,
-    signature,
+  // Build payment data
+  const paymentData = {
+    merchant_id,
+    merchant_key,
+    return_url,
+    cancel_url,
+    notify_url,
+    name_first: booking.customer_name || 'Customer',
+    name_last: booking.customer_surname || '',
+    email_address: booking.customer_email || 'customer@example.com',
+    m_payment_id: booking.id,
+    amount: Number(booking.total_amount).toFixed(2),
+    item_name: `Move Booking ${booking.booking_reference}`,
+    item_description: `Moving service from ${booking.pickup_address} to ${booking.dropoff_address}`,
+    custom_str1: booking.id,
+    custom_str2: booking.booking_reference,
   };
 
+  // Filter to only non-empty fields (what actually gets submitted)
+  const submittedData = buildSubmittedData(paymentData);
+
+  // Generate signature from the exact same fields
+  const signature = generateSignature(submittedData, settings.payfast_passphrase || '');
+
   // Log final payload
-  console.log('[PayFast] Final payload to PayFast:', finalPayload);
-  console.log('[PayFast] Signature in payload:', finalPayload.signature);
-  console.log('[PayFast] Signature length check:', finalPayload.signature.length === 32 ? '✓ PASS' : '✗ FAIL');
+  console.log('[PayFast] Submitted fields:', Object.keys(submittedData));
+  console.log('[PayFast] Final signature:', signature);
+  console.log('[PayFast] Signature length check:', signature.length === 32 ? '✓ PASS' : '✗ FAIL');
 
   // Debug info
   const debugInfo = {
@@ -140,8 +134,8 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     signature: signature,
     isValid: /^[a-f0-9]{32}$/.test(signature),
     hasPassphrase: !!settings.payfast_passphrase,
-    merchantKeyInPayload: 'merchant_key' in finalPayload ? '✓ YES' : '✗ NO',
-    passphraseInPayload: 'passphrase' in finalPayload ? '✗ YES (ERROR)' : '✓ NO (CORRECT)'
+    submittedFieldCount: Object.keys(submittedData).length,
+    passphraseInPayload: 'passphrase' in submittedData ? '✗ YES (ERROR)' : '✓ NO (CORRECT)'
   };
 
   return (
@@ -183,13 +177,13 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
                 <div className="pt-2 border-t border-yellow-300">
                   <span className="text-gray-700 block mb-1">Amount:</span>
                   <div className="bg-white p-2 rounded border">
-                    R {formParams.amount}
+                    R {submittedData.amount}
                   </div>
                 </div>
                 <div className="pt-2 border-t border-yellow-300">
                   <span className="text-gray-700 block mb-1">Payload Check:</span>
                   <div className="bg-white p-2 rounded border text-xs space-y-1">
-                    <div>merchant_key in payload: {debugInfo.merchantKeyInPayload}</div>
+                    <div>Fields submitted: {debugInfo.submittedFieldCount}</div>
                     <div>passphrase in payload: {debugInfo.passphraseInPayload}</div>
                   </div>
                 </div>
@@ -222,14 +216,15 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
             method="post"
             className="hidden"
           >
-            {Object.keys(finalPayload).map(key => (
+            {Object.entries(submittedData).map(([key, value]) => (
               <input
                 key={key}
                 type="hidden"
                 name={key}
-                value={finalPayload[key]}
+                value={value}
               />
             ))}
+            <input type="hidden" name="signature" value={signature} />
           </form>
 
           <div className="mt-4 flex justify-center">
