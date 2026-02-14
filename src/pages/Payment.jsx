@@ -43,8 +43,8 @@ export default function Payment() {
       }
       
       const env = settingsData[0].payfast_environment || 'sandbox';
-      const envMerchantId = settingsData[0][`payfast_${env}_merchant_id`] || settingsData[0].payfast_merchant_id;
-      const envMerchantKey = settingsData[0][`payfast_${env}_merchant_key`] || settingsData[0].payfast_merchant_key;
+      const envMerchantId = settingsData[0][`payfast_${env}_merchant_id`];
+      const envMerchantKey = settingsData[0][`payfast_${env}_merchant_key`];
       
       if (!envMerchantId || !envMerchantKey) {
         setError(`PayFast ${env} credentials not configured. Please contact administrator.`);

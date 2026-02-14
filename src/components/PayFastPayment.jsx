@@ -10,10 +10,10 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
 
   useEffect(() => {
     if (booking && settings && formRef.current && !error) {
-      // Validate settings based on environment (with legacy fallback)
+      // Validate environment-specific credentials (strict, no fallbacks)
       const env = settings.payfast_environment || 'sandbox';
-      const envMerchantId = settings[`payfast_${env}_merchant_id`] || settings.payfast_merchant_id;
-      const envMerchantKey = settings[`payfast_${env}_merchant_key`] || settings.payfast_merchant_key;
+      const envMerchantId = settings[`payfast_${env}_merchant_id`];
+      const envMerchantKey = settings[`payfast_${env}_merchant_key`];
       
       if (!envMerchantId || !envMerchantKey) {
         setError(`PayFast ${env} credentials not configured. Please contact administrator.`);
@@ -54,18 +54,17 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     );
   }
 
-  // Use configured PayFast credentials based on environment
-  // Fallback to legacy field names for backwards compatibility
+  // Use strict environment-specific credentials (no fallbacks)
   const environment = settings.payfast_environment || 'sandbox';
   const merchant_id = environment === 'live' 
-    ? (settings.payfast_live_merchant_id || settings.payfast_merchant_id)
-    : (settings.payfast_sandbox_merchant_id || settings.payfast_merchant_id);
+    ? settings.payfast_live_merchant_id
+    : settings.payfast_sandbox_merchant_id;
   const merchant_key = environment === 'live' 
-    ? (settings.payfast_live_merchant_key || settings.payfast_merchant_key)
-    : (settings.payfast_sandbox_merchant_key || settings.payfast_merchant_key);
+    ? settings.payfast_live_merchant_key
+    : settings.payfast_sandbox_merchant_key;
   const passphrase = environment === 'live' 
-    ? (settings.payfast_live_passphrase || settings.payfast_passphrase || '')
-    : (settings.payfast_sandbox_passphrase || settings.payfast_passphrase || '');
+    ? (settings.payfast_live_passphrase || '')
+    : (settings.payfast_sandbox_passphrase || '');
   
   const payfast_url = environment === 'live' 
     ? 'https://www.payfast.co.za/eng/process'
