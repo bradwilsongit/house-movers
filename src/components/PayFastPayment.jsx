@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
-import md5 from 'js-md5';
+import md5 from 'crypto-js/md5';
 
 export default function PayFastPayment({ booking, settings, onPaymentInitiated }) {
   const formRef = useRef(null);
@@ -66,7 +66,7 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
 
   // Helper: PHP urlencode equivalent (spaces as "+", not "%20")
   const pfUrlEncode = (val) => {
-    return encodeURIComponent(String(val).trim())
+    return encodeURIComponent(val)
       .replace(/%20/g, '+')
       .replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase())
       .replace(/%[0-9a-f]{2}/gi, (m) => m.toUpperCase());
@@ -74,36 +74,37 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
 
   // Helper: Build clean fields (remove empty) and generate signature
   const buildPayfastFieldsAndSignature = (data, passphrase) => {
-    // Remove empty/null/undefined fields
-    const cleanFields = Object.fromEntries(
+    // 1) remove empty/null/undefined (IMPORTANT: also don't POST them)
+    const clean = Object.fromEntries(
       Object.entries(data).filter(
-        ([_, v]) => v !== null && v !== undefined && String(v).trim() !== ''
+        ([, v]) => v !== null && v !== undefined && String(v).trim() !== ''
       )
     );
 
-    // Sort keys and build param string with PHP urlencode
-    const keys = Object.keys(cleanFields).sort();
-    const paramString = keys
-      .map(k => `${k}=${pfUrlEncode(String(cleanFields[k]).trim())}`)
+    // 2) build param string (sorted keys)
+    const keys = Object.keys(clean).sort();
+    const pfParamString = keys
+      .map((k) => `${k}=${pfUrlEncode(String(clean[k]).trim())}`)
       .join('&');
 
-    // Append passphrase ONLY to hash string (never as a posted field)
-    const stringToHash = passphrase && String(passphrase).trim() !== ''
-      ? `${paramString}&passphrase=${pfUrlEncode(String(passphrase).trim())}`
-      : paramString;
+    // 3) append passphrase ONLY for hashing (not as a field)
+    const finalString =
+      passphrase && String(passphrase).trim() !== ''
+        ? `${pfParamString}&passphrase=${pfUrlEncode(String(passphrase).trim())}`
+        : pfParamString;
 
-    // Generate MD5 hash (32 lowercase hex characters)
-    const signature = md5(stringToHash);
+    // 4) md5 -> 32-char hex
+    const signature = md5(finalString).toString();
 
     console.log('[PayFast] ========================================');
     console.log('[PayFast] Fields to hash & POST:', keys.join(', '));
-    console.log('[PayFast] String to hash:', stringToHash);
+    console.log('[PayFast] String to hash:', finalString);
     console.log('[PayFast] Generated signature:', signature);
     console.log('[PayFast] Signature length:', signature.length);
     console.log('[PayFast] Valid format:', /^[a-f0-9]{32}$/.test(signature) ? '✓ YES' : '✗ NO');
     console.log('[PayFast] ========================================');
 
-    return { fields: cleanFields, signature };
+    return { fields: clean, signature, finalString };
   };
 
   // Build payment data
