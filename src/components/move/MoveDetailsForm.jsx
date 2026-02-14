@@ -688,7 +688,7 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
       <div className="flex justify-end pt-6">
         <Button 
           onClick={handleNext} 
-          disabled={calculatingDistance}
+          disabled={!canContinue || calculatingDistance}
           className="bg-black text-white hover:bg-gray-800"
         >
           {calculatingDistance ? (
