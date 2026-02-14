@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MapPin, Loader2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -13,7 +12,7 @@ export default function GooglePlacesAutocomplete({
   apiKey,
   error 
 }) {
-  const inputRef = useRef(null);
+  const containerRef = useRef(null);
   const autocompleteRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [scriptError, setScriptError] = useState(null);
@@ -26,110 +25,106 @@ export default function GooglePlacesAutocomplete({
       return;
     }
 
-    // Wait for input to be mounted
-    if (!inputRef.current) {
-      console.log('[GooglePlaces] Input ref not ready, waiting...');
-      const timer = setTimeout(() => {
-        if (inputRef.current && !initAttempted.current) {
-          initializeAutocomplete();
-        }
-      }, 100);
-      return () => clearTimeout(timer);
+    if (!containerRef.current || initAttempted.current) {
+      return;
     }
 
-    if (!initAttempted.current) {
-      initializeAutocomplete();
+    initializeAutocomplete();
+
+    return () => {
+      // Cleanup
+      if (autocompleteRef.current && containerRef.current) {
+        try {
+          containerRef.current.innerHTML = '';
+        } catch (e) {
+          console.error('[GooglePlaces] Cleanup error:', e);
+        }
+      }
+    };
+  }, [apiKey]);
+
+  const handlePlaceChange = (event) => {
+    const place = event.detail.place;
+    
+    console.log('[GooglePlaces] Place selected:', place);
+
+    if (!place || !place.location) {
+      console.error('[GooglePlaces] Invalid place data');
+      return;
     }
-  }, [apiKey, inputRef.current]);
+
+    // Extract address components
+    const addressComponents = {};
+    place.addressComponents?.forEach(component => {
+      const types = component.types || [];
+      if (types.includes('locality')) {
+        addressComponents.city = component.longText || component.shortText;
+      }
+      if (types.includes('postal_code')) {
+        addressComponents.postal_code = component.longText || component.shortText;
+      }
+    });
+
+    const placeData = {
+      address: place.formattedAddress || place.displayName,
+      place_id: place.id,
+      lat: place.location.lat(),
+      lng: place.location.lng(),
+      city: addressComponents.city || '',
+      postal_code: addressComponents.postal_code || ''
+    };
+
+    console.log('[GooglePlaces] Parsed place data:', placeData);
+    onChange(placeData);
+  };
 
   const initializeAutocomplete = async () => {
     if (initAttempted.current) {
-      console.log('[GooglePlaces] Already attempted initialization');
       return;
     }
 
     initAttempted.current = true;
 
     try {
-      console.log('[GooglePlaces] Starting initialization for', label);
+      console.log('[GooglePlaces] Initializing widget for', label);
       
-      if (!inputRef.current) {
-        console.error('[GooglePlaces] Input ref is null for', label);
-        throw new Error('Input element not available - DOM not ready');
+      if (!containerRef.current) {
+        throw new Error('Container not ready');
       }
 
-      console.log('[GooglePlaces] Input element found, loading Google Maps API...');
+      const { PlaceAutocompleteElement } = await loadGoogleMapsAPI(apiKey);
       
-      await loadGoogleMapsAPI(apiKey);
-      
-      console.log('[GooglePlaces] Script loaded, checking Places availability...');
-      
-      if (!window.google?.maps?.places?.Autocomplete) {
-        const errorMsg = !window.google 
-          ? 'Google Maps not loaded'
-          : !window.google.maps 
-          ? 'Google Maps API not initialized'
-          : 'Places library not loaded - ensure Places API is enabled in Google Cloud Console';
-        
-        console.error('[GooglePlaces] Error:', errorMsg);
-        throw new Error(errorMsg);
-      }
+      console.log('[GooglePlaces] Creating PlaceAutocompleteElement...');
 
-      console.log('[GooglePlaces] Initializing Autocomplete for', label);
+      // Create the new Places widget
+      const autocomplete = new PlaceAutocompleteElement({
+        componentRestrictions: { country: 'za' },
+        fields: ['id', 'displayName', 'formattedAddress', 'addressComponents', 'location']
+      });
 
-      // Initialize autocomplete
-      autocompleteRef.current = new window.google.maps.places.Autocomplete(
-        inputRef.current,
-        {
-          componentRestrictions: { country: 'za' },
-          fields: ['place_id', 'formatted_address', 'address_components', 'geometry'],
-          types: ['address']
-        }
-      );
-
-      autocompleteRef.current.addListener('place_changed', handlePlaceSelect);
+      autocomplete.id = `place-autocomplete-${label.replace(/\s+/g, '-').toLowerCase()}`;
       
-      console.log('[GooglePlaces] Autocomplete initialized successfully for', label);
+      // Style the widget to match our design
+      autocomplete.style.width = '100%';
+      
+      // Clear container and append widget
+      containerRef.current.innerHTML = '';
+      containerRef.current.appendChild(autocomplete);
+      
+      // Listen for place selection
+      autocomplete.addEventListener('gmp-placeselect', handlePlaceChange);
+      
+      autocompleteRef.current = autocomplete;
+      
+      console.log('[GooglePlaces] Widget initialized successfully for', label);
       setLoading(false);
       setScriptError(null);
     } catch (error) {
       console.error('[GooglePlaces] Initialization error for', label, ':', error);
-      setScriptError(error.message || 'Failed to initialize address autocomplete');
+      setScriptError(error.message || 'Failed to load address autocomplete');
       setLoading(false);
-      initAttempted.current = false; // Allow retry
+      initAttempted.current = false;
     }
-  };
-
-  const handlePlaceSelect = () => {
-    const place = autocompleteRef.current.getPlace();
-
-    if (!place.place_id) {
-      console.error('No place selected or invalid selection');
-      return;
-    }
-
-    // Extract address components
-    let city = '';
-    let postal_code = '';
-
-    place.address_components?.forEach(component => {
-      if (component.types.includes('locality')) {
-        city = component.long_name;
-      }
-      if (component.types.includes('postal_code')) {
-        postal_code = component.long_name;
-      }
-    });
-
-    // Pass complete place data to parent
-    onChange({
-      address: place.formatted_address,
-      city: city,
-      postal_code: postal_code,
-      place_id: place.place_id,
-      lat: place.geometry?.location?.lat(),
-      lng: place.geometry?.location?.lng(),
-    });
   };
 
   if (scriptError) {
@@ -146,37 +141,27 @@ export default function GooglePlacesAutocomplete({
     );
   }
 
-  const handleInputMount = (element) => {
-    if (element && !inputRef.current) {
-      console.log('[GooglePlaces] Input mounted for', label);
-      inputRef.current = element;
-      if (apiKey && !initAttempted.current) {
-        initializeAutocomplete();
-      }
-    }
-  };
-
   return (
     <div className="space-y-2">
       <Label>{label}</Label>
       <div className="relative">
-        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <Input
-          ref={handleInputMount}
-          type="text"
-          placeholder={placeholder}
-          defaultValue={value}
-          disabled={loading}
-          className={`pl-10 ${error ? 'border-red-500' : ''}`}
+        <div className="absolute left-3 top-3 z-10 pointer-events-none">
+          <MapPin className="w-4 h-4 text-gray-400" />
+        </div>
+        <div 
+          ref={containerRef}
+          className="relative [&_input]:pl-10 [&_input]:h-9 [&_input]:w-full [&_input]:rounded-md [&_input]:border [&_input]:border-gray-200 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2 [&_input]:text-sm [&_input]:placeholder:text-gray-500 [&_input]:focus-visible:outline-none [&_input]:focus-visible:ring-1 [&_input]:focus-visible:ring-gray-400"
         />
         {loading && (
-          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-gray-400" />
+          <div className="absolute right-3 top-3 z-10">
+            <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+          </div>
         )}
       </div>
       {error && (
         <p className="text-sm text-red-600">{error}</p>
       )}
-      {!loading && !error && (
+      {!loading && !error && !scriptError && (
         <p className="text-xs text-gray-500">
           Start typing and select from the dropdown
         </p>
