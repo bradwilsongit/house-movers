@@ -6,6 +6,7 @@ import md5 from 'js-md5';
 export default function PayFastPayment({ booking, settings, onPaymentInitiated }) {
   const formRef = useRef(null);
   const [error, setError] = useState(null);
+  const [showDebug, setShowDebug] = useState(true);
 
   useEffect(() => {
     if (booking && settings && formRef.current && !error) {
@@ -18,10 +19,11 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
       // Log payment initiation
       onPaymentInitiated?.();
       
-      // Auto-submit after short delay
+      // Auto-submit after 5 seconds to allow viewing debug info
       setTimeout(() => {
+        setShowDebug(false);
         formRef.current?.submit();
-      }, 1500);
+      }, 5000);
     }
   }, [booking, settings, onPaymentInitiated, error]);
 
@@ -127,18 +129,65 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
   const passphrase = settings.payfast_passphrase || '';
   const signature = generatePayFastSignature(paymentData, passphrase);
 
+  // Debug info
+  const debugInfo = {
+    signatureLength: signature.length,
+    signature: signature,
+    isValid: /^[a-f0-9]{32}$/.test(signature),
+    hasPassphrase: !!passphrase
+  };
+
   return (
     <div className="max-w-md mx-auto">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-blue-600" />
-            Redirecting to PayFast...
+            {showDebug ? 'Preparing Payment...' : 'Redirecting to PayFast...'}
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {showDebug && (
+            <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4 mb-4 space-y-3">
+              <h4 className="font-semibold text-yellow-900">🔍 PayFast Debug Info</h4>
+              <div className="space-y-2 text-sm font-mono">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-700">Signature Length:</span>
+                  <span className={`font-bold ${debugInfo.signatureLength === 32 ? 'text-green-600' : 'text-red-600'}`}>
+                    {debugInfo.signatureLength} {debugInfo.signatureLength === 32 ? '✓' : '✗ (must be 32)'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-700">Format Valid:</span>
+                  <span className={`font-bold ${debugInfo.isValid ? 'text-green-600' : 'text-red-600'}`}>
+                    {debugInfo.isValid ? '✓ Yes' : '✗ No'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-700">Has Passphrase:</span>
+                  <span className="font-bold">{debugInfo.hasPassphrase ? '✓ Yes' : '✗ No'}</span>
+                </div>
+                <div className="pt-2 border-t border-yellow-300">
+                  <span className="text-gray-700 block mb-1">Generated Signature:</span>
+                  <div className="bg-white p-2 rounded border break-all text-xs">
+                    {debugInfo.signature}
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-yellow-300">
+                  <span className="text-gray-700 block mb-1">Amount:</span>
+                  <div className="bg-white p-2 rounded border">
+                    R {paymentData.amount}
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-yellow-800 italic pt-2">
+                Check browser console (F12) for full details. Auto-redirecting in 5 seconds...
+              </p>
+            </div>
+          )}
+          
           <p className="text-sm text-gray-600 mb-4">
-            Please wait while we redirect you to PayFast secure payment gateway.
+            {showDebug ? 'Validating payment details...' : 'Please wait while we redirect you to PayFast secure payment gateway.'}
           </p>
           
           <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
