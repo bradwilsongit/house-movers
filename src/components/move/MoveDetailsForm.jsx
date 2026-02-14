@@ -75,6 +75,7 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
   };
 
   const handleDropoffChange = (placeData) => {
+    console.log('[MoveDetailsForm] Dropoff place selected:', placeData);
     onChange({
       ...data,
       dropoff_address: placeData.address,
@@ -83,6 +84,10 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
       dropoff_place_id: placeData.place_id,
       dropoff_lat: placeData.lat,
       dropoff_lng: placeData.lng,
+      // Clear distance when addresses change
+      distance_km: null,
+      distance_duration_minutes: null,
+      distance_calculation_status: null,
     });
     setErrors({ ...errors, dropoff: null });
   };
