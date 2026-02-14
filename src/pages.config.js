@@ -51,6 +51,7 @@ import AdminBookings from './pages/AdminBookings';
 import AdminCommission from './pages/AdminCommission';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminExtras from './pages/AdminExtras';
+import AdminPayFast from './pages/AdminPayFast';
 import AdminSuppliers from './pages/AdminSuppliers';
 import AdminSupport from './pages/AdminSupport';
 import BookingDetails from './pages/BookingDetails';
@@ -60,6 +61,8 @@ import Home from './pages/Home';
 import MyMoves from './pages/MyMoves';
 import PayFastITN from './pages/PayFastITN';
 import Payment from './pages/Payment';
+import PaymentCancelled from './pages/PaymentCancelled';
+import PaymentReturn from './pages/PaymentReturn';
 import Privacy from './pages/Privacy';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
@@ -70,9 +73,6 @@ import SupplierOnboarding from './pages/SupplierOnboarding';
 import SupplierProfile from './pages/SupplierProfile';
 import Support from './pages/Support';
 import Terms from './pages/Terms';
-import AdminPayFast from './pages/AdminPayFast';
-import PaymentReturn from './pages/PaymentReturn';
-import PaymentCancelled from './pages/PaymentCancelled';
 import __Layout from './Layout.jsx';
 
 
@@ -81,6 +81,7 @@ export const PAGES = {
     "AdminCommission": AdminCommission,
     "AdminDashboard": AdminDashboard,
     "AdminExtras": AdminExtras,
+    "AdminPayFast": AdminPayFast,
     "AdminSuppliers": AdminSuppliers,
     "AdminSupport": AdminSupport,
     "BookingDetails": BookingDetails,
@@ -90,6 +91,8 @@ export const PAGES = {
     "MyMoves": MyMoves,
     "PayFastITN": PayFastITN,
     "Payment": Payment,
+    "PaymentCancelled": PaymentCancelled,
+    "PaymentReturn": PaymentReturn,
     "Privacy": Privacy,
     "Profile": Profile,
     "Settings": Settings,
@@ -100,9 +103,6 @@ export const PAGES = {
     "SupplierProfile": SupplierProfile,
     "Support": Support,
     "Terms": Terms,
-    "AdminPayFast": AdminPayFast,
-    "PaymentReturn": PaymentReturn,
-    "PaymentCancelled": PaymentCancelled,
 }
 
 export const pagesConfig = {

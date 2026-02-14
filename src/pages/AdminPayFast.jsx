@@ -16,10 +16,13 @@ export default function AdminPayFast() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [formData, setFormData] = useState({
-    payfast_merchant_id: '',
-    payfast_merchant_key: '',
-    payfast_passphrase: '',
     payfast_environment: 'sandbox',
+    payfast_sandbox_merchant_id: '',
+    payfast_sandbox_merchant_key: '',
+    payfast_sandbox_passphrase: '',
+    payfast_live_merchant_id: '',
+    payfast_live_merchant_key: '',
+    payfast_live_passphrase: '',
   });
 
   useEffect(() => {
@@ -33,14 +36,18 @@ export default function AdminPayFast() {
       if (allSettings.length > 0) {
         setSettings(allSettings[0]);
         setFormData({
-          payfast_merchant_id: allSettings[0].payfast_merchant_id || '',
-          payfast_merchant_key: allSettings[0].payfast_merchant_key || '',
-          payfast_passphrase: allSettings[0].payfast_passphrase || '',
           payfast_environment: allSettings[0].payfast_environment || 'sandbox',
+          payfast_sandbox_merchant_id: allSettings[0].payfast_sandbox_merchant_id || '',
+          payfast_sandbox_merchant_key: allSettings[0].payfast_sandbox_merchant_key || '',
+          payfast_sandbox_passphrase: allSettings[0].payfast_sandbox_passphrase || '',
+          payfast_live_merchant_id: allSettings[0].payfast_live_merchant_id || '',
+          payfast_live_merchant_key: allSettings[0].payfast_live_merchant_key || '',
+          payfast_live_passphrase: allSettings[0].payfast_live_passphrase || '',
         });
       }
     } catch (e) {
       console.error('Error loading settings:', e);
+      toast.error('Failed to load PayFast settings');
     } finally {
       setLoading(false);
     }
@@ -54,17 +61,20 @@ export default function AdminPayFast() {
         ...formData,
       };
 
-      if (settings) {
+      if (settings?.id) {
         await base44.entities.AppSettings.update(settings.id, data);
+        toast.success('PayFast settings saved successfully');
       } else {
         const newSettings = await base44.entities.AppSettings.create(data);
         setSettings(newSettings);
+        toast.success('PayFast settings created successfully');
       }
       
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (e) {
       console.error('Error saving settings:', e);
+      toast.error('Failed to save PayFast settings');
     } finally {
       setSaving(false);
     }
@@ -157,63 +167,109 @@ export default function AdminPayFast() {
           </CardContent>
         </Card>
 
-        {/* Credentials */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <CreditCard className="w-5 h-5" />
-              PayFast Credentials
-            </CardTitle>
-            <CardDescription>
-              Get these from your PayFast merchant dashboard
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="merchant_id">Merchant ID</Label>
-              <Input
-                id="merchant_id"
-                value={formData.payfast_merchant_id}
-                onChange={(e) => setFormData({ ...formData, payfast_merchant_id: e.target.value })}
-                placeholder={formData.payfast_environment === 'sandbox' ? '10000100' : 'Enter your merchant ID'}
-                className="mt-1.5"
-              />
-              {formData.payfast_environment === 'sandbox' && (
+        {/* Sandbox Credentials */}
+        {formData.payfast_environment === 'sandbox' && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <CreditCard className="w-5 h-5" />
+                Sandbox Credentials
+              </CardTitle>
+              <CardDescription>
+                Get these from your PayFast merchant dashboard (Sandbox)
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="sandbox_merchant_id">Merchant ID</Label>
+                <Input
+                  id="sandbox_merchant_id"
+                  value={formData.payfast_sandbox_merchant_id}
+                  onChange={(e) => setFormData({ ...formData, payfast_sandbox_merchant_id: e.target.value })}
+                  placeholder="10000100"
+                  className="mt-1.5"
+                />
                 <p className="text-xs text-gray-500 mt-1">Test Merchant ID: 10000100</p>
-              )}
-            </div>
+              </div>
 
-            <div>
-              <Label htmlFor="merchant_key">Merchant Key</Label>
-              <Input
-                id="merchant_key"
-                type="password"
-                value={formData.payfast_merchant_key}
-                onChange={(e) => setFormData({ ...formData, payfast_merchant_key: e.target.value })}
-                placeholder={formData.payfast_environment === 'sandbox' ? '46f0cd694581a' : 'Enter your merchant key'}
-                className="mt-1.5"
-              />
-              {formData.payfast_environment === 'sandbox' && (
+              <div>
+                <Label htmlFor="sandbox_merchant_key">Merchant Key</Label>
+                <Input
+                  id="sandbox_merchant_key"
+                  type="password"
+                  value={formData.payfast_sandbox_merchant_key}
+                  onChange={(e) => setFormData({ ...formData, payfast_sandbox_merchant_key: e.target.value })}
+                  placeholder="46f0cd694581a"
+                  className="mt-1.5"
+                />
                 <p className="text-xs text-gray-500 mt-1">Test Merchant Key: 46f0cd694581a</p>
-              )}
-            </div>
+              </div>
 
-            <div>
-              <Label htmlFor="passphrase">Security Passphrase (optional but recommended)</Label>
-              <Input
-                id="passphrase"
-                type="password"
-                value={formData.payfast_passphrase}
-                onChange={(e) => setFormData({ ...formData, payfast_passphrase: e.target.value })}
-                placeholder="Enter your security passphrase"
-                className="mt-1.5"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Set this in your PayFast account settings for enhanced security
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+              <div>
+                <Label htmlFor="sandbox_passphrase">Security Passphrase (optional)</Label>
+                <Input
+                  id="sandbox_passphrase"
+                  type="password"
+                  value={formData.payfast_sandbox_passphrase}
+                  onChange={(e) => setFormData({ ...formData, payfast_sandbox_passphrase: e.target.value })}
+                  placeholder="Enter your security passphrase"
+                  className="mt-1.5"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Live Credentials */}
+        {formData.payfast_environment === 'live' && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <CreditCard className="w-5 h-5" />
+                Live Credentials
+              </CardTitle>
+              <CardDescription>
+                Get these from your PayFast merchant dashboard (Live)
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="live_merchant_id">Merchant ID</Label>
+                <Input
+                  id="live_merchant_id"
+                  value={formData.payfast_live_merchant_id}
+                  onChange={(e) => setFormData({ ...formData, payfast_live_merchant_id: e.target.value })}
+                  placeholder="Enter your merchant ID"
+                  className="mt-1.5"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="live_merchant_key">Merchant Key</Label>
+                <Input
+                  id="live_merchant_key"
+                  type="password"
+                  value={formData.payfast_live_merchant_key}
+                  onChange={(e) => setFormData({ ...formData, payfast_live_merchant_key: e.target.value })}
+                  placeholder="Enter your merchant key"
+                  className="mt-1.5"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="live_passphrase">Security Passphrase (optional)</Label>
+                <Input
+                  id="live_passphrase"
+                  type="password"
+                  value={formData.payfast_live_passphrase}
+                  onChange={(e) => setFormData({ ...formData, payfast_live_passphrase: e.target.value })}
+                  placeholder="Enter your security passphrase"
+                  className="mt-1.5"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* URLs for PayFast Setup */}
         <Card>
