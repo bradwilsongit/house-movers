@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
 import { 
-  Building2, MapPin, Truck, Users, Save, Check, Plus, X, Upload
+  Building2, MapPin, Truck, Users, Save, Check, Plus, X, Upload, DollarSign, Package
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,6 +44,12 @@ export default function SupplierProfile() {
     vehicle_type: '',
     capacity_m3: '',
     plate_number: '',
+  });
+  const [newPackagingItem, setNewPackagingItem] = useState({
+    name: '',
+    category: 'boxes',
+    unit_price: '',
+    in_stock: true,
   });
 
   useEffect(() => {
@@ -124,6 +130,43 @@ export default function SupplierProfile() {
     setFormData({
       ...formData,
       fleet: formData.fleet.filter((_, i) => i !== index)
+    });
+  };
+
+  const addPackagingItem = () => {
+    if (newPackagingItem.name && newPackagingItem.unit_price) {
+      const pricing = formData.pricing || {};
+      const packagingItems = pricing.packaging_items || [];
+      setFormData({
+        ...formData,
+        pricing: {
+          ...pricing,
+          packaging_items: [...packagingItems, { ...newPackagingItem, unit_price: parseFloat(newPackagingItem.unit_price) }]
+        }
+      });
+      setNewPackagingItem({ name: '', category: 'boxes', unit_price: '', in_stock: true });
+    }
+  };
+
+  const removePackagingItem = (index) => {
+    const pricing = formData.pricing || {};
+    const packagingItems = pricing.packaging_items || [];
+    setFormData({
+      ...formData,
+      pricing: {
+        ...pricing,
+        packaging_items: packagingItems.filter((_, i) => i !== index)
+      }
+    });
+  };
+
+  const updatePricing = (field, value) => {
+    setFormData({
+      ...formData,
+      pricing: {
+        ...(formData.pricing || {}),
+        [field]: value ? parseFloat(value) : 0
+      }
     });
   };
 
@@ -339,7 +382,7 @@ export default function SupplierProfile() {
         </Card>
 
         {/* Crew */}
-        <Card>
+        <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Users className="w-5 h-5" />
@@ -362,6 +405,148 @@ export default function SupplierProfile() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Pricing Rates */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <DollarSign className="w-5 h-5" />
+              Pricing Rates
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="base_rate">Base Hourly Rate (R)</Label>
+                <Input
+                  id="base_rate"
+                  type="number"
+                  placeholder="0.00"
+                  value={formData.pricing?.base_rate_per_hour || ''}
+                  onChange={(e) => updatePricing('base_rate_per_hour', e.target.value)}
+                  className="mt-1.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="rate_per_km">Rate per KM (R)</Label>
+                <Input
+                  id="rate_per_km"
+                  type="number"
+                  placeholder="0.00"
+                  value={formData.pricing?.rate_per_km || ''}
+                  onChange={(e) => updatePricing('rate_per_km', e.target.value)}
+                  className="mt-1.5"
+                />
+              </div>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="rate_per_m3">Rate per m³ (R)</Label>
+                <Input
+                  id="rate_per_m3"
+                  type="number"
+                  placeholder="0.00"
+                  value={formData.pricing?.rate_per_m3 || ''}
+                  onChange={(e) => updatePricing('rate_per_m3', e.target.value)}
+                  className="mt-1.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="crew_rate">Crew Member Rate/Hour (R)</Label>
+                <Input
+                  id="crew_rate"
+                  type="number"
+                  placeholder="0.00"
+                  value={formData.pricing?.crew_member_rate || ''}
+                  onChange={(e) => updatePricing('crew_member_rate', e.target.value)}
+                  className="mt-1.5"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="packing_service">Packing Service Rate/Hour (R)</Label>
+              <Input
+                id="packing_service"
+                type="number"
+                placeholder="0.00"
+                value={formData.pricing?.packing_service_rate || ''}
+                onChange={(e) => updatePricing('packing_service_rate', e.target.value)}
+                className="mt-1.5 max-w-xs"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Packaging Items */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Package className="w-5 h-5" />
+              Packaging & Boxing Items
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {formData.pricing?.packaging_items?.map((item, index) => (
+              <div key={index} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                <div className="flex-1">
+                  <span className="font-medium">{item.name}</span>
+                  <span className="text-gray-500 text-sm ml-2">({item.category})</span>
+                </div>
+                <span className="font-semibold">R {item.unit_price.toFixed(2)}</span>
+                <Badge variant={item.in_stock ? "default" : "outline"} className={item.in_stock ? "bg-green-500" : ""}>
+                  {item.in_stock ? 'In Stock' : 'Out of Stock'}
+                </Badge>
+                <Button variant="ghost" size="icon" onClick={() => removePackagingItem(index)}>
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+
+            <div className="grid grid-cols-5 gap-2 pt-4 border-t">
+              <Input
+                placeholder="Item name"
+                value={newPackagingItem.name}
+                onChange={(e) => setNewPackagingItem({ ...newPackagingItem, name: e.target.value })}
+              />
+              <Select
+                value={newPackagingItem.category}
+                onValueChange={(v) => setNewPackagingItem({ ...newPackagingItem, category: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="boxes">Boxes</SelectItem>
+                  <SelectItem value="wrapping">Wrapping</SelectItem>
+                  <SelectItem value="tape">Tape</SelectItem>
+                  <SelectItem value="blankets">Blankets</SelectItem>
+                  <SelectItem value="specialty">Specialty</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input
+                placeholder="Price (R)"
+                type="number"
+                value={newPackagingItem.unit_price}
+                onChange={(e) => setNewPackagingItem({ ...newPackagingItem, unit_price: e.target.value })}
+              />
+              <Select
+                value={newPackagingItem.in_stock.toString()}
+                onValueChange={(v) => setNewPackagingItem({ ...newPackagingItem, in_stock: v === 'true' })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">In Stock</SelectItem>
+                  <SelectItem value="false">Out of Stock</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button onClick={addPackagingItem} disabled={!newPackagingItem.name || !newPackagingItem.unit_price}>
+                <Plus className="w-4 h-4" />
+              </Button>
             </div>
           </CardContent>
         </Card>
