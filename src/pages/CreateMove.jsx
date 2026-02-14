@@ -276,9 +276,10 @@ export default function CreateMove() {
 
       // Calculate pricing with commission
       const supplierBasePrice = distanceKm * supplierKmRate;
-      const commissionAmount = (supplierBasePrice * commissionRate) / 100;
-      const movePrice = supplierBasePrice + commissionAmount;
-      const totalAmount = movePrice + (packagingOrder.total_amount || 0);
+      const packagingTotal = packagingOrder.total_amount || 0;
+      const subtotal = supplierBasePrice + packagingTotal;
+      const commissionAmount = (subtotal * commissionRate) / 100;
+      const totalAmount = subtotal + commissionAmount;
 
       if (totalAmount <= 0) {
         alert('Invalid booking total. Please try again.');
