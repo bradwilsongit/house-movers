@@ -19,11 +19,20 @@ export default function GooglePlacesAutocomplete({
   const initAttempted = useRef(false);
 
   useEffect(() => {
+    // Reset state when apiKey changes
     if (!apiKey) {
       console.log('[GooglePlaces] No API key provided to', label);
       setScriptError('Google Maps API key not configured');
       setLoading(false);
       return;
+    }
+
+    // If we previously had no key but now have one, reset initAttempted
+    if (apiKey && scriptError === 'Google Maps API key not configured') {
+      console.log('[GooglePlaces] API key now available for', label, '- resetting state');
+      initAttempted.current = false;
+      setScriptError(null);
+      setLoading(true);
     }
 
     if (initAttempted.current) {
@@ -35,7 +44,7 @@ export default function GooglePlacesAutocomplete({
     if (!containerRef.current) {
       console.log('[GooglePlaces] Container not ready for', label, '- will retry');
       const timer = setTimeout(() => {
-        if (containerRef.current && !initAttempted.current) {
+        if (containerRef.current && !initAttempted.current && apiKey) {
           console.log('[GooglePlaces] Container now ready, initializing', label);
           initializeAutocomplete();
         }
@@ -56,7 +65,7 @@ export default function GooglePlacesAutocomplete({
         }
       }
     };
-  }, [apiKey, containerRef.current]);
+  }, [apiKey]);
 
   const handlePlaceChange = (event) => {
     const place = event.detail.place;
