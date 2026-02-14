@@ -211,11 +211,19 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
     const newErrors = {};
 
     if (!data.move_type) newErrors.move_type = 'Select move type';
-    if (!data.pickup_place_id) newErrors.pickup = 'Select pickup address from dropdown';
-    if (!data.dropoff_place_id) newErrors.dropoff = 'Select dropoff address from dropdown';
+    
+    // Validate that place was selected (not just typed)
+    if (!data.pickup_place_id || !data.pickup_lat || !data.pickup_lng) {
+      newErrors.pickup = 'Please select pickup address from dropdown';
+    }
+    if (!data.dropoff_place_id || !data.dropoff_lat || !data.dropoff_lng) {
+      newErrors.dropoff = 'Please select dropoff address from dropdown';
+    }
+    
     if (!data.move_date) newErrors.move_date = 'Select move date';
 
     if (Object.keys(newErrors).length > 0) {
+      console.log('[MoveDetailsForm] Validation errors:', newErrors);
       setErrors(newErrors);
       return;
     }
@@ -231,6 +239,7 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
       return;
     }
     
+    console.log('[MoveDetailsForm] ✓ Validation passed, proceeding to next step');
     onNext();
   };
 
