@@ -36,11 +36,22 @@ export default function Payment() {
     try {
       // Load PayFast settings first
       const settingsData = await base44.entities.AppSettings.list();
-      if (settingsData.length === 0 || !settingsData[0].payfast_merchant_id) {
+      if (settingsData.length === 0) {
         setError('PayFast payment is not configured. Please contact administrator.');
         setLoading(false);
         return;
       }
+      
+      const env = settingsData[0].payfast_environment || 'sandbox';
+      const envMerchantId = settingsData[0][`payfast_${env}_merchant_id`] || settingsData[0].payfast_merchant_id;
+      const envMerchantKey = settingsData[0][`payfast_${env}_merchant_key`] || settingsData[0].payfast_merchant_key;
+      
+      if (!envMerchantId || !envMerchantKey) {
+        setError(`PayFast ${env} credentials not configured. Please contact administrator.`);
+        setLoading(false);
+        return;
+      }
+      
       setSettings(settingsData[0]);
 
       const bookings = await base44.entities.Booking.filter({ id: bookingId });
