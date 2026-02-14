@@ -5,7 +5,7 @@ import { createPageUrl } from '@/utils';
 import { format } from 'date-fns';
 import { 
   Truck, Building2, DollarSign, Users, TrendingUp, 
-  AlertCircle, Clock, CheckCircle2, ChevronRight, Package
+  AlertCircle, Clock, CheckCircle2, ChevronRight, Package, Percent
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -86,9 +86,17 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Clock className="w-4 h-4" />
-            Last updated: {format(new Date(), 'HH:mm')}
+          <div className="flex items-center gap-3">
+            <Button asChild variant="outline" size="sm">
+              <Link to={createPageUrl('AdminCommission')}>
+                <Percent className="w-4 h-4 mr-2" />
+                Commission Settings
+              </Link>
+            </Button>
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <Clock className="w-4 h-4" />
+              Last updated: {format(new Date(), 'HH:mm')}
+            </div>
           </div>
         </div>
 
