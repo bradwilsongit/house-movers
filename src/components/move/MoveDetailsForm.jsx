@@ -125,38 +125,38 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
     setDistanceError(null);
 
     try {
-      if (!apiKey) {
-        throw new Error('Google Maps API key not configured. Contact administrator.');
+      // Wait for Google Maps API to be loaded
+      if (!window.google?.maps?.DistanceMatrixService) {
+        throw new Error('Google Maps API not loaded. Please refresh the page.');
       }
 
-      const origins = `${data.pickup_lat},${data.pickup_lng}`;
-      const destinations = `${data.dropoff_lat},${data.dropoff_lng}`;
-      
-      const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origins}&destinations=${destinations}&units=metric&key=${apiKey}`;
-      
-      console.log('Distance Matrix Request:', { origins, destinations });
-      
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-      }
+      console.log('Distance Matrix Request:', {
+        origin: { lat: data.pickup_lat, lng: data.pickup_lng },
+        destination: { lat: data.dropoff_lat, lng: data.dropoff_lng }
+      });
 
-      const result = await response.json();
+      // Use JavaScript API instead of HTTP endpoint to avoid CORS
+      const service = new window.google.maps.DistanceMatrixService();
       
+      const result = await new Promise((resolve, reject) => {
+        service.getDistanceMatrix(
+          {
+            origins: [{ lat: data.pickup_lat, lng: data.pickup_lng }],
+            destinations: [{ lat: data.dropoff_lat, lng: data.dropoff_lng }],
+            travelMode: window.google.maps.TravelMode.DRIVING,
+            unitSystem: window.google.maps.UnitSystem.METRIC,
+          },
+          (response, status) => {
+            if (status === 'OK') {
+              resolve(response);
+            } else {
+              reject(new Error(`Distance Matrix failed: ${status}`));
+            }
+          }
+        );
+      });
+
       console.log('Distance Matrix Response:', result);
-      
-      if (result.status === 'REQUEST_DENIED') {
-        throw new Error(`Google API Error: ${result.error_message || 'REQUEST_DENIED - Check API key and enabled APIs (Distance Matrix API must be enabled)'}`);
-      }
-      
-      if (result.status === 'OVER_QUERY_LIMIT') {
-        throw new Error('Google API quota exceeded. Please try again later or contact administrator.');
-      }
-      
-      if (result.status === 'INVALID_REQUEST') {
-        throw new Error('Invalid request to Google API. Please reselect addresses.');
-      }
 
       const element = result.rows?.[0]?.elements?.[0];
       
