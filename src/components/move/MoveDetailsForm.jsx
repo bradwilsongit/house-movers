@@ -57,6 +57,7 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
   };
 
   const handlePickupChange = (placeData) => {
+    console.log('[MoveDetailsForm] Pickup place selected:', placeData);
     onChange({
       ...data,
       pickup_address: placeData.address,
@@ -65,6 +66,10 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
       pickup_place_id: placeData.place_id,
       pickup_lat: placeData.lat,
       pickup_lng: placeData.lng,
+      // Clear distance when addresses change
+      distance_km: null,
+      distance_duration_minutes: null,
+      distance_calculation_status: null,
     });
     setErrors({ ...errors, pickup: null });
   };
