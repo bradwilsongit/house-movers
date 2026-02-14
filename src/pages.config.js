@@ -47,48 +47,48 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Home from './pages/Home';
-import CreateMove from './pages/CreateMove';
-import MyMoves from './pages/MyMoves';
-import BookingDetails from './pages/BookingDetails';
-import SupplierOnboarding from './pages/SupplierOnboarding';
-import SupplierDashboard from './pages/SupplierDashboard';
-import SupplierJobs from './pages/SupplierJobs';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminSuppliers from './pages/AdminSuppliers';
 import AdminBookings from './pages/AdminBookings';
+import AdminDashboard from './pages/AdminDashboard';
 import AdminExtras from './pages/AdminExtras';
+import AdminSuppliers from './pages/AdminSuppliers';
 import AdminSupport from './pages/AdminSupport';
+import BookingDetails from './pages/BookingDetails';
+import CreateMove from './pages/CreateMove';
+import Home from './pages/Home';
+import MyMoves from './pages/MyMoves';
+import Privacy from './pages/Privacy';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
-import Terms from './pages/Terms';
-import Privacy from './pages/Privacy';
-import Support from './pages/Support';
-import SupplierProfile from './pages/SupplierProfile';
+import SupplierDashboard from './pages/SupplierDashboard';
 import SupplierJobDetails from './pages/SupplierJobDetails';
+import SupplierJobs from './pages/SupplierJobs';
+import SupplierOnboarding from './pages/SupplierOnboarding';
+import SupplierProfile from './pages/SupplierProfile';
+import Support from './pages/Support';
+import Terms from './pages/Terms';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Home": Home,
-    "CreateMove": CreateMove,
-    "MyMoves": MyMoves,
-    "BookingDetails": BookingDetails,
-    "SupplierOnboarding": SupplierOnboarding,
-    "SupplierDashboard": SupplierDashboard,
-    "SupplierJobs": SupplierJobs,
-    "AdminDashboard": AdminDashboard,
-    "AdminSuppliers": AdminSuppliers,
     "AdminBookings": AdminBookings,
+    "AdminDashboard": AdminDashboard,
     "AdminExtras": AdminExtras,
+    "AdminSuppliers": AdminSuppliers,
     "AdminSupport": AdminSupport,
+    "BookingDetails": BookingDetails,
+    "CreateMove": CreateMove,
+    "Home": Home,
+    "MyMoves": MyMoves,
+    "Privacy": Privacy,
     "Profile": Profile,
     "Settings": Settings,
-    "Terms": Terms,
-    "Privacy": Privacy,
-    "Support": Support,
-    "SupplierProfile": SupplierProfile,
+    "SupplierDashboard": SupplierDashboard,
     "SupplierJobDetails": SupplierJobDetails,
+    "SupplierJobs": SupplierJobs,
+    "SupplierOnboarding": SupplierOnboarding,
+    "SupplierProfile": SupplierProfile,
+    "Support": Support,
+    "Terms": Terms,
 }
 
 export const pagesConfig = {

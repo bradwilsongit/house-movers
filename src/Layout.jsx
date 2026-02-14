@@ -105,12 +105,19 @@ export default function Layout({ children, currentPageName }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link to={createPageUrl('Home')} className="flex items-center gap-2">
+            <a 
+              href="/" 
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = '/';
+              }}
+              className="flex items-center gap-2 cursor-pointer"
+            >
               <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
                 <Truck className="w-5 h-5 text-white" />
               </div>
               <span className="font-semibold text-xl tracking-tight">House Moves</span>
-            </Link>
+            </a>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-1">
