@@ -24,74 +24,74 @@ const ROOMS = [
 
 const COMMON_ITEMS = {
   living_room: [
-    { name: 'Sofa (3-seater)', volume: 2.5 },
-    { name: 'Sofa (2-seater)', volume: 1.8 },
-    { name: 'Armchair', volume: 1.0 },
-    { name: 'Coffee Table', volume: 0.5 },
-    { name: 'TV Stand', volume: 0.8 },
-    { name: 'Bookshelf', volume: 1.2 },
-    { name: 'TV (50"+)', volume: 0.3, fragile: true },
-    { name: 'Floor Lamp', volume: 0.2 },
+    { name: 'Sofa (3-seater)', volume: 2.5, weight: 85 },
+    { name: 'Sofa (2-seater)', volume: 1.8, weight: 65 },
+    { name: 'Armchair', volume: 1.0, weight: 35 },
+    { name: 'Coffee Table', volume: 0.5, weight: 25 },
+    { name: 'TV Stand', volume: 0.8, weight: 30 },
+    { name: 'Bookshelf', volume: 1.2, weight: 40 },
+    { name: 'TV (50"+)', volume: 0.3, weight: 20, fragile: true },
+    { name: 'Floor Lamp', volume: 0.2, weight: 5 },
   ],
   bedroom: [
-    { name: 'Double Bed (with mattress)', volume: 3.0, dismantling: true },
-    { name: 'King Bed (with mattress)', volume: 4.0, dismantling: true },
-    { name: 'Single Bed (with mattress)', volume: 2.0 },
-    { name: 'Wardrobe (large)', volume: 3.5, dismantling: true },
-    { name: 'Wardrobe (small)', volume: 2.0 },
-    { name: 'Chest of Drawers', volume: 1.0 },
-    { name: 'Bedside Table', volume: 0.3 },
-    { name: 'Dressing Table', volume: 1.2 },
+    { name: 'Double Bed (with mattress)', volume: 3.0, weight: 80, dismantling: true },
+    { name: 'King Bed (with mattress)', volume: 4.0, weight: 100, dismantling: true },
+    { name: 'Single Bed (with mattress)', volume: 2.0, weight: 50 },
+    { name: 'Wardrobe (large)', volume: 3.5, weight: 120, dismantling: true },
+    { name: 'Wardrobe (small)', volume: 2.0, weight: 70 },
+    { name: 'Chest of Drawers', volume: 1.0, weight: 45 },
+    { name: 'Bedside Table', volume: 0.3, weight: 15 },
+    { name: 'Dressing Table', volume: 1.2, weight: 50 },
   ],
   kitchen: [
-    { name: 'Fridge (large)', volume: 1.5, heavy: true },
-    { name: 'Fridge (small)', volume: 0.8 },
-    { name: 'Washing Machine', volume: 0.8, heavy: true },
-    { name: 'Dishwasher', volume: 0.7 },
-    { name: 'Microwave', volume: 0.1 },
-    { name: 'Kitchen Table', volume: 1.0 },
-    { name: 'Kitchen Chair', volume: 0.2 },
-    { name: 'Boxes (kitchenware)', volume: 0.5, fragile: true },
+    { name: 'Fridge (large)', volume: 1.5, weight: 120, heavy: true },
+    { name: 'Fridge (small)', volume: 0.8, weight: 60 },
+    { name: 'Washing Machine', volume: 0.8, weight: 75, heavy: true },
+    { name: 'Dishwasher', volume: 0.7, weight: 50 },
+    { name: 'Microwave', volume: 0.1, weight: 15 },
+    { name: 'Kitchen Table', volume: 1.0, weight: 40 },
+    { name: 'Kitchen Chair', volume: 0.2, weight: 8 },
+    { name: 'Boxes (kitchenware)', volume: 0.5, weight: 15, fragile: true },
   ],
   bathroom: [
-    { name: 'Bathroom Cabinet', volume: 0.5 },
-    { name: 'Boxes (toiletries)', volume: 0.2 },
+    { name: 'Bathroom Cabinet', volume: 0.5, weight: 20 },
+    { name: 'Boxes (toiletries)', volume: 0.2, weight: 8 },
   ],
   dining_room: [
-    { name: 'Dining Table (6-seater)', volume: 2.0 },
-    { name: 'Dining Table (4-seater)', volume: 1.5 },
-    { name: 'Dining Chair', volume: 0.3 },
-    { name: 'Sideboard', volume: 1.5 },
-    { name: 'Display Cabinet', volume: 2.0, fragile: true },
+    { name: 'Dining Table (6-seater)', volume: 2.0, weight: 80 },
+    { name: 'Dining Table (4-seater)', volume: 1.5, weight: 55 },
+    { name: 'Dining Chair', volume: 0.3, weight: 12 },
+    { name: 'Sideboard', volume: 1.5, weight: 65 },
+    { name: 'Display Cabinet', volume: 2.0, weight: 70, fragile: true },
   ],
   office: [
-    { name: 'Office Desk', volume: 1.5 },
-    { name: 'Office Chair', volume: 0.5 },
-    { name: 'Filing Cabinet', volume: 0.5 },
-    { name: 'Bookshelf', volume: 1.2 },
-    { name: 'Computer', volume: 0.2, fragile: true },
-    { name: 'Printer', volume: 0.2 },
+    { name: 'Office Desk', volume: 1.5, weight: 60 },
+    { name: 'Office Chair', volume: 0.5, weight: 15 },
+    { name: 'Filing Cabinet', volume: 0.5, weight: 40 },
+    { name: 'Bookshelf', volume: 1.2, weight: 45 },
+    { name: 'Computer', volume: 0.2, weight: 10, fragile: true },
+    { name: 'Printer', volume: 0.2, weight: 8 },
   ],
   garage: [
-    { name: 'Tool Cabinet', volume: 1.0 },
-    { name: 'Bicycle', volume: 0.5 },
-    { name: 'Garden Tools', volume: 0.3 },
-    { name: 'Large Equipment', volume: 2.0, heavy: true },
+    { name: 'Tool Cabinet', volume: 1.0, weight: 50 },
+    { name: 'Bicycle', volume: 0.5, weight: 15 },
+    { name: 'Garden Tools', volume: 0.3, weight: 10 },
+    { name: 'Large Equipment', volume: 2.0, weight: 150, heavy: true },
   ],
   outdoor: [
-    { name: 'Patio Table', volume: 1.0 },
-    { name: 'Patio Chair', volume: 0.3 },
-    { name: 'BBQ', volume: 1.0 },
-    { name: 'Potted Plant (large)', volume: 0.5 },
-    { name: 'Potted Plant (small)', volume: 0.2 },
+    { name: 'Patio Table', volume: 1.0, weight: 35 },
+    { name: 'Patio Chair', volume: 0.3, weight: 10 },
+    { name: 'BBQ', volume: 1.0, weight: 45 },
+    { name: 'Potted Plant (large)', volume: 0.5, weight: 25 },
+    { name: 'Potted Plant (small)', volume: 0.2, weight: 8 },
   ],
   other: [
-    { name: 'Moving Box (large)', volume: 0.1 },
-    { name: 'Moving Box (medium)', volume: 0.07 },
-    { name: 'Moving Box (small)', volume: 0.04 },
-    { name: 'Artwork/Mirror (large)', volume: 0.3, fragile: true },
-    { name: 'Exercise Equipment', volume: 1.5, heavy: true },
-    { name: 'Piano', volume: 3.0, heavy: true, oversized: true },
+    { name: 'Moving Box (large)', volume: 0.1, weight: 20 },
+    { name: 'Moving Box (medium)', volume: 0.07, weight: 15 },
+    { name: 'Moving Box (small)', volume: 0.04, weight: 10 },
+    { name: 'Artwork/Mirror (large)', volume: 0.3, weight: 15, fragile: true },
+    { name: 'Exercise Equipment', volume: 1.5, weight: 100, heavy: true },
+    { name: 'Piano', volume: 3.0, weight: 300, heavy: true, oversized: true },
   ],
 };
 
@@ -111,6 +111,7 @@ export default function InventoryWizard({ items, onChange, onNext, onBack }) {
       needs_dismantling: item.dismantling || false,
       is_oversized: item.oversized || item.heavy || false,
       estimated_volume_m3: item.volume || 0.5,
+      estimated_weight_kg: item.weight || 25,
       photo_urls: [],
       notes: '',
     };
@@ -160,7 +161,7 @@ export default function InventoryWizard({ items, onChange, onNext, onBack }) {
 
   const addCustomItem = () => {
     if (customItemName.trim()) {
-      addItem({ name: customItemName.trim(), volume: 0.5 }, activeRoom);
+      addItem({ name: customItemName.trim(), volume: 0.5, weight: 25 }, activeRoom);
       setCustomItemName('');
     }
   };
@@ -169,7 +170,25 @@ export default function InventoryWizard({ items, onChange, onNext, onBack }) {
   const totalVolume = items.reduce((sum, item) => 
     sum + (item.estimated_volume_m3 || 0.5) * item.quantity, 0
   );
+  const totalWeight = items.reduce((sum, item) => 
+    sum + (item.estimated_weight_kg || 25) * item.quantity, 0
+  );
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Truck size recommendation based on volume and weight
+  const getTruckRecommendation = () => {
+    if (totalVolume <= 8 && totalWeight <= 1000) {
+      return { size: '2-ton', capacity: '8m³', maxWeight: '1,000kg', suitable: true };
+    } else if (totalVolume <= 14 && totalWeight <= 1500) {
+      return { size: '4-ton', capacity: '14m³', maxWeight: '1,500kg', suitable: true };
+    } else if (totalVolume <= 22 && totalWeight <= 2500) {
+      return { size: '8-ton', capacity: '22m³', maxWeight: '2,500kg', suitable: true };
+    } else {
+      return { size: '10-ton+', capacity: '30m³+', maxWeight: '4,000kg+', suitable: totalVolume <= 30 && totalWeight <= 4000 };
+    }
+  };
+
+  const truckRec = getTruckRecommendation();
 
   const getItemCountForRoom = (roomId) => {
     return items.filter(i => i.room === roomId).reduce((sum, i) => sum + i.quantity, 0);
@@ -180,8 +199,8 @@ export default function InventoryWizard({ items, onChange, onNext, onBack }) {
       {/* Summary Bar */}
       <Card className="bg-black text-white">
         <CardContent className="py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-4 md:gap-6">
               <div>
                 <p className="text-sm text-gray-400">Total Items</p>
                 <p className="text-2xl font-bold">{totalItems}</p>
@@ -191,6 +210,11 @@ export default function InventoryWizard({ items, onChange, onNext, onBack }) {
                 <p className="text-sm text-gray-400">Est. Volume</p>
                 <p className="text-2xl font-bold">{totalVolume.toFixed(1)} m³</p>
               </div>
+              <div className="w-px h-10 bg-gray-700" />
+              <div>
+                <p className="text-sm text-gray-400">Est. Weight</p>
+                <p className="text-2xl font-bold">{totalWeight.toFixed(0)} kg</p>
+              </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <Sparkles className="w-4 h-4" />
@@ -199,6 +223,32 @@ export default function InventoryWizard({ items, onChange, onNext, onBack }) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Truck Recommendation */}
+      {items.length > 0 && (
+        <Card className={cn(
+          "border-2",
+          truckRec.suitable ? "bg-green-50 border-green-200" : "bg-amber-50 border-amber-200"
+        )}>
+          <CardContent className="py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700 mb-1">Recommended Truck Size</p>
+                <p className="text-2xl font-bold text-gray-900">{truckRec.size} Truck</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  Capacity: {truckRec.capacity} • Max Load: {truckRec.maxWeight}
+                </p>
+              </div>
+              {!truckRec.suitable && (
+                <div className="flex items-center gap-2 text-amber-700">
+                  <AlertTriangle className="w-5 h-5" />
+                  <span className="text-sm font-medium">May require multiple trips</span>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Room Tabs */}
       <Tabs value={activeRoom} onValueChange={setActiveRoom}>
@@ -279,6 +329,11 @@ export default function InventoryWizard({ items, onChange, onNext, onBack }) {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <p className="font-medium">{item.item_name}</p>
+                          <div className="flex items-center gap-3 mt-1 text-sm text-gray-600">
+                            <span>{((item.estimated_volume_m3 || 0.5) * item.quantity).toFixed(1)} m³</span>
+                            <span>•</span>
+                            <span>{((item.estimated_weight_kg || 25) * item.quantity).toFixed(0)} kg</span>
+                          </div>
                           <div className="flex flex-wrap gap-2 mt-2">
                             {item.is_fragile && (
                               <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50">
