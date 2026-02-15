@@ -24,7 +24,24 @@ export default function BookingConfirmation({
   const supplierKmRate = supplier?.pricing?.rate_per_km || 0;
   const supplierBasePrice = distanceKm * supplierKmRate;
   
-  const packagingTotal = packagingOrder?.total_amount || 0;
+  // Calculate packaging costs from supplier's pricing
+  let packagingTotal = 0;
+  if (packagingOrder?.items?.length > 0 && supplier?.pricing?.packaging_items) {
+    packagingOrder.items.forEach(selectedItem => {
+      const supplierItem = supplier.pricing.packaging_items.find(
+        item => item.name === selectedItem.name && item.in_stock
+      );
+      if (supplierItem) {
+        packagingTotal += supplierItem.unit_price * selectedItem.quantity;
+      }
+    });
+  }
+  
+  // Add packing service cost if selected
+  if (packagingOrder?.include_packing_service && supplier?.pricing?.packing_service_rate) {
+    packagingTotal += supplier.pricing.packing_service_rate;
+  }
+  
   const subtotal = supplierBasePrice + packagingTotal;
   const commissionAmount = (subtotal * commissionRate) / 100;
   const grandTotal = subtotal + commissionAmount;
