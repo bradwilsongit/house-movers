@@ -136,7 +136,10 @@ export default function CreateMove() {
       }
 
       // Determine which step to show based on saved data
-      if (moveRequest.status === 'confirmed' || moveRequest.selected_quote_id) {
+      // If distance not calculated, must go back to details step
+      if (!moveRequest.distance_km || moveRequest.distance_km <= 0) {
+        setCurrentStep(0); // Details step - need to recalculate distance
+      } else if (moveRequest.status === 'confirmed' || moveRequest.selected_quote_id) {
         setCurrentStep(4); // Confirmation step
       } else if (moveQuotes.length > 0) {
         setCurrentStep(3); // Quotes step
