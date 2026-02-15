@@ -55,9 +55,11 @@ const faqs = [
 export default function Support() {
   const [user, setUser] = useState(null);
   const [bookings, setBookings] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [ticketForm, setTicketForm] = useState({
     ticket_type: '',
     booking_id: '',
+    supplier_id: '',
     subject: '',
     description: '',
   });
@@ -72,12 +74,14 @@ export default function Support() {
     try {
       const isAuth = await base44.auth.isAuthenticated();
       if (isAuth) {
-        const [userData, userBookings] = await Promise.all([
+        const [userData, userBookings, allSuppliers] = await Promise.all([
           base44.auth.me(),
           base44.entities.Booking.filter({}, '-created_date', 10),
+          base44.entities.Supplier.list(),
         ]);
         setUser(userData);
         setBookings(userBookings.filter(b => b.customer_id === userData.id));
+        setSuppliers(allSuppliers);
       }
     } catch (e) {
       console.error('Error loading data:', e);
@@ -103,6 +107,7 @@ export default function Support() {
       setTicketForm({
         ticket_type: '',
         booking_id: '',
+        supplier_id: '',
         subject: '',
         description: '',
       });
@@ -242,22 +247,22 @@ export default function Support() {
                   </div>
 
                   <div>
-                  <Label htmlFor="supplier_id">Supplier (Optional)</Label>
-                  <Select
-                    value={ticketForm.supplier_id || ''}
-                    onValueChange={(v) => setTicketForm({ ...ticketForm, supplier_id: v })}
-                  >
-                    <SelectTrigger className="mt-1.5">
-                      <SelectValue placeholder="Select supplier" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {bookings.map(b => (
-                        <SelectItem key={b.supplier_id} value={b.supplier_id}>
-                          Supplier from {b.booking_reference}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    <Label htmlFor="supplier_id">Supplier (Optional)</Label>
+                    <Select
+                      value={ticketForm.supplier_id || ''}
+                      onValueChange={(v) => setTicketForm({ ...ticketForm, supplier_id: v })}
+                    >
+                      <SelectTrigger className="mt-1.5">
+                        <SelectValue placeholder="Select supplier" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {suppliers.map(s => (
+                          <SelectItem key={s.id} value={s.id}>
+                            {s.company_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-4">
