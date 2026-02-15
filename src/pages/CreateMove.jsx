@@ -54,6 +54,15 @@ export default function CreateMove() {
   }, []);
 
   useEffect(() => {
+    // Check for existing draft move request from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const draftId = urlParams.get('draft_id');
+    if (draftId && user) {
+      loadDraftMove(draftId);
+    }
+  }, [user]);
+
+  useEffect(() => {
     if (selectedQuoteId && quotes.length > 0) {
       const quote = quotes.find(q => q.id === selectedQuoteId);
       setSelectedQuote(quote);
@@ -94,6 +103,57 @@ export default function CreateMove() {
     }
   };
 
+  const loadDraftMove = async (draftId) => {
+    setLoading(true);
+    try {
+      // Load move request
+      const moveRequests = await base44.entities.MoveRequest.filter({ id: draftId });
+      if (moveRequests.length === 0) {
+        setLoading(false);
+        return;
+      }
+      
+      const moveRequest = moveRequests[0];
+      setMoveRequestId(moveRequest.id);
+      setMoveDetails(moveRequest);
+
+      // Load inventory items
+      const inventory = await base44.entities.InventoryItem.filter({ move_request_id: draftId });
+      setInventoryItems(inventory);
+
+      // Load packaging order
+      const packaging = await base44.entities.PackagingOrder.filter({ move_request_id: draftId });
+      if (packaging.length > 0) {
+        setPackagingOrder(packaging[0]);
+      }
+
+      // Load quotes
+      const moveQuotes = await base44.entities.Quote.filter({ move_request_id: draftId });
+      setQuotes(moveQuotes);
+
+      if (moveRequest.selected_quote_id) {
+        setSelectedQuoteId(moveRequest.selected_quote_id);
+      }
+
+      // Determine which step to show based on saved data
+      if (moveRequest.status === 'confirmed' || moveRequest.selected_quote_id) {
+        setCurrentStep(4); // Confirmation step
+      } else if (moveQuotes.length > 0) {
+        setCurrentStep(3); // Quotes step
+      } else if (packaging.length > 0) {
+        setCurrentStep(2); // Packaging step
+      } else if (inventory.length > 0) {
+        setCurrentStep(1); // Inventory step
+      } else {
+        setCurrentStep(0); // Details step
+      }
+    } catch (e) {
+      console.error('Error loading draft move:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const nextStep = () => {
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -107,15 +167,24 @@ export default function CreateMove() {
   };
 
   const handleDetailsNext = async () => {
-    // Save move request
+    // Save or update move request
     setLoading(true);
     try {
-      const moveRequest = await base44.entities.MoveRequest.create({
-        ...moveDetails,
-        customer_id: user?.id,
-        status: 'draft',
-      });
-      setMoveRequestId(moveRequest.id);
+      if (moveRequestId) {
+        // Update existing draft
+        await base44.entities.MoveRequest.update(moveRequestId, {
+          ...moveDetails,
+          status: 'draft',
+        });
+      } else {
+        // Create new move request
+        const moveRequest = await base44.entities.MoveRequest.create({
+          ...moveDetails,
+          customer_id: user?.id,
+          status: 'draft',
+        });
+        setMoveRequestId(moveRequest.id);
+      }
       nextStep();
     } catch (e) {
       console.error('Error creating move request:', e);
@@ -128,6 +197,13 @@ export default function CreateMove() {
     // Save inventory items
     setLoading(true);
     try {
+      // Delete existing inventory items for this move
+      const existingItems = await base44.entities.InventoryItem.filter({ move_request_id: moveRequestId });
+      for (const item of existingItems) {
+        await base44.entities.InventoryItem.delete(item.id);
+      }
+
+      // Create new inventory items
       for (const item of inventoryItems) {
         await base44.entities.InventoryItem.create({
           ...item,
@@ -144,8 +220,10 @@ export default function CreateMove() {
         status: 'requested',
       });
 
-      // Generate demo quotes
-      await generateDemoQuotes();
+      // Generate demo quotes if not already generated
+      if (quotes.length === 0) {
+        await generateDemoQuotes();
+      }
       nextStep();
     } catch (e) {
       console.error('Error saving inventory:', e);
@@ -234,6 +312,13 @@ export default function CreateMove() {
     // Save packaging order
     setLoading(true);
     try {
+      // Delete existing packaging order if any
+      const existingOrders = await base44.entities.PackagingOrder.filter({ move_request_id: moveRequestId });
+      for (const order of existingOrders) {
+        await base44.entities.PackagingOrder.delete(order.id);
+      }
+
+      // Create new packaging order
       await base44.entities.PackagingOrder.create({
         move_request_id: moveRequestId,
         ...packagingOrder,
