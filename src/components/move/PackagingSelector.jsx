@@ -166,12 +166,16 @@ export default function PackagingSelector({
     return selectedItems.find(i => i.packaging_item_id === itemId)?.quantity || 0;
   };
 
-  const totalAmount = selectedItems.reduce((sum, i) => sum + i.total_price, 0) + 
+  const totalAmount = selectedItems
+    .filter(i => i.quantity > 0)
+    .reduce((sum, i) => sum + i.total_price, 0) + 
     (includePackingService ? 800 : 0);
+  
+  const selectedCount = selectedItems.filter(i => i.quantity > 0).length;
 
   const handleNext = () => {
     onChange({
-      items: selectedItems,
+      items: selectedItems.filter(i => i.quantity > 0),
       include_packing_service: includePackingService,
       packing_service_price: includePackingService ? 800 : 0,
       total_amount: totalAmount
@@ -310,7 +314,7 @@ export default function PackagingSelector({
               <p className="text-3xl font-bold">R{totalAmount.toLocaleString()}</p>
             </div>
             <div className="text-right text-sm text-gray-400">
-              <p>{selectedItems.length} items selected</p>
+              <p>{selectedCount} items selected</p>
               {includePackingService && <p>+ Packing service</p>}
             </div>
           </div>
