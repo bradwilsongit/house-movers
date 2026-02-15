@@ -296,7 +296,7 @@ export default function Layout({ children, currentPageName }) {
               </Link>
             </div>
             <p className="text-sm text-gray-400">
-              © 2026 House Moves. All rights reserved.
+              © 2026 House Movers. All rights reserved.
             </p>
           </div>
         </div>

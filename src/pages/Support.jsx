@@ -44,11 +44,11 @@ const faqs = [
   },
   {
     question: 'How do payments work?',
-    answer: 'A 50% deposit secures your booking. The remaining 50% is due when the mover arrives. All payments are processed securely through PayFast.'
+    answer: '100% payment upfront secures your booking. All payments are processed securely through PayFast.'
   },
   {
     question: 'What are "extras" and how are they charged?',
-    answer: 'Extras include additional materials, services, or trips not included in the original quote. All extras must be authorised by House Moves before you are charged.'
+    answer: 'Extras include additional materials, services, or trips not included in the original quote. All extras must be authorised by House Movers before you are charged.'
   },
 ];
 
@@ -239,6 +239,28 @@ export default function Support() {
                       </Select>
                     </div>
                   )}
+                  </div>
+
+                  <div>
+                  <Label htmlFor="supplier_id">Supplier (Optional)</Label>
+                  <Select
+                    value={ticketForm.supplier_id || ''}
+                    onValueChange={(v) => setTicketForm({ ...ticketForm, supplier_id: v })}
+                  >
+                    <SelectTrigger className="mt-1.5">
+                      <SelectValue placeholder="Select supplier" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {bookings.map(b => (
+                        <SelectItem key={b.supplier_id} value={b.supplier_id}>
+                          Supplier from {b.booking_reference}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
                 </div>
 
                 <div>

@@ -269,8 +269,7 @@ export default function QuoteComparison({
               <div>
                 <p className="font-medium text-blue-900">Secure Payment</p>
                 <p className="text-sm text-blue-700">
-                  Pay 50% deposit now to confirm your booking. 
-                  The remaining 50% is due when the mover arrives.
+                  100% payment upfront to confirm your booking.
                 </p>
               </div>
             </div>
