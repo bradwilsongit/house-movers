@@ -33,6 +33,19 @@ const CAPABILITY_CLASSES = [
   { id: 'long_distance', label: 'Long Distance' },
 ];
 
+const PACKAGING_OPTIONS = [
+  { name: 'Large Box', category: 'boxes' },
+  { name: 'Medium Box', category: 'boxes' },
+  { name: 'Small Box', category: 'boxes' },
+  { name: 'Wardrobe Box', category: 'boxes' },
+  { name: 'Bubble Wrap (10m)', category: 'wrapping' },
+  { name: 'Packing Paper (5kg)', category: 'wrapping' },
+  { name: 'Packing Tape', category: 'tape' },
+  { name: 'Moving Blanket', category: 'blankets' },
+  { name: 'Mattress Cover', category: 'specialty' },
+  { name: 'TV Box', category: 'specialty' },
+];
+
 export default function SupplierProfile() {
   const [user, setUser] = useState(null);
   const [supplier, setSupplier] = useState(null);
@@ -47,7 +60,6 @@ export default function SupplierProfile() {
   });
   const [newPackagingItem, setNewPackagingItem] = useState({
     name: '',
-    category: 'boxes',
     unit_price: '',
     in_stock: true,
   });
@@ -137,14 +149,20 @@ export default function SupplierProfile() {
     if (newPackagingItem.name && newPackagingItem.unit_price) {
       const pricing = formData.pricing || {};
       const packagingItems = pricing.packaging_items || [];
+      const selectedOption = PACKAGING_OPTIONS.find(opt => opt.name === newPackagingItem.name);
       setFormData({
         ...formData,
         pricing: {
           ...pricing,
-          packaging_items: [...packagingItems, { ...newPackagingItem, unit_price: parseFloat(newPackagingItem.unit_price) }]
+          packaging_items: [...packagingItems, { 
+            name: newPackagingItem.name,
+            category: selectedOption?.category || 'boxes',
+            unit_price: parseFloat(newPackagingItem.unit_price),
+            in_stock: newPackagingItem.in_stock
+          }]
         }
       });
-      setNewPackagingItem({ name: '', category: 'boxes', unit_price: '', in_stock: true });
+      setNewPackagingItem({ name: '', unit_price: '', in_stock: true });
     }
   };
 
@@ -505,25 +523,20 @@ export default function SupplierProfile() {
               </div>
             ))}
 
-            <div className="grid grid-cols-5 gap-2 pt-4 border-t">
-              <Input
-                placeholder="Item name"
-                value={newPackagingItem.name}
-                onChange={(e) => setNewPackagingItem({ ...newPackagingItem, name: e.target.value })}
-              />
+            <div className="grid grid-cols-4 gap-2 pt-4 border-t">
               <Select
-                value={newPackagingItem.category}
-                onValueChange={(v) => setNewPackagingItem({ ...newPackagingItem, category: v })}
+                value={newPackagingItem.name}
+                onValueChange={(v) => setNewPackagingItem({ ...newPackagingItem, name: v })}
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Item name" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="boxes">Boxes</SelectItem>
-                  <SelectItem value="wrapping">Wrapping</SelectItem>
-                  <SelectItem value="tape">Tape</SelectItem>
-                  <SelectItem value="blankets">Blankets</SelectItem>
-                  <SelectItem value="specialty">Specialty</SelectItem>
+                  {PACKAGING_OPTIONS.map(opt => (
+                    <SelectItem key={opt.name} value={opt.name}>
+                      {opt.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <Input
@@ -531,6 +544,7 @@ export default function SupplierProfile() {
                 type="number"
                 value={newPackagingItem.unit_price}
                 onChange={(e) => setNewPackagingItem({ ...newPackagingItem, unit_price: e.target.value })}
+                required
               />
               <Select
                 value={newPackagingItem.in_stock.toString()}
