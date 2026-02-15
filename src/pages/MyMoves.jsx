@@ -261,7 +261,7 @@ function MoveRequestCard({ move }) {
   const StatusIcon = status.icon;
 
   return (
-    <Link to={createPageUrl('CreateMove') + `?continue=${move.id}`}>
+    <Link to={createPageUrl('CreateMove') + `?draft_id=${move.id}`}>
       <Card className="hover:shadow-md transition-shadow cursor-pointer border-dashed">
         <CardContent className="p-6">
           <div className="flex items-start justify-between">
