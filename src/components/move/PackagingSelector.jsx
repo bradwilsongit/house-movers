@@ -142,7 +142,7 @@ export default function PackagingSelector({
       } else {
         setSelectedItems(selectedItems.map(i => 
           i.packaging_item_id === itemId 
-            ? { ...i, quantity: newQty, total_price: newQty * i.unit_price }
+            ? { ...i, quantity: newQty }
             : i
         ));
       }
@@ -150,9 +150,7 @@ export default function PackagingSelector({
       setSelectedItems([...selectedItems, {
         packaging_item_id: itemId,
         name: packagingItem.name,
-        quantity: 1,
-        unit_price: packagingItem.unit_price,
-        total_price: packagingItem.unit_price
+        quantity: 1
       }]);
     }
   };
@@ -161,19 +159,12 @@ export default function PackagingSelector({
     return selectedItems.find(i => i.packaging_item_id === itemId)?.quantity || 0;
   };
 
-  const totalAmount = selectedItems
-    .filter(i => i.quantity > 0)
-    .reduce((sum, i) => sum + i.total_price, 0) + 
-    (includePackingService ? 800 : 0);
-  
   const selectedCount = selectedItems.filter(i => i.quantity > 0).length;
 
   const handleNext = () => {
     onChange({
       items: selectedItems.filter(i => i.quantity > 0),
-      include_packing_service: includePackingService,
-      packing_service_price: includePackingService ? 800 : 0,
-      total_amount: totalAmount
+      include_packing_service: includePackingService
     });
     onNext();
   };
@@ -226,7 +217,6 @@ export default function PackagingSelector({
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="font-medium">R{item.unit_price}</span>
                       <div className="flex items-center bg-white rounded-lg border">
                         <Button
                           variant="ghost"
@@ -266,33 +256,30 @@ export default function PackagingSelector({
               <div>
                 <p className="font-medium">Professional Packing Service</p>
                 <p className="text-sm text-gray-500">
-                  Our team will pack all your items on moving day
+                  Let the movers pack your items on moving day
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="font-medium">R800</span>
-              <Switch
-                checked={includePackingService}
-                onCheckedChange={setIncludePackingService}
-              />
-            </div>
+            <Switch
+              checked={includePackingService}
+              onCheckedChange={setIncludePackingService}
+            />
           </div>
         </CardContent>
       </Card>
 
-      {/* Total */}
-      <Card className="bg-black text-white">
+      {/* Summary */}
+      <Card className="bg-gray-50 border-2 border-dashed">
         <CardContent className="py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-400">Packaging Total</p>
-              <p className="text-3xl font-bold">R{totalAmount.toLocaleString()}</p>
-            </div>
-            <div className="text-right text-sm text-gray-400">
-              <p>{selectedCount} items selected</p>
-              {includePackingService && <p>+ Packing service</p>}
-            </div>
+          <div className="text-center">
+            <p className="text-sm text-gray-500 mb-1">Materials Selected</p>
+            <p className="text-2xl font-bold">{selectedCount} items</p>
+            {includePackingService && (
+              <p className="text-sm text-gray-600 mt-2">+ Professional packing service</p>
+            )}
+            <p className="text-xs text-gray-500 mt-3">
+              Pricing will be included in supplier quotes
+            </p>
           </div>
         </CardContent>
       </Card>
