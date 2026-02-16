@@ -449,7 +449,7 @@ export default function SupplierProfile() {
                 />
               </div>
               <div>
-                <Label htmlFor="crew_rate">Crew Member Rate/Hour (R)</Label>
+                <Label htmlFor="crew_rate">Crew Member Rate per Person (R)</Label>
                 <Input
                   id="crew_rate"
                   type="number"
