@@ -136,7 +136,7 @@ export default function SupplierProfile() {
   };
 
   const addVehicle = () => {
-    if (newVehicle.vehicle_type && newVehicle.capacity_m3) {
+    if (newVehicle.vehicle_type && newVehicle.capacity_m3 && newVehicle.front_photo_url && newVehicle.back_photo_url) {
       setFormData({
         ...formData,
         fleet: [...(formData.fleet || []), { 
@@ -466,7 +466,7 @@ export default function SupplierProfile() {
                   value={newVehicle.plate_number}
                   onChange={(e) => setNewVehicle({ ...newVehicle, plate_number: e.target.value })}
                 />
-                <Button onClick={addVehicle} disabled={!newVehicle.vehicle_type}>
+                <Button onClick={addVehicle} disabled={!newVehicle.vehicle_type || !newVehicle.capacity_m3 || !newVehicle.front_photo_url || !newVehicle.back_photo_url}>
                   <Plus className="w-4 h-4" />
                 </Button>
               </div>
