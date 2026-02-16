@@ -438,17 +438,6 @@ export default function SupplierProfile() {
           <CardContent className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="base_rate">Base Hourly Rate (R)</Label>
-                <Input
-                  id="base_rate"
-                  type="number"
-                  placeholder="0.00"
-                  value={formData.pricing?.base_rate_per_hour || ''}
-                  onChange={(e) => updatePricing('base_rate_per_hour', e.target.value)}
-                  className="mt-1.5"
-                />
-              </div>
-              <div>
                 <Label htmlFor="rate_per_km">Rate per KM (R)</Label>
                 <Input
                   id="rate_per_km"
@@ -456,19 +445,6 @@ export default function SupplierProfile() {
                   placeholder="0.00"
                   value={formData.pricing?.rate_per_km || ''}
                   onChange={(e) => updatePricing('rate_per_km', e.target.value)}
-                  className="mt-1.5"
-                />
-              </div>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="rate_per_m3">Rate per m³ (R)</Label>
-                <Input
-                  id="rate_per_m3"
-                  type="number"
-                  placeholder="0.00"
-                  value={formData.pricing?.rate_per_m3 || ''}
-                  onChange={(e) => updatePricing('rate_per_m3', e.target.value)}
                   className="mt-1.5"
                 />
               </div>
