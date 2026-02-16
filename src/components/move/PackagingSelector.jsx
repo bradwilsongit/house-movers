@@ -32,6 +32,9 @@ export default function PackagingSelector({
   const [includePackingService, setIncludePackingService] = useState(
     packagingOrder?.include_packing_service || false
   );
+  const [includeShuttleService, setIncludeShuttleService] = useState(
+    packagingOrder?.include_shuttle_service || false
+  );
 
   useEffect(() => {
     loadPackagingItems();
@@ -164,7 +167,8 @@ export default function PackagingSelector({
   const handleNext = () => {
     onChange({
       items: selectedItems.filter(i => i.quantity > 0),
-      include_packing_service: includePackingService
+      include_packing_service: includePackingService,
+      include_shuttle_service: includeShuttleService
     });
     onNext();
   };
@@ -245,9 +249,12 @@ export default function PackagingSelector({
         );
       })}
 
-      {/* Packing Service */}
+      {/* Services */}
       <Card>
-        <CardContent className="py-6">
+        <CardHeader>
+          <CardTitle className="text-lg">Additional Services</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
@@ -265,6 +272,24 @@ export default function PackagingSelector({
               onCheckedChange={setIncludePackingService}
             />
           </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <p className="font-medium">Shuttle Service</p>
+                <p className="text-sm text-gray-500">
+                  Required for buildings with restricted vehicle access
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={includeShuttleService}
+              onCheckedChange={setIncludeShuttleService}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -274,8 +299,11 @@ export default function PackagingSelector({
           <div className="text-center">
             <p className="text-sm text-gray-500 mb-1">Materials Selected</p>
             <p className="text-2xl font-bold">{selectedCount} items</p>
-            {includePackingService && (
-              <p className="text-sm text-gray-600 mt-2">+ Professional packing service</p>
+            {(includePackingService || includeShuttleService) && (
+              <div className="text-sm text-gray-600 mt-2">
+                {includePackingService && <p>+ Professional packing service</p>}
+                {includeShuttleService && <p>+ Shuttle service</p>}
+              </div>
             )}
             <p className="text-xs text-gray-500 mt-3">
               Pricing will be included in supplier quotes
