@@ -484,16 +484,29 @@ export default function SupplierProfile() {
                 />
               </div>
             </div>
-            <div>
-              <Label htmlFor="packing_service">Packing Service Rate/Hour (R)</Label>
-              <Input
-                id="packing_service"
-                type="number"
-                placeholder="0.00"
-                value={formData.pricing?.packing_service_rate || ''}
-                onChange={(e) => updatePricing('packing_service_rate', e.target.value)}
-                className="mt-1.5 max-w-xs"
-              />
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="packing_service">Packing Service Rate/Hour (R)</Label>
+                <Input
+                  id="packing_service"
+                  type="number"
+                  placeholder="0.00"
+                  value={formData.pricing?.packing_service_rate || ''}
+                  onChange={(e) => updatePricing('packing_service_rate', e.target.value)}
+                  className="mt-1.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="shuttle_service">Shuttle Service Rate (R)</Label>
+                <Input
+                  id="shuttle_service"
+                  type="number"
+                  placeholder="0.00"
+                  value={formData.pricing?.shuttle_service_rate || ''}
+                  onChange={(e) => updatePricing('shuttle_service_rate', e.target.value)}
+                  className="mt-1.5"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
