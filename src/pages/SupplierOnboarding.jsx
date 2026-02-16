@@ -23,10 +23,9 @@ import {
 import { Badge } from '@/components/ui/badge';
 
 const CAPABILITY_CLASSES = [
-  { id: 'micro', label: 'Micro Move', description: 'Small items, single rooms' },
-  { id: 'small', label: 'Small Move', description: '1-2 bedroom apartments' },
-  { id: 'family', label: 'Family Move', description: '3+ bedroom homes' },
-  { id: 'office', label: 'Office Move', description: 'Commercial relocations' },
+  { id: 'apartment', label: 'Apartment', description: 'Apartment moves' },
+  { id: 'house', label: 'House', description: 'House moves' },
+  { id: 'office', label: 'Office', description: 'Commercial relocations' },
   { id: 'long_distance', label: 'Long Distance', description: 'Inter-city moves' },
 ];
 

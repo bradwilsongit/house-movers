@@ -26,10 +26,9 @@ const REGIONS = [
 ];
 
 const CAPABILITY_CLASSES = [
-  { id: 'micro', label: 'Micro Move' },
-  { id: 'small', label: 'Small Move' },
-  { id: 'family', label: 'Family Move' },
-  { id: 'office', label: 'Office Move' },
+  { id: 'apartment', label: 'Apartment' },
+  { id: 'house', label: 'House' },
+  { id: 'office', label: 'Office' },
   { id: 'long_distance', label: 'Long Distance' },
 ];
 
