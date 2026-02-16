@@ -393,9 +393,14 @@ export default function SupplierProfile() {
                   <SelectContent>
                     <SelectItem value="1-ton Bakkie">1-ton Bakkie</SelectItem>
                     <SelectItem value="2-ton Truck">2-ton Truck</SelectItem>
+                    <SelectItem value="3-ton Truck">3-ton Truck</SelectItem>
                     <SelectItem value="4-ton Truck">4-ton Truck</SelectItem>
+                    <SelectItem value="5-ton Truck">5-ton Truck</SelectItem>
                     <SelectItem value="6-ton Truck">6-ton Truck</SelectItem>
+                    <SelectItem value="7-ton Truck">7-ton Truck</SelectItem>
                     <SelectItem value="8-ton Truck">8-ton Truck</SelectItem>
+                    <SelectItem value="9-ton Truck">9-ton Truck</SelectItem>
+                    <SelectItem value="10-ton Truck">10-ton Truck</SelectItem>
                   </SelectContent>
                 </Select>
                 <Input
