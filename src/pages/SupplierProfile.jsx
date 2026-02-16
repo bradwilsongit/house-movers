@@ -535,33 +535,7 @@ export default function SupplierProfile() {
           </CardContent>
         </Card>
 
-        {/* Crew */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Users className="w-5 h-5" />
-              Crew Capacity
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div>
-              <Label>Maximum Crew Size</Label>
-              <Select
-                value={formData.crew_capacity?.toString()}
-                onValueChange={(v) => setFormData({ ...formData, crew_capacity: parseInt(v) })}
-              >
-                <SelectTrigger className="mt-1.5 w-full max-w-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {[2, 3, 4, 5, 6, 8, 10].map(n => (
-                    <SelectItem key={n} value={n.toString()}>{n} crew members</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
+
 
         {/* Pricing Rates */}
         <Card className="mb-6">

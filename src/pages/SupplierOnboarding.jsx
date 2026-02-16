@@ -564,23 +564,7 @@ export default function SupplierOnboarding() {
                   </div>
                 </div>
 
-                {/* Crew Capacity */}
-                <div>
-                  <Label htmlFor="crew_capacity">Maximum Crew Size</Label>
-                  <Select
-                    value={formData.crew_capacity.toString()}
-                    onValueChange={(v) => handleChange('crew_capacity', parseInt(v))}
-                  >
-                    <SelectTrigger className="mt-1.5 w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[2, 3, 4, 5, 6, 8, 10].map(n => (
-                        <SelectItem key={n} value={n.toString()}>{n} crew members</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+
 
                 <div className="flex justify-between pt-4">
                   <Button variant="outline" onClick={() => setStep(2)}>
