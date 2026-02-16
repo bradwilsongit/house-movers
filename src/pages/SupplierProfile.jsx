@@ -462,7 +462,7 @@ export default function SupplierProfile() {
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="packing_service">Packing Service Rate/Hour (R)</Label>
+                <Label htmlFor="packing_service">Packing Service Rate (R)</Label>
                 <Input
                   id="packing_service"
                   type="number"
