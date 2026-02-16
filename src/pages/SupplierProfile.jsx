@@ -60,7 +60,11 @@ export default function SupplierProfile() {
     year: '',
     capacity_m3: '',
     plate_number: '',
+    front_photo_url: '',
+    back_photo_url: '',
   });
+  const [uploadingFront, setUploadingFront] = useState(false);
+  const [uploadingBack, setUploadingBack] = useState(false);
   const [newPackagingItem, setNewPackagingItem] = useState({
     name: '',
     unit_price: '',
@@ -141,7 +145,25 @@ export default function SupplierProfile() {
           year: newVehicle.year ? parseInt(newVehicle.year) : null
         }]
       });
-      setNewVehicle({ vehicle_type: '', make: '', model: '', year: '', capacity_m3: '', plate_number: '' });
+      setNewVehicle({ vehicle_type: '', make: '', model: '', year: '', capacity_m3: '', plate_number: '', front_photo_url: '', back_photo_url: '' });
+    }
+  };
+
+  const handleVehiclePhotoUpload = async (file, type) => {
+    if (type === 'front') setUploadingFront(true);
+    else setUploadingBack(true);
+    
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setNewVehicle({
+        ...newVehicle,
+        [type === 'front' ? 'front_photo_url' : 'back_photo_url']: file_url
+      });
+    } catch (e) {
+      console.error('Error uploading photo:', e);
+    } finally {
+      if (type === 'front') setUploadingFront(false);
+      else setUploadingBack(false);
     }
   };
 
@@ -363,21 +385,33 @@ export default function SupplierProfile() {
           </CardHeader>
           <CardContent className="space-y-4">
             {formData.fleet?.map((vehicle, index) => (
-              <div key={index} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                <div className="flex-1">
-                  <span className="font-medium">{vehicle.vehicle_type}</span>
-                  {vehicle.make && vehicle.model && (
-                    <span className="text-gray-500 ml-2">• {vehicle.make} {vehicle.model}</span>
-                  )}
-                  {vehicle.year && (
-                    <span className="text-gray-500 ml-1">({vehicle.year})</span>
-                  )}
+              <div key={index} className="p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex-1">
+                    <span className="font-medium">{vehicle.vehicle_type}</span>
+                    {vehicle.make && vehicle.model && (
+                      <span className="text-gray-500 ml-2">• {vehicle.make} {vehicle.model}</span>
+                    )}
+                    {vehicle.year && (
+                      <span className="text-gray-500 ml-1">({vehicle.year})</span>
+                    )}
+                  </div>
+                  <span className="text-gray-500">{vehicle.capacity_m3}m³</span>
+                  <span className="text-gray-500">{vehicle.plate_number}</span>
+                  <Button variant="ghost" size="icon" onClick={() => removeVehicle(index)}>
+                    <X className="w-4 h-4" />
+                  </Button>
                 </div>
-                <span className="text-gray-500">{vehicle.capacity_m3}m³</span>
-                <span className="text-gray-500">{vehicle.plate_number}</span>
-                <Button variant="ghost" size="icon" onClick={() => removeVehicle(index)}>
-                  <X className="w-4 h-4" />
-                </Button>
+                {(vehicle.front_photo_url || vehicle.back_photo_url) && (
+                  <div className="flex gap-2 mt-2">
+                    {vehicle.front_photo_url && (
+                      <img src={vehicle.front_photo_url} alt="Front" className="w-20 h-20 object-cover rounded" />
+                    )}
+                    {vehicle.back_photo_url && (
+                      <img src={vehicle.back_photo_url} alt="Back" className="w-20 h-20 object-cover rounded" />
+                    )}
+                  </div>
+                )}
               </div>
             ))}
 
@@ -435,6 +469,68 @@ export default function SupplierProfile() {
                 <Button onClick={addVehicle} disabled={!newVehicle.vehicle_type}>
                   <Plus className="w-4 h-4" />
                 </Button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-sm text-gray-600">Front Photo</Label>
+                  <div className="mt-1">
+                    {newVehicle.front_photo_url ? (
+                      <div className="relative">
+                        <img src={newVehicle.front_photo_url} alt="Front" className="w-full h-24 object-cover rounded" />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute top-1 right-1 bg-white"
+                          onClick={() => setNewVehicle({ ...newVehicle, front_photo_url: '' })}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <label className="flex items-center justify-center h-24 border-2 border-dashed rounded cursor-pointer hover:bg-gray-50">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => e.target.files?.[0] && handleVehiclePhotoUpload(e.target.files[0], 'front')}
+                          disabled={uploadingFront}
+                        />
+                        <Upload className="w-5 h-5 text-gray-400" />
+                        {uploadingFront && <span className="ml-2 text-sm">Uploading...</span>}
+                      </label>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm text-gray-600">Back Photo</Label>
+                  <div className="mt-1">
+                    {newVehicle.back_photo_url ? (
+                      <div className="relative">
+                        <img src={newVehicle.back_photo_url} alt="Back" className="w-full h-24 object-cover rounded" />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute top-1 right-1 bg-white"
+                          onClick={() => setNewVehicle({ ...newVehicle, back_photo_url: '' })}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <label className="flex items-center justify-center h-24 border-2 border-dashed rounded cursor-pointer hover:bg-gray-50">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => e.target.files?.[0] && handleVehiclePhotoUpload(e.target.files[0], 'back')}
+                          disabled={uploadingBack}
+                        />
+                        <Upload className="w-5 h-5 text-gray-400" />
+                        {uploadingBack && <span className="ml-2 text-sm">Uploading...</span>}
+                      </label>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>
