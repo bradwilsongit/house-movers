@@ -153,9 +153,37 @@ export default function BookingConfirmation({
               <span className="font-medium">R{supplierBasePrice.toFixed(2)}</span>
             </div>
             {packagingTotal > 0 && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">Packaging & Services</span>
-                <span className="font-medium">R{packagingTotal.toFixed(2)}</span>
+              <div className="space-y-2">
+                <div className="flex justify-between font-medium">
+                  <span className="text-gray-600">Packaging & Services</span>
+                  <span>R{packagingTotal.toFixed(2)}</span>
+                </div>
+                <div className="ml-4 space-y-1 text-sm">
+                  {packagingOrder?.items?.map((item, idx) => {
+                    const supplierItem = supplier?.pricing?.packaging_items?.find(
+                      si => si.name === item.name && si.in_stock
+                    );
+                    const itemTotal = supplierItem ? supplierItem.unit_price * item.quantity : 0;
+                    return (
+                      <div key={idx} className="flex justify-between text-gray-500">
+                        <span>{item.name} × {item.quantity}</span>
+                        <span>R{itemTotal.toFixed(2)}</span>
+                      </div>
+                    );
+                  })}
+                  {packagingOrder?.include_packing_service && supplier?.pricing?.packing_service_rate && (
+                    <div className="flex justify-between text-gray-500">
+                      <span>Professional Packing Service</span>
+                      <span>R{supplier.pricing.packing_service_rate.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {packagingOrder?.include_shuttle_service && supplier?.pricing?.shuttle_service_rate && (
+                    <div className="flex justify-between text-gray-500">
+                      <span>Shuttle Service</span>
+                      <span>R{supplier.pricing.shuttle_service_rate.toFixed(2)}</span>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
             <div className="flex justify-between text-sm">
