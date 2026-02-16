@@ -55,6 +55,9 @@ export default function SupplierProfile() {
   const [formData, setFormData] = useState(null);
   const [newVehicle, setNewVehicle] = useState({
     vehicle_type: '',
+    make: '',
+    model: '',
+    year: '',
     capacity_m3: '',
     plate_number: '',
   });
@@ -132,9 +135,13 @@ export default function SupplierProfile() {
     if (newVehicle.vehicle_type && newVehicle.capacity_m3) {
       setFormData({
         ...formData,
-        fleet: [...(formData.fleet || []), { ...newVehicle, capacity_m3: parseFloat(newVehicle.capacity_m3) }]
+        fleet: [...(formData.fleet || []), { 
+          ...newVehicle, 
+          capacity_m3: parseFloat(newVehicle.capacity_m3),
+          year: newVehicle.year ? parseInt(newVehicle.year) : null
+        }]
       });
-      setNewVehicle({ vehicle_type: '', capacity_m3: '', plate_number: '' });
+      setNewVehicle({ vehicle_type: '', make: '', model: '', year: '', capacity_m3: '', plate_number: '' });
     }
   };
 
@@ -357,7 +364,15 @@ export default function SupplierProfile() {
           <CardContent className="space-y-4">
             {formData.fleet?.map((vehicle, index) => (
               <div key={index} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                <span className="flex-1 font-medium">{vehicle.vehicle_type}</span>
+                <div className="flex-1">
+                  <span className="font-medium">{vehicle.vehicle_type}</span>
+                  {vehicle.make && vehicle.model && (
+                    <span className="text-gray-500 ml-2">• {vehicle.make} {vehicle.model}</span>
+                  )}
+                  {vehicle.year && (
+                    <span className="text-gray-500 ml-1">({vehicle.year})</span>
+                  )}
+                </div>
                 <span className="text-gray-500">{vehicle.capacity_m3}m³</span>
                 <span className="text-gray-500">{vehicle.plate_number}</span>
                 <Button variant="ghost" size="icon" onClick={() => removeVehicle(index)}>
@@ -366,35 +381,56 @@ export default function SupplierProfile() {
               </div>
             ))}
 
-            <div className="grid grid-cols-4 gap-2 pt-4 border-t">
-              <Select
-                value={newVehicle.vehicle_type}
-                onValueChange={(v) => setNewVehicle({ ...newVehicle, vehicle_type: v })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1-ton Bakkie">1-ton Bakkie</SelectItem>
-                  <SelectItem value="2-ton Truck">2-ton Truck</SelectItem>
-                  <SelectItem value="4-ton Truck">4-ton Truck</SelectItem>
-                  <SelectItem value="6-ton Truck">6-ton Truck</SelectItem>
-                  <SelectItem value="8-ton Truck">8-ton Truck</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                placeholder="Capacity (m³)"
-                value={newVehicle.capacity_m3}
-                onChange={(e) => setNewVehicle({ ...newVehicle, capacity_m3: e.target.value })}
-              />
-              <Input
-                placeholder="Plate #"
-                value={newVehicle.plate_number}
-                onChange={(e) => setNewVehicle({ ...newVehicle, plate_number: e.target.value })}
-              />
-              <Button onClick={addVehicle} disabled={!newVehicle.vehicle_type}>
-                <Plus className="w-4 h-4" />
-              </Button>
+            <div className="space-y-2 pt-4 border-t">
+              <div className="grid grid-cols-3 gap-2">
+                <Select
+                  value={newVehicle.vehicle_type}
+                  onValueChange={(v) => setNewVehicle({ ...newVehicle, vehicle_type: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1-ton Bakkie">1-ton Bakkie</SelectItem>
+                    <SelectItem value="2-ton Truck">2-ton Truck</SelectItem>
+                    <SelectItem value="4-ton Truck">4-ton Truck</SelectItem>
+                    <SelectItem value="6-ton Truck">6-ton Truck</SelectItem>
+                    <SelectItem value="8-ton Truck">8-ton Truck</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  placeholder="Make"
+                  value={newVehicle.make}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, make: e.target.value })}
+                />
+                <Input
+                  placeholder="Model"
+                  value={newVehicle.model}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, model: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                <Input
+                  placeholder="Year"
+                  type="number"
+                  value={newVehicle.year}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, year: e.target.value })}
+                />
+                <Input
+                  placeholder="Capacity (m³)"
+                  type="number"
+                  value={newVehicle.capacity_m3}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, capacity_m3: e.target.value })}
+                />
+                <Input
+                  placeholder="Plate #"
+                  value={newVehicle.plate_number}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, plate_number: e.target.value })}
+                />
+                <Button onClick={addVehicle} disabled={!newVehicle.vehicle_type}>
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
