@@ -101,6 +101,11 @@ export default function QuoteComparison({
       packagingTotal += supplier.pricing.packing_service_rate;
     }
     
+    // Add shuttle service cost if selected
+    if (packagingOrder?.include_shuttle_service && supplier?.pricing?.shuttle_service_rate) {
+      packagingTotal += supplier.pricing.shuttle_service_rate;
+    }
+    
     const subtotal = supplierBasePrice + packagingTotal;
     const commissionAmount = (subtotal * commissionRate) / 100;
     

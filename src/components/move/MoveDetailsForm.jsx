@@ -609,52 +609,9 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
           <CardTitle className="text-lg">Special Requirements</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-wrap gap-6">
-            <div className="flex items-center gap-2">
-              <Switch
-                id="dismantling"
-                checked={data.special_requirements?.dismantling_required || false}
-                onCheckedChange={(v) => handleChange('special_requirements', {
-                  ...data.special_requirements,
-                  dismantling_required: v
-                })}
-              />
-              <Label htmlFor="dismantling" className="cursor-pointer">Dismantling Required</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                id="hoisting"
-                checked={data.special_requirements?.hoisting_required || false}
-                onCheckedChange={(v) => handleChange('special_requirements', {
-                  ...data.special_requirements,
-                  hoisting_required: v
-                })}
-              />
-              <Label htmlFor="hoisting" className="cursor-pointer">Hoisting Required</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                id="shuttle"
-                checked={data.special_requirements?.shuttle_service || false}
-                onCheckedChange={(v) => handleChange('special_requirements', {
-                  ...data.special_requirements,
-                  shuttle_service: v
-                })}
-              />
-              <Label htmlFor="shuttle" className="cursor-pointer">Shuttle Service</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                id="heavy"
-                checked={data.special_requirements?.heavy_items || false}
-                onCheckedChange={(v) => handleChange('special_requirements', {
-                  ...data.special_requirements,
-                  heavy_items: v
-                })}
-              />
-              <Label htmlFor="heavy" className="cursor-pointer">Heavy Items (4+ men)</Label>
-            </div>
-          </div>
+          <p className="text-sm text-gray-500">
+            These requirements will be reviewed by the moving company and may affect pricing.
+          </p>
 
           <div>
             <Label htmlFor="notes">Additional Notes</Label>

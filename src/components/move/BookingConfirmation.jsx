@@ -42,6 +42,11 @@ export default function BookingConfirmation({
     packagingTotal += supplier.pricing.packing_service_rate;
   }
   
+  // Add shuttle service cost if selected
+  if (packagingOrder?.include_shuttle_service && supplier?.pricing?.shuttle_service_rate) {
+    packagingTotal += supplier.pricing.shuttle_service_rate;
+  }
+  
   const subtotal = supplierBasePrice + packagingTotal;
   const commissionAmount = (subtotal * commissionRate) / 100;
   const grandTotal = subtotal + commissionAmount;
@@ -149,7 +154,7 @@ export default function BookingConfirmation({
             </div>
             {packagingTotal > 0 && (
               <div className="flex justify-between">
-                <span className="text-gray-600">Packaging Materials</span>
+                <span className="text-gray-600">Packaging & Services</span>
                 <span className="font-medium">R{packagingTotal.toFixed(2)}</span>
               </div>
             )}
