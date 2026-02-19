@@ -637,7 +637,7 @@ export default function SupplierOnboarding() {
                       <>
                         <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                         <p className="text-sm text-gray-500 mb-2">
-                          Upload any compliance certificates
+                          Upload business owner ID document
                         </p>
                         <Label className="cursor-pointer">
                           <span className="text-black underline">Choose file</span>
