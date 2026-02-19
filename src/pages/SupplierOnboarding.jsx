@@ -161,12 +161,20 @@ export default function SupplierOnboarding() {
     }));
   };
 
+  const [uploadingInsuranceDoc, setUploadingInsuranceDoc] = useState(false);
+  const [uploadingComplianceDoc, setUploadingComplianceDoc] = useState(false);
+
   const handleFileUpload = async (file, field) => {
+    if (field === 'insurance_doc_url') setUploadingInsuranceDoc(true);
+    else setUploadingComplianceDoc(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       handleChange(field, file_url);
     } catch (e) {
       console.error('Upload failed:', e);
+    } finally {
+      if (field === 'insurance_doc_url') setUploadingInsuranceDoc(false);
+      else setUploadingComplianceDoc(false);
     }
   };
 

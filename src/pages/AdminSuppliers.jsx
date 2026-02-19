@@ -460,7 +460,7 @@ export default function AdminSuppliers() {
                       </div>
                     </div>
                     <div>
-                      <Label>Compliance Document</Label>
+                      <Label>Business Owner ID</Label>
                       <div className="mt-1 space-y-1.5">
                         {editForm.compliance_doc_url && (
                           <a href={editForm.compliance_doc_url} target="_blank" rel="noopener noreferrer"

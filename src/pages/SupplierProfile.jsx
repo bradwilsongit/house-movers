@@ -674,7 +674,7 @@ export default function SupplierProfile() {
                 </div>
               </div>
               <div>
-                <Label>Compliance Document</Label>
+                <Label>Business Owner ID</Label>
                 <div className="mt-1.5 space-y-2">
                   {formData.compliance_doc_url && (
                     <a href={formData.compliance_doc_url} target="_blank" rel="noopener noreferrer"
