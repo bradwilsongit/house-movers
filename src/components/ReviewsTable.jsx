@@ -81,6 +81,9 @@ export default function ReviewsTable({ supplierId }) {
               <tbody>
                 {reviews.map(review => (
                   <tr key={review.id} className="border-b hover:bg-gray-50">
+                    <td className="py-3 text-sm font-medium text-gray-900">
+                      {review.customer_name}
+                    </td>
                     <td className="py-3">
                       <StarRating rating={review.overall_rating} />
                     </td>
