@@ -4,8 +4,9 @@ import { base44 } from '@/api/base44Client';
 import { createPageUrl } from './utils';
 import { 
   Home, Package, Truck, ClipboardList, Settings, Menu, X, 
-  LogOut, User, Building2, Shield, ChevronDown, Bell
+  LogOut, User, Building2, Shield, ChevronDown
 } from 'lucide-react';
+import NotificationBell from './components/NotificationBell';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
