@@ -53,15 +53,16 @@ export default function SupplierProfile() {
   const [saved, setSaved] = useState(false);
   const [formData, setFormData] = useState(null);
   const [newVehicle, setNewVehicle] = useState({
-    vehicle_type: '',
-    make: '',
-    model: '',
-    year: '',
-    capacity_m3: '',
-    plate_number: '',
-    front_photo_url: '',
-    back_photo_url: '',
-  });
+      vehicle_type: '',
+      make: '',
+      model: '',
+      year: '',
+      capacity_m3: '',
+      crew_size: '',
+      plate_number: '',
+      front_photo_url: '',
+      back_photo_url: '',
+    });
   const [uploadingFront, setUploadingFront] = useState(false);
   const [uploadingBack, setUploadingBack] = useState(false);
   const [newPackagingItem, setNewPackagingItem] = useState({

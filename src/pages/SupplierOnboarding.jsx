@@ -69,6 +69,7 @@ export default function SupplierOnboarding() {
     model: '',
     year: '',
     capacity_m3: '',
+    crew_size: '',
     plate_number: '',
     front_photo_url: '',
     back_photo_url: '',
