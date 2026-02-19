@@ -349,13 +349,6 @@ export default function CreateMove() {
         return;
       }
 
-      const supplierKmRate = supplier?.pricing?.rate_per_km;
-      if (!supplierKmRate || supplierKmRate <= 0) {
-        alert('Supplier pricing not configured. Please select a different mover.');
-        setLoading(false);
-        return;
-      }
-
       if (!commissionRate || commissionRate < 0) {
         alert('Commission rate not configured. Please contact administrator.');
         setLoading(false);
