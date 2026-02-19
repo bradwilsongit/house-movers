@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Check, Shield, CreditCard, FileText, AlertCircle } from 'lucide-react';
+import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
