@@ -132,6 +132,7 @@ export default function BookingConfirmation({
                 {matchedVehicle?.year ? ` (${matchedVehicle.year})` : ''}
                 {` • ${crewSize} crew member${crewSize !== 1 ? 's' : ''}`}
               </p>
+              </div>
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-500">Quote Valid Until</p>
