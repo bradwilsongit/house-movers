@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
 import { 
-  Building2, MapPin, Truck, Users, Save, Check, Plus, X, Upload, DollarSign, Package, Pencil
+  Building2, MapPin, Truck, Users, Save, Check, Plus, X, Upload, DollarSign, Package, Pencil, FileText
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -644,6 +644,56 @@ export default function SupplierProfile() {
         </Card>
 
 
+
+        {/* Documents */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              Documents
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <Label>Insurance Document</Label>
+                <div className="mt-1.5 space-y-2">
+                  {formData.insurance_doc_url && (
+                    <a href={formData.insurance_doc_url} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
+                      <FileText className="w-4 h-4" /> View Current Document
+                    </a>
+                  )}
+                  <label className="flex items-center justify-center gap-2 h-10 border-2 border-dashed rounded cursor-pointer hover:bg-gray-50 text-sm text-gray-500">
+                    <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden"
+                      onChange={(e) => e.target.files?.[0] && handleDocUpload(e.target.files[0], 'insurance')}
+                      disabled={uploadingInsurance} />
+                    <Upload className="w-4 h-4" />
+                    {uploadingInsurance ? 'Uploading...' : formData.insurance_doc_url ? 'Replace Document' : 'Upload Document'}
+                  </label>
+                </div>
+              </div>
+              <div>
+                <Label>Compliance Document</Label>
+                <div className="mt-1.5 space-y-2">
+                  {formData.compliance_doc_url && (
+                    <a href={formData.compliance_doc_url} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
+                      <FileText className="w-4 h-4" /> View Current Document
+                    </a>
+                  )}
+                  <label className="flex items-center justify-center gap-2 h-10 border-2 border-dashed rounded cursor-pointer hover:bg-gray-50 text-sm text-gray-500">
+                    <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden"
+                      onChange={(e) => e.target.files?.[0] && handleDocUpload(e.target.files[0], 'compliance')}
+                      disabled={uploadingCompliance} />
+                    <Upload className="w-4 h-4" />
+                    {uploadingCompliance ? 'Uploading...' : formData.compliance_doc_url ? 'Replace Document' : 'Upload Document'}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Pricing Rates */}
         <Card className="mb-6">
