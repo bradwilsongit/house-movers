@@ -109,8 +109,10 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
   const payfast_url =
     env === 'live' ? 'https://www.payfast.co.za/eng/process' : 'https://sandbox.payfast.co.za/eng/process';
 
-  const return_url = `${window.location.origin}/payment-return?booking_id=${booking.id}`;
-  const cancel_url = `${window.location.origin}/payment-cancelled?booking_id=${booking.id}`;
+  const returnPage = createPageUrl('PaymentReturn');
+  const cancelPage = createPageUrl('PaymentCancelled');
+  const return_url = `${window.location.origin}${returnPage}?booking_id=${booking.id}`;
+  const cancel_url = `${window.location.origin}${cancelPage}?booking_id=${booking.id}`;
   const notify_url = `${window.location.origin}/api/payfast-itn`;
 
   const fieldsToPost = {
