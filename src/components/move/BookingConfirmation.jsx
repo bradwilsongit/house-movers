@@ -120,7 +120,11 @@ export default function BookingConfirmation({
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
-            <div>
+            <div className="flex items-center gap-3">
+              {matchedVehicle?.front_photo_url && (
+                <img src={matchedVehicle.front_photo_url} alt="Vehicle" className="w-16 h-16 object-cover rounded-lg" />
+              )}
+              <div>
               <p className="font-semibold text-lg">{supplier?.company_name || 'Moving Company'}</p>
               <p className="text-sm text-gray-500">
                 {matchedVehicle?.vehicle_type || selectedQuote?.vehicle_type}
