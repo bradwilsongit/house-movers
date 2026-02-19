@@ -73,12 +73,12 @@ export default function BookingDetails() {
   };
 
   const getCurrentStepIndex = () => {
-    const statusOrder = ['pending_deposit', 'confirmed', 'driver_assigned', 'on_route', 'arrived', 'loading', 'in_transit', 'unloading', 'completed'];
+    const statusOrder = ['confirmed', 'driver_assigned', 'on_route', 'arrived', 'loading', 'in_transit', 'unloading', 'completed'];
     const index = statusOrder.indexOf(booking?.status);
-    if (index <= 1) return 0;
-    if (index <= 2) return 1;
-    if (index <= 4) return 2;
-    if (index <= 6) return 3;
+    if (index <= 0) return 0;
+    if (index <= 1) return 1;
+    if (index <= 3) return 2;
+    if (index <= 5) return 3;
     return 4;
   };
 
@@ -108,8 +108,6 @@ export default function BookingDetails() {
   }
 
   const currentStepIndex = getCurrentStepIndex();
-  const needsPayment = booking.status === 'pending_deposit';
-  const needsBalancePayment = booking.status === 'arrived' && !booking.balance_paid;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -138,52 +136,7 @@ export default function BookingDetails() {
           </Badge>
         </div>
 
-        {/* Payment Alert */}
-        {needsPayment && (
-          <Card className="bg-amber-50 border-amber-200 mb-6">
-            <CardContent className="py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
-                    <CreditCard className="w-5 h-5 text-amber-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-amber-900">Deposit Payment Required</p>
-                    <p className="text-sm text-amber-700">
-                      Pay R{booking.deposit_amount?.toLocaleString()} to confirm your booking
-                    </p>
-                  </div>
-                </div>
-                <Button className="bg-amber-600 hover:bg-amber-700 text-white">
-                  Pay Now
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
-        {needsBalancePayment && (
-          <Card className="bg-blue-50 border-blue-200 mb-6">
-            <CardContent className="py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                    <CreditCard className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-blue-900">Your Mover Has Arrived!</p>
-                    <p className="text-sm text-blue-700">
-                      Pay balance of R{booking.balance_amount?.toLocaleString()} to start the move
-                    </p>
-                  </div>
-                </div>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                  Pay Balance
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Progress Timeline */}
         <Card className="mb-6">
@@ -384,35 +337,12 @@ export default function BookingDetails() {
                   <span>R{booking.total_amount?.toLocaleString()}</span>
                 </div>
 
-                <div className="space-y-2 pt-2">
-                  <div className="flex justify-between text-sm">
-                    <span className={cn(
-                      "flex items-center gap-2",
-                      booking.deposit_paid ? "text-emerald-600" : "text-amber-600"
-                    )}>
-                      {booking.deposit_paid ? (
-                        <CheckCircle2 className="w-4 h-4" />
-                      ) : (
-                        <Clock className="w-4 h-4" />
-                      )}
-                      Deposit
-                    </span>
-                    <span>R{booking.deposit_amount?.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className={cn(
-                      "flex items-center gap-2",
-                      booking.balance_paid ? "text-emerald-600" : "text-gray-500"
-                    )}>
-                      {booking.balance_paid ? (
-                        <CheckCircle2 className="w-4 h-4" />
-                      ) : (
-                        <Clock className="w-4 h-4" />
-                      )}
-                      Balance
-                    </span>
-                    <span>R{booking.balance_amount?.toLocaleString()}</span>
-                  </div>
+                <div className="flex justify-between text-sm pt-2">
+                  <span className="flex items-center gap-2 text-emerald-600">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Payment Status
+                  </span>
+                  <span className="font-medium">{booking.payment_status === 'paid' ? 'Paid' : 'Pending'}</span>
                 </div>
               </CardContent>
             </Card>
