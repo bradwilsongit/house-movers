@@ -35,6 +35,9 @@ export default function AdminSuppliers() {
   const [actionDialog, setActionDialog] = useState({ open: false, action: null });
   const [actionNotes, setActionNotes] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [editDialog, setEditDialog] = useState({ open: false });
+  const [editForm, setEditForm] = useState(null);
+  const [editSaving, setEditSaving] = useState(false);
 
   useEffect(() => {
     loadSuppliers();
