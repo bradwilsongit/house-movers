@@ -383,64 +383,185 @@ export default function AdminSuppliers() {
 
         {/* Edit Dialog */}
         <Dialog open={editDialog.open} onOpenChange={(open) => setEditDialog({ open })}>
-          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Edit Supplier</DialogTitle>
+              <DialogTitle>Edit Supplier — {editForm?.company_name}</DialogTitle>
             </DialogHeader>
             {editForm && (
-              <div className="space-y-4">
+              <div className="space-y-6">
+
+                {/* Company Info */}
                 <div>
-                  <Label>Company Name</Label>
-                  <Input className="mt-1" value={editForm.company_name || ''} onChange={e => setEditForm({ ...editForm, company_name: e.target.value })} />
-                </div>
-                <div>
-                  <Label>Registration Number</Label>
-                  <Input className="mt-1" value={editForm.registration_number || ''} onChange={e => setEditForm({ ...editForm, registration_number: e.target.value })} />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label>Contact Person</Label>
-                    <Input className="mt-1" value={editForm.contact_person || ''} onChange={e => setEditForm({ ...editForm, contact_person: e.target.value })} />
+                  <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wide mb-3">Company Information</h4>
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Company Name</Label>
+                        <Input className="mt-1" value={editForm.company_name || ''} onChange={e => setEditForm({ ...editForm, company_name: e.target.value })} />
+                      </div>
+                      <div>
+                        <Label>Registration Number</Label>
+                        <Input className="mt-1" value={editForm.registration_number || ''} onChange={e => setEditForm({ ...editForm, registration_number: e.target.value })} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Contact Person</Label>
+                        <Input className="mt-1" value={editForm.contact_person || ''} onChange={e => setEditForm({ ...editForm, contact_person: e.target.value })} />
+                      </div>
+                      <div>
+                        <Label>Phone</Label>
+                        <Input className="mt-1" value={editForm.contact_phone || ''} onChange={e => setEditForm({ ...editForm, contact_phone: e.target.value })} />
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Email</Label>
+                      <Input className="mt-1" value={editForm.contact_email || ''} onChange={e => setEditForm({ ...editForm, contact_email: e.target.value })} />
+                    </div>
+                    <div>
+                      <Label>Max Crew Capacity</Label>
+                      <Input className="mt-1" type="number" value={editForm.crew_capacity || ''} onChange={e => setEditForm({ ...editForm, crew_capacity: parseInt(e.target.value) || 0 })} />
+                    </div>
                   </div>
-                  <div>
-                    <Label>Phone</Label>
-                    <Input className="mt-1" value={editForm.contact_phone || ''} onChange={e => setEditForm({ ...editForm, contact_phone: e.target.value })} />
+                </div>
+
+                {/* Documents */}
+                <div>
+                  <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wide mb-3">Documents</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Insurance Document URL</Label>
+                      <div className="flex gap-2 mt-1">
+                        <Input value={editForm.insurance_doc_url || ''} onChange={e => setEditForm({ ...editForm, insurance_doc_url: e.target.value })} placeholder="https://..." />
+                        {editForm.insurance_doc_url && (
+                          <a href={editForm.insurance_doc_url} target="_blank" rel="noopener noreferrer">
+                            <Button variant="outline" size="sm" type="button">View</Button>
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Compliance Document URL</Label>
+                      <div className="flex gap-2 mt-1">
+                        <Input value={editForm.compliance_doc_url || ''} onChange={e => setEditForm({ ...editForm, compliance_doc_url: e.target.value })} placeholder="https://..." />
+                        {editForm.compliance_doc_url && (
+                          <a href={editForm.compliance_doc_url} target="_blank" rel="noopener noreferrer">
+                            <Button variant="outline" size="sm" type="button">View</Button>
+                          </a>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
+
+                {/* Regions */}
                 <div>
-                  <Label>Email</Label>
-                  <Input className="mt-1" value={editForm.contact_email || ''} onChange={e => setEditForm({ ...editForm, contact_email: e.target.value })} />
-                </div>
-                <div>
-                  <Label>Max Crew Capacity</Label>
-                  <Input className="mt-1" type="number" value={editForm.crew_capacity || ''} onChange={e => setEditForm({ ...editForm, crew_capacity: parseInt(e.target.value) || 0 })} />
-                </div>
-                <div>
-                  <Label className="mb-2 block">Service Regions</Label>
+                  <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wide mb-3">Service Regions</h4>
                   <div className="flex flex-wrap gap-2">
                     {REGIONS.map(r => (
-                      <Badge
-                        key={r}
-                        variant={editForm.service_regions?.includes(r) ? 'default' : 'outline'}
+                      <Badge key={r} variant={editForm.service_regions?.includes(r) ? 'default' : 'outline'}
                         className={cn('cursor-pointer', editForm.service_regions?.includes(r) ? 'bg-black text-white' : 'hover:bg-gray-100')}
-                        onClick={() => toggleEditRegion(r)}
-                      >{r}</Badge>
+                        onClick={() => toggleEditRegion(r)}>{r}</Badge>
                     ))}
                   </div>
                 </div>
+
+                {/* Capabilities */}
                 <div>
-                  <Label className="mb-2 block">Capabilities</Label>
+                  <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wide mb-3">Move Types / Capabilities</h4>
                   <div className="flex flex-wrap gap-2">
                     {CAPABILITY_CLASSES.map(c => (
-                      <Badge
-                        key={c}
-                        variant={editForm.capability_classes?.includes(c) ? 'default' : 'outline'}
+                      <Badge key={c} variant={editForm.capability_classes?.includes(c) ? 'default' : 'outline'}
                         className={cn('cursor-pointer capitalize', editForm.capability_classes?.includes(c) ? 'bg-black text-white' : 'hover:bg-gray-100')}
-                        onClick={() => toggleEditCapability(c)}
-                      >{c.replace(/_/g, ' ')}</Badge>
+                        onClick={() => toggleEditCapability(c)}>{c.replace(/_/g, ' ')}</Badge>
                     ))}
                   </div>
                 </div>
+
+                {/* Fleet */}
+                <div>
+                  <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wide mb-3">Fleet</h4>
+                  <div className="space-y-2 mb-3">
+                    {(editForm.fleet || []).map((v, i) => (
+                      <div key={i} className="flex items-center gap-2 p-2 bg-gray-50 rounded text-sm">
+                        <span className="font-medium">{v.vehicle_type}</span>
+                        {v.make && <span className="text-gray-500">{v.make} {v.model}</span>}
+                        {v.year && <span className="text-gray-400">({v.year})</span>}
+                        <span className="text-gray-500">{v.capacity_m3}m³</span>
+                        {v.plate_number && <span className="text-gray-400">{v.plate_number}</span>}
+                        <Button variant="ghost" size="icon" className="ml-auto h-6 w-6" onClick={() => removeEditVehicle(i)}><XCircle className="w-4 h-4 text-red-500" /></Button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="border rounded-lg p-3 space-y-2 bg-gray-50">
+                    <p className="text-xs font-medium text-gray-500">Add Vehicle</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      <Select value={editNewVehicle.vehicle_type} onValueChange={v => setEditNewVehicle({ ...editNewVehicle, vehicle_type: v })}>
+                        <SelectTrigger><SelectValue placeholder="Type" /></SelectTrigger>
+                        <SelectContent>{VEHICLE_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                      </Select>
+                      <Input placeholder="Make" value={editNewVehicle.make} onChange={e => setEditNewVehicle({ ...editNewVehicle, make: e.target.value })} />
+                      <Input placeholder="Model" value={editNewVehicle.model} onChange={e => setEditNewVehicle({ ...editNewVehicle, model: e.target.value })} />
+                    </div>
+                    <div className="grid grid-cols-4 gap-2">
+                      <Input placeholder="Year" type="number" value={editNewVehicle.year} onChange={e => setEditNewVehicle({ ...editNewVehicle, year: e.target.value })} />
+                      <Input placeholder="m³" type="number" value={editNewVehicle.capacity_m3} onChange={e => setEditNewVehicle({ ...editNewVehicle, capacity_m3: e.target.value })} />
+                      <Input placeholder="Crew" type="number" value={editNewVehicle.crew_size} onChange={e => setEditNewVehicle({ ...editNewVehicle, crew_size: e.target.value })} />
+                      <Input placeholder="Plate #" value={editNewVehicle.plate_number} onChange={e => setEditNewVehicle({ ...editNewVehicle, plate_number: e.target.value })} />
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <Input placeholder="Rate/km (R)" type="number" value={editNewVehicle.rate_per_km} onChange={e => setEditNewVehicle({ ...editNewVehicle, rate_per_km: e.target.value })} />
+                      <Input placeholder="Crew rate (R)" type="number" value={editNewVehicle.crew_member_rate} onChange={e => setEditNewVehicle({ ...editNewVehicle, crew_member_rate: e.target.value })} />
+                      <Button onClick={addEditVehicle} disabled={!editNewVehicle.vehicle_type || !editNewVehicle.capacity_m3} size="sm">Add</Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pricing */}
+                <div>
+                  <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wide mb-3">Pricing Rates</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Rate per KM (R)</Label>
+                      <Input className="mt-1" type="number" value={editForm.pricing?.rate_per_km || ''} onChange={e => updateEditPricing('rate_per_km', e.target.value)} />
+                    </div>
+                    <div>
+                      <Label>Crew Member Rate (R)</Label>
+                      <Input className="mt-1" type="number" value={editForm.pricing?.crew_member_rate || ''} onChange={e => updateEditPricing('crew_member_rate', e.target.value)} />
+                    </div>
+                    <div>
+                      <Label>Packing Service Rate (R)</Label>
+                      <Input className="mt-1" type="number" value={editForm.pricing?.packing_service_rate || ''} onChange={e => updateEditPricing('packing_service_rate', e.target.value)} />
+                    </div>
+                    <div>
+                      <Label>Shuttle Service Rate (R)</Label>
+                      <Input className="mt-1" type="number" value={editForm.pricing?.shuttle_service_rate || ''} onChange={e => updateEditPricing('shuttle_service_rate', e.target.value)} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Packaging Items */}
+                <div>
+                  <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wide mb-3">Packaging Items</h4>
+                  <div className="space-y-2 mb-3">
+                    {(editForm.pricing?.packaging_items || []).map((item, i) => (
+                      <div key={i} className="flex items-center gap-2 p-2 bg-gray-50 rounded text-sm">
+                        <span className="flex-1 font-medium">{item.name}</span>
+                        <span className="text-gray-500">R{item.unit_price}</span>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeEditPackaging(i)}><XCircle className="w-4 h-4 text-red-500" /></Button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Select value={editNewPkg.name} onValueChange={v => setEditNewPkg({ ...editNewPkg, name: v })}>
+                      <SelectTrigger className="flex-1"><SelectValue placeholder="Item" /></SelectTrigger>
+                      <SelectContent>{PACKAGING_OPTIONS.map(o => <SelectItem key={o.name} value={o.name}>{o.name}</SelectItem>)}</SelectContent>
+                    </Select>
+                    <Input className="w-28" placeholder="Price (R)" type="number" value={editNewPkg.unit_price} onChange={e => setEditNewPkg({ ...editNewPkg, unit_price: e.target.value })} />
+                    <Button onClick={addEditPackaging} disabled={!editNewPkg.name || !editNewPkg.unit_price} size="sm">Add</Button>
+                  </div>
+                </div>
+
               </div>
             )}
             <DialogFooter>
