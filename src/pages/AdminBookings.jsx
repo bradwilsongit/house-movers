@@ -40,6 +40,7 @@ export default function AdminBookings() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [updatingId, setUpdatingId] = useState(null);
 
   useEffect(() => {
     loadData();
