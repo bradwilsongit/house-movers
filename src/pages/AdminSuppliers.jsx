@@ -522,14 +522,6 @@ export default function AdminSuppliers() {
                   <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wide mb-3">Pricing Rates</h4>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label>Rate per KM (R)</Label>
-                      <Input className="mt-1" type="number" value={editForm.pricing?.rate_per_km || ''} onChange={e => updateEditPricing('rate_per_km', e.target.value)} />
-                    </div>
-                    <div>
-                      <Label>Crew Member Rate (R)</Label>
-                      <Input className="mt-1" type="number" value={editForm.pricing?.crew_member_rate || ''} onChange={e => updateEditPricing('crew_member_rate', e.target.value)} />
-                    </div>
-                    <div>
                       <Label>Packing Service Rate (R)</Label>
                       <Input className="mt-1" type="number" value={editForm.pricing?.packing_service_rate || ''} onChange={e => updateEditPricing('packing_service_rate', e.target.value)} />
                     </div>

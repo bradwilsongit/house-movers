@@ -640,30 +640,6 @@ export default function SupplierProfile() {
           <CardContent className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="rate_per_km">Rate per KM (R)</Label>
-                <Input
-                  id="rate_per_km"
-                  type="number"
-                  placeholder="0.00"
-                  value={formData.pricing?.rate_per_km || ''}
-                  onChange={(e) => updatePricing('rate_per_km', e.target.value)}
-                  className="mt-1.5"
-                />
-              </div>
-              <div>
-                <Label htmlFor="crew_rate">Crew Member Rate per Person (R)</Label>
-                <Input
-                  id="crew_rate"
-                  type="number"
-                  placeholder="0.00"
-                  value={formData.pricing?.crew_member_rate || ''}
-                  onChange={(e) => updatePricing('crew_member_rate', e.target.value)}
-                  className="mt-1.5"
-                />
-              </div>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
                 <Label htmlFor="packing_service">Packing Service Rate (R)</Label>
                 <Input
                   id="packing_service"
