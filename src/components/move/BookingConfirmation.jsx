@@ -125,13 +125,13 @@ export default function BookingConfirmation({
                 <img src={matchedVehicle.front_photo_url} alt="Vehicle" className="w-16 h-16 object-cover rounded-lg" />
               )}
               <div>
-              <p className="font-semibold text-lg">{supplier?.company_name || 'Moving Company'}</p>
-              <p className="text-sm text-gray-500">
-                {matchedVehicle?.vehicle_type || selectedQuote?.vehicle_type}
-                {matchedVehicle?.make && matchedVehicle?.model ? ` • ${matchedVehicle.make} ${matchedVehicle.model}` : ''}
-                {matchedVehicle?.year ? ` (${matchedVehicle.year})` : ''}
-                {` • ${crewSize} crew member${crewSize !== 1 ? 's' : ''}`}
-              </p>
+                <p className="font-semibold text-lg">{supplier?.company_name || 'Moving Company'}</p>
+                <p className="text-sm text-gray-500">
+                  {matchedVehicle?.vehicle_type || selectedQuote?.vehicle_type}
+                  {matchedVehicle?.make && matchedVehicle?.model ? ` • ${matchedVehicle.make} ${matchedVehicle.model}` : ''}
+                  {matchedVehicle?.year ? ` (${matchedVehicle.year})` : ''}
+                  {` • ${crewSize} crew member${crewSize !== 1 ? 's' : ''}`}
+                </p>
               </div>
             </div>
             <div className="text-right">
