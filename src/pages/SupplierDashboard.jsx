@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import ReviewsTable from '@/components/ReviewsTable';
+import DisputesTable from '@/components/DisputesTable';
 
 export default function SupplierDashboard() {
   const [user, setUser] = useState(null);
@@ -298,57 +299,11 @@ export default function SupplierDashboard() {
           </CardContent>
         </Card>
 
-        {/* Performance */}
-        {supplier.status === 'approved' && (
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle className="text-lg">Performance Metrics</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid sm:grid-cols-3 gap-6">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-500">On-Time Rate</span>
-                    <span className="font-medium">{supplier.on_time_rate || 100}%</span>
-                  </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-emerald-500 rounded-full"
-                      style={{ width: `${supplier.on_time_rate || 100}%` }}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-500">Completion Rate</span>
-                    <span className="font-medium">{supplier.completion_rate || 100}%</span>
-                  </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue-500 rounded-full"
-                      style={{ width: `${supplier.completion_rate || 100}%` }}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-500">Dispute Rate</span>
-                    <span className="font-medium">{supplier.dispute_rate || 0}%</span>
-                  </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-red-500 rounded-full"
-                      style={{ width: `${supplier.dispute_rate || 0}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Reviews */}
         <ReviewsTable supplierId={supplier.id} />
+
+        {/* Disputes */}
+        <DisputesTable supplierId={supplier.id} />
       </div>
     </div>
   );
