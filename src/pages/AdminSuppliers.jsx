@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { format } from 'date-fns';
 import { 
   Building2, Search, Clock, CheckCircle2, XCircle, 
-  Star, Truck, MapPin, FileText, ChevronDown, Pencil
+  Star, Truck, MapPin, FileText, ChevronDown, Pencil, Upload
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
