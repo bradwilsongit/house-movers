@@ -28,13 +28,14 @@ const statusSteps = [
 
 export default function BookingDetails() {
   const [booking, setBooking] = useState(null);
-  const [moveRequest, setMoveRequest] = useState(null);
-  const [quote, setQuote] = useState(null);
-  const [supplier, setSupplier] = useState(null);
-  const [inventoryItems, setInventoryItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [supportDialogOpen, setSupportDialogOpen] = useState(false);
-  const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
+   const [moveRequest, setMoveRequest] = useState(null);
+   const [quote, setQuote] = useState(null);
+   const [supplier, setSupplier] = useState(null);
+   const [inventoryItems, setInventoryItems] = useState([]);
+   const [loading, setLoading] = useState(true);
+   const [supportDialogOpen, setSupportDialogOpen] = useState(false);
+   const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
+   const [hasRated, setHasRated] = useState(false);
 
   useEffect(() => {
     loadBooking();
@@ -70,6 +71,16 @@ export default function BookingDetails() {
       if (quotes.length > 0) setQuote(quotes[0]);
       if (suppliers.length > 0) setSupplier(suppliers[0]);
       setInventoryItems(items);
+
+      // Check if user already rated this booking
+      const user = await base44.auth.me();
+      const existingRatings = await base44.entities.Rating.filter({
+        booking_id: bookingData.id,
+        customer_id: user.id
+      });
+      if (existingRatings.length > 0) {
+        setHasRated(true);
+      }
     } catch (e) {
       console.error('Error loading booking:', e);
     } finally {
@@ -371,13 +382,23 @@ export default function BookingDetails() {
                   <FileText className="w-4 h-4 mr-2" />
                   View Invoice
                 </Button>
-                {booking.status === 'completed' && (
+                {booking.status === 'completed' && !hasRated && (
                   <Button 
                     className="w-full justify-start bg-black text-white hover:bg-gray-800"
                     onClick={() => setRatingDialogOpen(true)}
                   >
                     <Star className="w-4 h-4 mr-2" />
                     Rate Your Move
+                  </Button>
+                )}
+                {hasRated && (
+                  <Button 
+                    disabled
+                    variant="outline"
+                    className="w-full justify-start"
+                  >
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                    Already Rated
                   </Button>
                 )}
               </CardContent>
@@ -407,11 +428,15 @@ export default function BookingDetails() {
         bookingId={booking.id}
       />
       <RatingDialog 
-        open={ratingDialogOpen}
-        onOpenChange={setRatingDialogOpen}
-        booking={booking}
-        supplier={supplier}
-      />
+         open={ratingDialogOpen}
+         onOpenChange={setRatingDialogOpen}
+         booking={booking}
+         supplier={supplier}
+         onSuccess={() => {
+           setHasRated(true);
+           setRatingDialogOpen(false);
+         }}
+       />
     </div>
   );
 }
