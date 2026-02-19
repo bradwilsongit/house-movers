@@ -68,6 +68,25 @@ export default function AdminBookings() {
     }
   };
 
+  const handleMarkAsPaid = async (booking) => {
+    setUpdatingId(booking.id);
+    try {
+      await base44.entities.Booking.update(booking.id, {
+        payment_status: 'paid',
+        paid_at: new Date().toISOString(),
+        status: 'confirmed'
+      });
+      
+      // Reload bookings
+      const updatedBookings = await base44.entities.Booking.list('-created_date', 200);
+      setBookings(updatedBookings);
+    } catch (e) {
+      console.error('Error marking as paid:', e);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const filteredBookings = bookings.filter(b => {
     const matchesSearch = !searchQuery || 
       b.booking_reference?.toLowerCase().includes(searchQuery.toLowerCase());
