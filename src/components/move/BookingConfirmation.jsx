@@ -123,7 +123,10 @@ export default function BookingConfirmation({
             <div>
               <p className="font-semibold text-lg">{supplier?.company_name || 'Moving Company'}</p>
               <p className="text-sm text-gray-500">
-                {selectedQuote?.vehicle_type} • {selectedQuote?.crew_size} crew members
+                {matchedVehicle?.vehicle_type || selectedQuote?.vehicle_type}
+                {matchedVehicle?.make && matchedVehicle?.model ? ` • ${matchedVehicle.make} ${matchedVehicle.model}` : ''}
+                {matchedVehicle?.year ? ` (${matchedVehicle.year})` : ''}
+                {` • ${crewSize} crew member${crewSize !== 1 ? 's' : ''}`}
               </p>
             </div>
             <div className="text-right">
