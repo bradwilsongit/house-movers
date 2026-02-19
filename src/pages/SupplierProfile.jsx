@@ -418,34 +418,70 @@ export default function SupplierProfile() {
           <CardContent className="space-y-4">
             {formData.fleet?.map((vehicle, index) => (
               <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="flex-1">
-                    <span className="font-medium">{vehicle.vehicle_type}</span>
-                    {vehicle.make && vehicle.model && (
-                      <span className="text-gray-500 ml-2">• {vehicle.make} {vehicle.model}</span>
-                    )}
-                    {vehicle.year && (
-                      <span className="text-gray-500 ml-1">({vehicle.year})</span>
-                    )}
+                {editingVehicleIndex === index && editingVehicle ? (
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-3 gap-2">
+                      <Select value={editingVehicle.vehicle_type} onValueChange={(v) => setEditingVehicle({ ...editingVehicle, vehicle_type: v })}>
+                        <SelectTrigger><SelectValue placeholder="Type" /></SelectTrigger>
+                        <SelectContent>
+                          {['1-ton Bakkie','2-ton Truck','3-ton Truck','4-ton Truck','5-ton Truck','6-ton Truck','7-ton Truck','8-ton Truck','9-ton Truck','10-ton Truck'].map(t => (
+                            <SelectItem key={t} value={t}>{t}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input placeholder="Make" value={editingVehicle.make || ''} onChange={(e) => setEditingVehicle({ ...editingVehicle, make: e.target.value })} />
+                      <Input placeholder="Model" value={editingVehicle.model || ''} onChange={(e) => setEditingVehicle({ ...editingVehicle, model: e.target.value })} />
+                    </div>
+                    <div className="grid grid-cols-4 gap-2">
+                      <Input placeholder="Year" type="number" value={editingVehicle.year || ''} onChange={(e) => setEditingVehicle({ ...editingVehicle, year: e.target.value })} />
+                      <Input placeholder="Capacity (m³)" type="number" value={editingVehicle.capacity_m3 || ''} onChange={(e) => setEditingVehicle({ ...editingVehicle, capacity_m3: e.target.value })} />
+                      <Input placeholder="Crew size" type="number" value={editingVehicle.crew_size || ''} onChange={(e) => setEditingVehicle({ ...editingVehicle, crew_size: e.target.value })} />
+                      <Input placeholder="Plate #" value={editingVehicle.plate_number || ''} onChange={(e) => setEditingVehicle({ ...editingVehicle, plate_number: e.target.value })} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input placeholder="Rate per KM (R)" type="number" value={editingVehicle.rate_per_km || ''} onChange={(e) => setEditingVehicle({ ...editingVehicle, rate_per_km: e.target.value })} />
+                      <Input placeholder="Crew Member Rate (R)" type="number" value={editingVehicle.crew_member_rate || ''} onChange={(e) => setEditingVehicle({ ...editingVehicle, crew_member_rate: e.target.value })} />
+                    </div>
+                    <div className="flex gap-2 justify-end">
+                      <Button variant="outline" size="sm" onClick={cancelEditVehicle}>Cancel</Button>
+                      <Button size="sm" className="bg-black text-white hover:bg-gray-800" onClick={saveEditVehicle}><Check className="w-4 h-4 mr-1" /> Save</Button>
+                    </div>
                   </div>
-                  <span className="text-gray-500 text-sm">{vehicle.capacity_m3}m³</span>
-                  {vehicle.crew_size && <span className="text-gray-500 text-sm">{vehicle.crew_size} crew</span>}
-                  {vehicle.rate_per_km != null && <span className="text-gray-500 text-sm">R{vehicle.rate_per_km}/km</span>}
-                  {vehicle.crew_member_rate != null && <span className="text-gray-500 text-sm">R{vehicle.crew_member_rate}/crew</span>}
-                  <span className="text-gray-500 text-sm">{vehicle.plate_number}</span>
-                  <Button variant="ghost" size="icon" onClick={() => removeVehicle(index)}>
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-                {(vehicle.front_photo_url || vehicle.back_photo_url) && (
-                  <div className="flex gap-2 mt-2">
-                    {vehicle.front_photo_url && (
-                      <img src={vehicle.front_photo_url} alt="Front" className="w-20 h-20 object-cover rounded" />
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex-1">
+                        <span className="font-medium">{vehicle.vehicle_type}</span>
+                        {vehicle.make && vehicle.model && (
+                          <span className="text-gray-500 ml-2">• {vehicle.make} {vehicle.model}</span>
+                        )}
+                        {vehicle.year && (
+                          <span className="text-gray-500 ml-1">({vehicle.year})</span>
+                        )}
+                      </div>
+                      <span className="text-gray-500 text-sm">{vehicle.capacity_m3}m³</span>
+                      {vehicle.crew_size && <span className="text-gray-500 text-sm">{vehicle.crew_size} crew</span>}
+                      {vehicle.rate_per_km != null && <span className="text-gray-500 text-sm">R{vehicle.rate_per_km}/km</span>}
+                      {vehicle.crew_member_rate != null && <span className="text-gray-500 text-sm">R{vehicle.crew_member_rate}/crew</span>}
+                      <span className="text-gray-500 text-sm">{vehicle.plate_number}</span>
+                      <Button variant="ghost" size="icon" onClick={() => startEditVehicle(index)}>
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => removeVehicle(index)}>
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    {(vehicle.front_photo_url || vehicle.back_photo_url) && (
+                      <div className="flex gap-2 mt-2">
+                        {vehicle.front_photo_url && (
+                          <img src={vehicle.front_photo_url} alt="Front" className="w-20 h-20 object-cover rounded" />
+                        )}
+                        {vehicle.back_photo_url && (
+                          <img src={vehicle.back_photo_url} alt="Back" className="w-20 h-20 object-cover rounded" />
+                        )}
+                      </div>
                     )}
-                    {vehicle.back_photo_url && (
-                      <img src={vehicle.back_photo_url} alt="Back" className="w-20 h-20 object-cover rounded" />
-                    )}
-                  </div>
+                  </>
                 )}
               </div>
             ))}
