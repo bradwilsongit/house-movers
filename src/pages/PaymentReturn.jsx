@@ -23,10 +23,14 @@ export default function PaymentReturn() {
     }
 
     try {
-      // Note: In production, payment status should be updated via ITN webhook
-      // This is just for user redirect after payment
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      // Update booking status and payment status
+      await base44.entities.Booking.update(bookingId, {
+        payment_status: 'paid',
+        paid_at: new Date().toISOString(),
+        status: 'confirmed'
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 1500));
       navigate(createPageUrl('BookingDetails') + `?id=${bookingId}`);
     } catch (e) {
       console.error('Error processing return:', e);
