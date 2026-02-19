@@ -169,7 +169,7 @@ export default function AdminBookings() {
                     <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">Supplier</th>
                     <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">Amount</th>
                     <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">Status</th>
-                    <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">Payment</th>
+                    <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">Payment Status</th>
                     <th className="px-6 py-3"></th>
                   </tr>
                 </thead>
