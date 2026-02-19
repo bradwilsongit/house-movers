@@ -285,7 +285,7 @@ export default function Layout({ children, currentPageName }) {
               )}
             </div>
             <div className="flex items-center gap-6 text-sm text-gray-500">
-              <Link to={createPageUrl('Terms')} className="hover:text-black transition-colors">
+              <Link to={createPageUrl('Terms')} className="hover:text-black transition-colors" target="_blank">
                 Terms & Conditions
               </Link>
               <Link to={createPageUrl('Privacy')} className="hover:text-black transition-colors">
