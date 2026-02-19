@@ -359,11 +359,11 @@ export default function SupplierJobDetails() {
               </Card>
             )}
 
-            {/* Driver Details */}
-            {booking.driver_name && (
+            {/* Driver Details - Optional */}
+            {booking.status !== 'confirmed' && booking.driver_name && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Assigned Driver</CardTitle>
+                  <CardTitle className="text-lg">Driver Details</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-4">

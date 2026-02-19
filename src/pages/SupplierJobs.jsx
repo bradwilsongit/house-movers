@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 const statusConfig = {
   pending_deposit: { label: 'Awaiting Payment', color: 'bg-gray-100 text-gray-700' },
   confirmed: { label: 'Confirmed', color: 'bg-blue-100 text-blue-700' },
-  driver_assigned: { label: 'Ready', color: 'bg-emerald-100 text-emerald-700' },
+  mover_accepted: { label: 'Accepted', color: 'bg-emerald-100 text-emerald-700' },
   on_route: { label: 'On Route', color: 'bg-blue-100 text-blue-700' },
   arrived: { label: 'Arrived', color: 'bg-amber-100 text-amber-700' },
   loading: { label: 'Loading', color: 'bg-amber-100 text-amber-700' },
@@ -76,7 +76,7 @@ export default function SupplierJobs() {
   };
 
   const upcomingBookings = bookings.filter(b => 
-    ['pending_deposit', 'confirmed', 'driver_assigned'].includes(b.status)
+    ['pending_deposit', 'confirmed', 'mover_accepted'].includes(b.status)
   );
   const activeBookings = bookings.filter(b => 
     ['on_route', 'arrived', 'loading', 'in_transit', 'unloading'].includes(b.status)
@@ -190,7 +190,7 @@ export default function SupplierJobs() {
 
 function JobCard({ booking, moveRequest, active }) {
   const status = statusConfig[booking.status] || statusConfig.confirmed;
-  const needsDriverDetails = booking.status === 'confirmed' && !booking.driver_name;
+  const needsAcceptance = booking.status === 'confirmed';
 
   return (
     <Link to={createPageUrl('SupplierJobDetails') + `?id=${booking.id}`}>
@@ -227,10 +227,10 @@ function JobCard({ booking, moveRequest, active }) {
                 </div>
               )}
 
-              {needsDriverDetails && (
-                <div className="flex items-center gap-2 mt-3 text-amber-600 text-sm">
+              {needsAcceptance && (
+                <div className="flex items-center gap-2 mt-3 text-emerald-600 text-sm">
                   <AlertCircle className="w-4 h-4" />
-                  <span>Driver details required</span>
+                  <span>Ready to accept</span>
                 </div>
               )}
             </div>
@@ -238,7 +238,7 @@ function JobCard({ booking, moveRequest, active }) {
             <div className="text-right">
               <p className="text-2xl font-bold">R{booking.total_amount?.toLocaleString()}</p>
               <p className="text-sm text-gray-500">
-                {booking.deposit_paid ? 'Deposit paid' : 'Pending'}
+                {booking.payment_status === 'paid' ? 'Paid' : 'Pending'}
               </p>
             </div>
 

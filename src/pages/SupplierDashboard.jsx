@@ -58,11 +58,11 @@ export default function SupplierDashboard() {
             ['pending_deposit', 'confirmed'].includes(b.status)
           ).length;
           const active = supplierBookings.filter(b => 
-            ['driver_assigned', 'on_route', 'arrived', 'loading', 'in_transit', 'unloading'].includes(b.status)
+            ['mover_accepted', 'on_route', 'arrived', 'loading', 'in_transit', 'unloading'].includes(b.status)
           ).length;
           const completed = supplierBookings.filter(b => b.status === 'completed').length;
           const earnings = supplierBookings
-            .filter(b => b.status === 'completed')
+            .filter(b => ['mover_accepted', 'on_route', 'arrived', 'loading', 'in_transit', 'unloading', 'completed'].includes(b.status))
             .reduce((sum, b) => sum + (b.total_amount || 0), 0);
 
           setStats({ pending, active, completed, earnings });
@@ -114,7 +114,7 @@ export default function SupplierDashboard() {
 
   const pendingApproval = supplier.status === 'pending';
   const upcomingBookings = bookings.filter(b => 
-    ['pending_deposit', 'confirmed', 'driver_assigned', 'on_route'].includes(b.status)
+    ['pending_deposit', 'confirmed', 'mover_accepted', 'on_route'].includes(b.status)
   );
 
   return (
