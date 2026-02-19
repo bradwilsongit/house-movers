@@ -250,9 +250,9 @@ export default function BookingConfirmation({
               </Label>
               <p className="text-sm text-gray-500">
                 By checking this box, you agree to our{' '}
-                <a href="#" className="text-black underline">Terms of Service</a>,{' '}
-                <a href="#" className="text-black underline">Privacy Policy</a>, and{' '}
-                <a href="#" className="text-black underline">Cancellation Policy</a>.
+                <a href={`/pages/Terms`} target="_blank" className="text-black underline">Terms & Conditions</a>,{' '}
+                <a href={`/pages/Privacy`} target="_blank" className="text-black underline">Privacy Policy</a>, and{' '}
+                <a href={`/pages/Terms`} target="_blank" className="text-black underline">Cancellation Policy</a>.
               </p>
             </div>
           </div>
