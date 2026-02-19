@@ -177,16 +177,31 @@ export default function QuoteComparison({
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between mb-4">
                           <div>
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-semibold text-lg">
-                                {supplier?.company_name || 'Moving Company'}
-                              </h3>
+                            <div className="flex items-center gap-2 mb-0.5">
+                              {(() => {
+                                const fleet = suppliers[quote.supplier_id]?.fleet || [];
+                                const matchedVehicle = fleet.find(v => v.vehicle_type === quote.vehicle_type) || fleet[0];
+                                const isPremium = matchedVehicle?.year && matchedVehicle.year > 2021;
+                                return isPremium ? (
+                                  <h3 className="font-semibold text-lg">Premium</h3>
+                                ) : (
+                                  <h3 className="font-semibold text-lg">{supplier?.company_name || 'Moving Company'}</h3>
+                                );
+                              })()}
                               {isLowest && (
                                 <Badge className="bg-emerald-100 text-emerald-700">
                                   Best Price
                                 </Badge>
                               )}
                             </div>
+                            {(() => {
+                              const fleet = suppliers[quote.supplier_id]?.fleet || [];
+                              const matchedVehicle = fleet.find(v => v.vehicle_type === quote.vehicle_type) || fleet[0];
+                              const isPremium = matchedVehicle?.year && matchedVehicle.year > 2021;
+                              return isPremium ? (
+                                <p className="text-sm text-gray-500 mb-1">{supplier?.company_name || 'Moving Company'}</p>
+                              ) : null;
+                            })()}
                             <div className="flex items-center gap-4 text-sm text-gray-500">
                               {supplier?.rating_average > 0 && (
                                 <span className="flex items-center gap-1">
