@@ -70,6 +70,7 @@ export default function ReviewsTable({ supplierId }) {
             <table className="w-full">
               <thead>
                 <tr className="border-b text-left text-sm text-gray-500">
+                  <th className="pb-3 font-medium">Customer</th>
                   <th className="pb-3 font-medium">Overall</th>
                   <th className="pb-3 font-medium">Punctuality</th>
                   <th className="pb-3 font-medium">Care</th>
