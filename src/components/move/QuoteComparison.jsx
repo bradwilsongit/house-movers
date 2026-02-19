@@ -212,12 +212,7 @@ export default function QuoteComparison({
                               {supplier?.total_jobs > 0 && (
                                 <span>{supplier.total_jobs} moves completed</span>
                               )}
-                              {supplier?.on_time_rate && (
-                                <span className="flex items-center gap-1">
-                                  <Clock className="w-4 h-4" />
-                                  {supplier.on_time_rate}% on-time
-                                </span>
-                              )}
+
                             </div>
                           </div>
 
@@ -253,9 +248,7 @@ export default function QuoteComparison({
                                     {matchedVehicle?.year && (
                                       <span className="text-xs text-gray-400">({matchedVehicle.year})</span>
                                     )}
-                                    {isPremium && (
-                                      <Badge className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0">Premium</Badge>
-                                    )}
+
                                   </div>
                                 </div>
                               </div>
