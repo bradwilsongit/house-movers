@@ -269,6 +269,13 @@ export default function AdminSuppliers() {
                       </div>
 
                       <div className="flex items-center gap-2 ml-4">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => openEditDialog(supplier)}
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
                         {supplier.status === 'pending' && (
                           <>
                             <Button
