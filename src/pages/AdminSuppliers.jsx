@@ -21,10 +21,30 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 
 const REGIONS = ['Cape Town','Johannesburg','Pretoria','Durban','Port Elizabeth','Bloemfontein','East London','Polokwane','Nelspruit','Kimberley'];
 const CAPABILITY_CLASSES = ['apartment','house','office','long_distance'];
+const VEHICLE_TYPES = ['1-ton Bakkie','2-ton Truck','3-ton Truck','4-ton Truck','5-ton Truck','6-ton Truck','7-ton Truck','8-ton Truck','9-ton Truck','10-ton Truck'];
+const PACKAGING_OPTIONS = [
+  { name: 'Large Box', category: 'boxes' },
+  { name: 'Medium Box', category: 'boxes' },
+  { name: 'Small Box', category: 'boxes' },
+  { name: 'Wardrobe Box', category: 'boxes' },
+  { name: 'Bubble Wrap (10m)', category: 'wrapping' },
+  { name: 'Packing Paper (5kg)', category: 'wrapping' },
+  { name: 'Packing Tape', category: 'tape' },
+  { name: 'Moving Blanket', category: 'blankets' },
+  { name: 'Mattress Cover', category: 'specialty' },
+  { name: 'TV Box', category: 'specialty' },
+];
 
 export default function AdminSuppliers() {
   const [suppliers, setSuppliers] = useState([]);
