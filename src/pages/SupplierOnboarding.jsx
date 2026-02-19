@@ -123,10 +123,11 @@ export default function SupplierOnboarding() {
         fleet: [...prev.fleet, { 
           ...newVehicle, 
           capacity_m3: parseFloat(newVehicle.capacity_m3),
-          year: newVehicle.year ? parseInt(newVehicle.year) : null
+          year: newVehicle.year ? parseInt(newVehicle.year) : null,
+          crew_size: newVehicle.crew_size ? parseInt(newVehicle.crew_size) : null,
         }]
       }));
-      setNewVehicle({ vehicle_type: '', make: '', model: '', year: '', capacity_m3: '', plate_number: '', front_photo_url: '', back_photo_url: '' });
+      setNewVehicle({ vehicle_type: '', make: '', model: '', year: '', capacity_m3: '', crew_size: '', plate_number: '', front_photo_url: '', back_photo_url: '' });
     }
   };
 
@@ -478,7 +479,7 @@ export default function SupplierOnboarding() {
                         onChange={(e) => setNewVehicle(prev => ({ ...prev, model: e.target.value }))}
                       />
                     </div>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-5 gap-2">
                       <Input
                         placeholder="Year"
                         type="number"
@@ -490,6 +491,12 @@ export default function SupplierOnboarding() {
                         type="number"
                         value={newVehicle.capacity_m3}
                         onChange={(e) => setNewVehicle(prev => ({ ...prev, capacity_m3: e.target.value }))}
+                      />
+                      <Input
+                        placeholder="Crew size"
+                        type="number"
+                        value={newVehicle.crew_size}
+                        onChange={(e) => setNewVehicle(prev => ({ ...prev, crew_size: e.target.value }))}
                       />
                       <Input
                         placeholder="Plate #"
