@@ -137,15 +137,16 @@ export default function SupplierProfile() {
 
   const addVehicle = () => {
     if (newVehicle.vehicle_type && newVehicle.capacity_m3 && newVehicle.front_photo_url && newVehicle.back_photo_url) {
-      setFormData({
-        ...formData,
-        fleet: [...(formData.fleet || []), { 
-          ...newVehicle, 
-          capacity_m3: parseFloat(newVehicle.capacity_m3),
-          year: newVehicle.year ? parseInt(newVehicle.year) : null
-        }]
-      });
-      setNewVehicle({ vehicle_type: '', make: '', model: '', year: '', capacity_m3: '', plate_number: '', front_photo_url: '', back_photo_url: '' });
+        setFormData({
+          ...formData,
+          fleet: [...(formData.fleet || []), { 
+            ...newVehicle, 
+            capacity_m3: parseFloat(newVehicle.capacity_m3),
+            year: newVehicle.year ? parseInt(newVehicle.year) : null,
+            crew_size: newVehicle.crew_size ? parseInt(newVehicle.crew_size) : null,
+          }]
+        });
+        setNewVehicle({ vehicle_type: '', make: '', model: '', year: '', capacity_m3: '', crew_size: '', plate_number: '', front_photo_url: '', back_photo_url: '' });
     }
   };
 
@@ -448,7 +449,7 @@ export default function SupplierProfile() {
                   onChange={(e) => setNewVehicle({ ...newVehicle, model: e.target.value })}
                 />
               </div>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-5 gap-2">
                 <Input
                   placeholder="Year"
                   type="number"
@@ -460,6 +461,12 @@ export default function SupplierProfile() {
                   type="number"
                   value={newVehicle.capacity_m3}
                   onChange={(e) => setNewVehicle({ ...newVehicle, capacity_m3: e.target.value })}
+                />
+                <Input
+                  placeholder="Crew size"
+                  type="number"
+                  value={newVehicle.crew_size}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, crew_size: e.target.value })}
                 />
                 <Input
                   placeholder="Plate #"
