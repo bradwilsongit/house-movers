@@ -330,6 +330,77 @@ export default function AdminSuppliers() {
           </div>
         </Tabs>
 
+        {/* Edit Dialog */}
+        <Dialog open={editDialog.open} onOpenChange={(open) => setEditDialog({ open })}>
+          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Supplier</DialogTitle>
+            </DialogHeader>
+            {editForm && (
+              <div className="space-y-4">
+                <div>
+                  <Label>Company Name</Label>
+                  <Input className="mt-1" value={editForm.company_name || ''} onChange={e => setEditForm({ ...editForm, company_name: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Registration Number</Label>
+                  <Input className="mt-1" value={editForm.registration_number || ''} onChange={e => setEditForm({ ...editForm, registration_number: e.target.value })} />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Contact Person</Label>
+                    <Input className="mt-1" value={editForm.contact_person || ''} onChange={e => setEditForm({ ...editForm, contact_person: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label>Phone</Label>
+                    <Input className="mt-1" value={editForm.contact_phone || ''} onChange={e => setEditForm({ ...editForm, contact_phone: e.target.value })} />
+                  </div>
+                </div>
+                <div>
+                  <Label>Email</Label>
+                  <Input className="mt-1" value={editForm.contact_email || ''} onChange={e => setEditForm({ ...editForm, contact_email: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Max Crew Capacity</Label>
+                  <Input className="mt-1" type="number" value={editForm.crew_capacity || ''} onChange={e => setEditForm({ ...editForm, crew_capacity: parseInt(e.target.value) || 0 })} />
+                </div>
+                <div>
+                  <Label className="mb-2 block">Service Regions</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {REGIONS.map(r => (
+                      <Badge
+                        key={r}
+                        variant={editForm.service_regions?.includes(r) ? 'default' : 'outline'}
+                        className={cn('cursor-pointer', editForm.service_regions?.includes(r) ? 'bg-black text-white' : 'hover:bg-gray-100')}
+                        onClick={() => toggleEditRegion(r)}
+                      >{r}</Badge>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <Label className="mb-2 block">Capabilities</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {CAPABILITY_CLASSES.map(c => (
+                      <Badge
+                        key={c}
+                        variant={editForm.capability_classes?.includes(c) ? 'default' : 'outline'}
+                        className={cn('cursor-pointer capitalize', editForm.capability_classes?.includes(c) ? 'bg-black text-white' : 'hover:bg-gray-100')}
+                        onClick={() => toggleEditCapability(c)}
+                      >{c.replace(/_/g, ' ')}</Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditDialog({ open: false })}>Cancel</Button>
+              <Button onClick={handleEditSave} disabled={editSaving} className="bg-black text-white hover:bg-gray-800">
+                {editSaving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         {/* Action Dialog */}
         <Dialog open={actionDialog.open} onOpenChange={(open) => {
           setActionDialog({ open, action: null });
