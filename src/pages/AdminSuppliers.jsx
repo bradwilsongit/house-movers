@@ -510,14 +510,40 @@ export default function AdminSuppliers() {
                   <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wide mb-3">Fleet</h4>
                   <div className="space-y-2 mb-3">
                     {(editForm.fleet || []).map((v, i) => (
-                      <div key={i} className="flex items-center gap-2 p-2 bg-gray-50 rounded text-sm">
-                        <span className="font-medium">{v.vehicle_type}</span>
-                        {v.make && <span className="text-gray-500">{v.make} {v.model}</span>}
-                        {v.year && <span className="text-gray-400">({v.year})</span>}
-                        <span className="text-gray-500">{v.capacity_m3}m³</span>
-                        {v.plate_number && <span className="text-gray-400">{v.plate_number}</span>}
-                        <Button variant="ghost" size="icon" className="ml-auto h-6 w-6" onClick={() => removeEditVehicle(i)}><XCircle className="w-4 h-4 text-red-500" /></Button>
-                      </div>
+                      editingVehicleIdx === i ? (
+                        <div key={i} className="border rounded-lg p-3 space-y-2 bg-blue-50">
+                          <p className="text-xs font-medium text-blue-600">Editing Vehicle {i + 1}</p>
+                          <div className="grid grid-cols-3 gap-2">
+                            <Select value={v.vehicle_type} onValueChange={val => setEditForm({ ...editForm, fleet: editForm.fleet.map((f, fi) => fi === i ? { ...f, vehicle_type: val } : f) })}>
+                              <SelectTrigger><SelectValue placeholder="Type" /></SelectTrigger>
+                              <SelectContent>{VEHICLE_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                            </Select>
+                            <Input placeholder="Make" value={v.make || ''} onChange={e => setEditForm({ ...editForm, fleet: editForm.fleet.map((f, fi) => fi === i ? { ...f, make: e.target.value } : f) })} />
+                            <Input placeholder="Model" value={v.model || ''} onChange={e => setEditForm({ ...editForm, fleet: editForm.fleet.map((f, fi) => fi === i ? { ...f, model: e.target.value } : f) })} />
+                          </div>
+                          <div className="grid grid-cols-4 gap-2">
+                            <Input placeholder="Year" type="number" value={v.year || ''} onChange={e => setEditForm({ ...editForm, fleet: editForm.fleet.map((f, fi) => fi === i ? { ...f, year: e.target.value ? parseInt(e.target.value) : null } : f) })} />
+                            <Input placeholder="m³" type="number" value={v.capacity_m3 || ''} onChange={e => setEditForm({ ...editForm, fleet: editForm.fleet.map((f, fi) => fi === i ? { ...f, capacity_m3: parseFloat(e.target.value) } : f) })} />
+                            <Input placeholder="Crew" type="number" value={v.crew_size || ''} onChange={e => setEditForm({ ...editForm, fleet: editForm.fleet.map((f, fi) => fi === i ? { ...f, crew_size: e.target.value ? parseInt(e.target.value) : null } : f) })} />
+                            <Input placeholder="Plate #" value={v.plate_number || ''} onChange={e => setEditForm({ ...editForm, fleet: editForm.fleet.map((f, fi) => fi === i ? { ...f, plate_number: e.target.value } : f) })} />
+                          </div>
+                          <div className="grid grid-cols-3 gap-2">
+                            <Input placeholder="Rate/km (R)" type="number" value={v.rate_per_km || ''} onChange={e => setEditForm({ ...editForm, fleet: editForm.fleet.map((f, fi) => fi === i ? { ...f, rate_per_km: parseFloat(e.target.value) } : f) })} />
+                            <Input placeholder="Crew rate (R)" type="number" value={v.crew_member_rate || ''} onChange={e => setEditForm({ ...editForm, fleet: editForm.fleet.map((f, fi) => fi === i ? { ...f, crew_member_rate: parseFloat(e.target.value) } : f) })} />
+                            <Button size="sm" onClick={() => setEditingVehicleIdx(null)} className="bg-blue-600 hover:bg-blue-700">Done</Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div key={i} className="flex items-center gap-2 p-2 bg-gray-50 rounded text-sm">
+                          <span className="font-medium">{v.vehicle_type}</span>
+                          {v.make && <span className="text-gray-500">{v.make} {v.model}</span>}
+                          {v.year && <span className="text-gray-400">({v.year})</span>}
+                          <span className="text-gray-500">{v.capacity_m3}m³</span>
+                          {v.plate_number && <span className="text-gray-400">{v.plate_number}</span>}
+                          <Button variant="ghost" size="icon" className="ml-auto h-6 w-6" onClick={() => setEditingVehicleIdx(i)}><Pencil className="w-3.5 h-3.5 text-blue-500" /></Button>
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeEditVehicle(i)}><XCircle className="w-4 h-4 text-red-500" /></Button>
+                        </div>
+                      )
                     ))}
                   </div>
                   <div className="border rounded-lg p-3 space-y-2 bg-gray-50">
