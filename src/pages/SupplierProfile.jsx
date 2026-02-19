@@ -401,8 +401,11 @@ export default function SupplierProfile() {
                       <span className="text-gray-500 ml-1">({vehicle.year})</span>
                     )}
                   </div>
-                  <span className="text-gray-500">{vehicle.capacity_m3}m³</span>
-                  <span className="text-gray-500">{vehicle.plate_number}</span>
+                  <span className="text-gray-500 text-sm">{vehicle.capacity_m3}m³</span>
+                  {vehicle.crew_size && <span className="text-gray-500 text-sm">{vehicle.crew_size} crew</span>}
+                  {vehicle.rate_per_km != null && <span className="text-gray-500 text-sm">R{vehicle.rate_per_km}/km</span>}
+                  {vehicle.crew_member_rate != null && <span className="text-gray-500 text-sm">R{vehicle.crew_member_rate}/crew</span>}
+                  <span className="text-gray-500 text-sm">{vehicle.plate_number}</span>
                   <Button variant="ghost" size="icon" onClick={() => removeVehicle(index)}>
                     <X className="w-4 h-4" />
                   </Button>
