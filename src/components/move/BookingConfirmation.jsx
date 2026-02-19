@@ -19,10 +19,14 @@ export default function BookingConfirmation({
 }) {
   const [tcAccepted, setTcAccepted] = useState(false);
 
-  // Calculate pricing with commission
+  // Calculate pricing with commission - match vehicle-specific rates like QuoteComparison
   const distanceKm = moveRequest?.distance_km || 0;
-  const supplierKmRate = supplier?.pricing?.rate_per_km || 0;
-  const supplierBasePrice = distanceKm * supplierKmRate;
+  const fleet = supplier?.fleet || [];
+  const matchedVehicle = fleet.find(v => v.vehicle_type === selectedQuote?.vehicle_type) || fleet[0];
+  const kmRate = matchedVehicle?.rate_per_km ?? supplier?.pricing?.rate_per_km ?? 0;
+  const crewRate = matchedVehicle?.crew_member_rate ?? supplier?.pricing?.crew_member_rate ?? 0;
+  const crewSize = matchedVehicle?.crew_size || selectedQuote?.crew_size || 0;
+  const supplierBasePrice = (distanceKm * kmRate) + (crewSize * crewRate);
   
   // Calculate packaging costs from supplier's pricing
   let packagingTotal = 0;
