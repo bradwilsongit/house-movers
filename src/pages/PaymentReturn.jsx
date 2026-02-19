@@ -23,14 +23,10 @@ export default function PaymentReturn() {
     }
 
     try {
-      // Update booking status and payment status
-      await base44.entities.Booking.update(bookingId, {
-        payment_status: 'paid',
-        paid_at: new Date().toISOString(),
-        status: 'confirmed'
-      });
-
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Note: Actual payment verification happens via PayFast ITN webhook
+      // This return URL just redirects the customer - it doesn't confirm payment
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
       navigate(createPageUrl('BookingDetails') + `?id=${bookingId}`);
     } catch (e) {
       console.error('Error processing return:', e);
