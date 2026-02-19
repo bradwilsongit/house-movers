@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Truck, Users, Clock, Shield, Check, ChevronRight, Loader2 } from 'lucide-react';
+// Clock kept for on-time rate display
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
