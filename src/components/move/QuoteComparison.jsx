@@ -242,11 +242,19 @@ export default function QuoteComparison({
                           const crewSize = matchedVehicle?.crew_size || quote.crew_size || 2;
 
                           return (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t">
+                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t">
                               <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                                  <Truck className="w-4 h-4" />
-                                </div>
+                                {matchedVehicle?.front_photo_url ? (
+                                  <img 
+                                    src={matchedVehicle.front_photo_url} 
+                                    alt="Vehicle" 
+                                    className="w-12 h-12 object-cover rounded-lg"
+                                  />
+                                ) : (
+                                  <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <Truck className="w-4 h-4" />
+                                  </div>
+                                )}
                                 <div>
                                   <p className="text-xs text-gray-500">Vehicle</p>
                                   <div className="flex items-center gap-1.5">
@@ -254,7 +262,6 @@ export default function QuoteComparison({
                                     {matchedVehicle?.year && (
                                       <span className="text-xs text-gray-400">({matchedVehicle.year})</span>
                                     )}
-
                                   </div>
                                 </div>
                               </div>
