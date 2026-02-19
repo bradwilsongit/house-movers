@@ -82,6 +82,43 @@ export default function AdminSuppliers() {
     }
   };
 
+  const openEditDialog = (supplier) => {
+    setEditForm({ ...supplier });
+    setEditDialog({ open: true });
+  };
+
+  const handleEditSave = async () => {
+    setEditSaving(true);
+    try {
+      await base44.entities.Supplier.update(editForm.id, {
+        company_name: editForm.company_name,
+        contact_person: editForm.contact_person,
+        contact_email: editForm.contact_email,
+        contact_phone: editForm.contact_phone,
+        registration_number: editForm.registration_number,
+        service_regions: editForm.service_regions,
+        capability_classes: editForm.capability_classes,
+        crew_capacity: editForm.crew_capacity,
+      });
+      setSuppliers(suppliers.map(s => s.id === editForm.id ? { ...s, ...editForm } : s));
+      setEditDialog({ open: false });
+    } catch (e) {
+      console.error('Error saving supplier:', e);
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
+  const toggleEditRegion = (region) => {
+    const regions = editForm.service_regions || [];
+    setEditForm({ ...editForm, service_regions: regions.includes(region) ? regions.filter(r => r !== region) : [...regions, region] });
+  };
+
+  const toggleEditCapability = (cap) => {
+    const caps = editForm.capability_classes || [];
+    setEditForm({ ...editForm, capability_classes: caps.includes(cap) ? caps.filter(c => c !== cap) : [...caps, cap] });
+  };
+
   const filteredSuppliers = suppliers.filter(s => {
     const matchesSearch = !searchQuery || 
       s.company_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
