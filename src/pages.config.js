@@ -72,6 +72,7 @@ import SupplierJobs from './pages/SupplierJobs';
 import SupplierOnboarding from './pages/SupplierOnboarding';
 import SupplierProfile from './pages/SupplierProfile';
 import Support from './pages/Support';
+import Terms from './pages/Terms';
 import __Layout from './Layout.jsx';
 
 
@@ -101,6 +102,7 @@ export const PAGES = {
     "SupplierOnboarding": SupplierOnboarding,
     "SupplierProfile": SupplierProfile,
     "Support": Support,
+    "Terms": Terms,
 }
 
 export const pagesConfig = {
