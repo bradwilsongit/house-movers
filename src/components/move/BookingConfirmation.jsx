@@ -156,8 +156,18 @@ export default function BookingConfirmation({
               <span className="font-medium">{distanceKm.toFixed(1)} km</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Supplier Base Price</span>
-              <span className="font-medium">R{supplierBasePrice.toFixed(2)}</span>
+              <span className="text-gray-600">Distance Cost ({distanceKm.toFixed(1)} km × R{kmRate}/km)</span>
+              <span className="font-medium">R{(distanceKm * kmRate).toFixed(2)}</span>
+            </div>
+            {crewSize > 0 && crewRate > 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Crew Cost ({crewSize} × R{crewRate}/crew)</span>
+                <span className="font-medium">R{(crewSize * crewRate).toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between font-medium border-t pt-2">
+              <span className="text-gray-700">Supplier Base Price</span>
+              <span>R{supplierBasePrice.toFixed(2)}</span>
             </div>
             {packagingTotal > 0 && (
               <div className="space-y-2">
