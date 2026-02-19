@@ -31,16 +31,17 @@ export default function RatingDialog({ open, onOpenChange, booking, supplier, on
       const user = await base44.auth.me();
       
       // Create rating
-      const rating = await base44.entities.Rating.create({
-        booking_id: booking.id,
-        supplier_id: booking.supplier_id,
-        customer_id: user.id,
-        overall_rating: form.overall_rating,
-        punctuality_rating: form.punctuality_rating || form.overall_rating,
-        care_rating: form.care_rating || form.overall_rating,
-        communication_rating: form.communication_rating || form.overall_rating,
-        review_text: form.review_text,
-      });
+       const rating = await base44.entities.Rating.create({
+         booking_id: booking.id,
+         supplier_id: booking.supplier_id,
+         customer_id: user.id,
+         customer_name: user.full_name || user.email,
+         overall_rating: form.overall_rating,
+         punctuality_rating: form.punctuality_rating || form.overall_rating,
+         care_rating: form.care_rating || form.overall_rating,
+         communication_rating: form.communication_rating || form.overall_rating,
+         review_text: form.review_text,
+       });
 
       // Get supplier email
       const suppliers = await base44.entities.Supplier.filter({ id: booking.supplier_id });
