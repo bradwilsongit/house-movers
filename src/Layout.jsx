@@ -168,10 +168,7 @@ export default function Layout({ children, currentPageName }) {
             <div className="flex items-center gap-3">
               {user ? (
                 <>
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="w-5 h-5" />
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-                  </Button>
+                  <NotificationBell user={user} />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="flex items-center gap-2">
