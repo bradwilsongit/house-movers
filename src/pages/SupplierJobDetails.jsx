@@ -35,8 +35,8 @@ import { cn } from '@/lib/utils';
 
 const statusConfig = {
   pending_deposit: { label: 'Awaiting Payment', color: 'bg-gray-100 text-gray-700', next: null },
-  confirmed: { label: 'Confirmed', color: 'bg-blue-100 text-blue-700', next: 'driver_assigned' },
-  driver_assigned: { label: 'Ready', color: 'bg-emerald-100 text-emerald-700', next: 'on_route' },
+  confirmed: { label: 'Confirmed', color: 'bg-blue-100 text-blue-700', next: 'mover_accepted' },
+  mover_accepted: { label: 'Accepted', color: 'bg-emerald-100 text-emerald-700', next: 'on_route' },
   on_route: { label: 'On Route', color: 'bg-blue-100 text-blue-700', next: 'arrived' },
   arrived: { label: 'Arrived', color: 'bg-amber-100 text-amber-700', next: 'loading' },
   loading: { label: 'Loading', color: 'bg-amber-100 text-amber-700', next: 'in_transit' },
@@ -130,19 +130,18 @@ export default function SupplierJobDetails() {
   };
 
   const handleSaveDriverDetails = async () => {
-    setProcessing(true);
-    try {
-      await base44.entities.Booking.update(booking.id, {
-        ...driverForm,
-        status: 'driver_assigned',
-      });
-      setBooking({ ...booking, ...driverForm, status: 'driver_assigned' });
-      setDriverDialog(false);
-    } catch (e) {
-      console.error('Error saving driver details:', e);
-    } finally {
-      setProcessing(false);
-    }
+   setProcessing(true);
+   try {
+     await base44.entities.Booking.update(booking.id, {
+       ...driverForm,
+     });
+     setBooking({ ...booking, ...driverForm });
+     setDriverDialog(false);
+   } catch (e) {
+     console.error('Error saving driver details:', e);
+   } finally {
+     setProcessing(false);
+   }
   };
 
   const handleSubmitExtra = async () => {
@@ -192,8 +191,8 @@ export default function SupplierJobDetails() {
   }
 
   const status = statusConfig[booking.status] || statusConfig.confirmed;
-  const canUpdateStatus = status.next && booking.deposit_paid;
-  const needsDriverDetails = booking.status === 'confirmed' && !booking.driver_name;
+  const canUpdateStatus = status.next && booking.payment_status === 'paid';
+  const needsAcceptance = booking.status === 'confirmed';
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -217,22 +216,22 @@ export default function SupplierJobDetails() {
           </Badge>
         </div>
 
-        {/* Alert for driver details */}
-        {needsDriverDetails && (
-          <Card className="bg-amber-50 border-amber-200 mb-6">
+        {/* Alert for acceptance */}
+        {needsAcceptance && (
+          <Card className="bg-emerald-50 border-emerald-200 mb-6">
             <CardContent className="py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <AlertCircle className="w-5 h-5 text-amber-600" />
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                   <div>
-                    <p className="font-medium text-amber-900">Driver Details Required</p>
-                    <p className="text-sm text-amber-700">
-                      Please assign a driver before the move date
+                    <p className="font-medium text-emerald-900">Ready to Accept</p>
+                    <p className="text-sm text-emerald-700">
+                      Click below to accept this job
                     </p>
                   </div>
                 </div>
-                <Button onClick={() => setDriverDialog(true)} className="bg-amber-600 hover:bg-amber-700">
-                  Assign Driver
+                <Button onClick={() => handleUpdateStatus('mover_accepted')} disabled={processing} className="bg-emerald-600 hover:bg-emerald-700">
+                  Accept Job
                 </Button>
               </div>
             </CardContent>
@@ -398,35 +397,12 @@ export default function SupplierJobDetails() {
                   <span className="font-bold">R{booking.total_amount?.toLocaleString()}</span>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t">
-                  <div className="flex justify-between text-sm">
-                    <span className={cn(
-                      "flex items-center gap-2",
-                      booking.deposit_paid ? "text-emerald-600" : "text-gray-500"
-                    )}>
-                      {booking.deposit_paid ? (
-                        <CheckCircle2 className="w-4 h-4" />
-                      ) : (
-                        <Clock className="w-4 h-4" />
-                      )}
-                      Deposit
-                    </span>
-                    <span>R{booking.deposit_amount?.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className={cn(
-                      "flex items-center gap-2",
-                      booking.balance_paid ? "text-emerald-600" : "text-gray-500"
-                    )}>
-                      {booking.balance_paid ? (
-                        <CheckCircle2 className="w-4 h-4" />
-                      ) : (
-                        <Clock className="w-4 h-4" />
-                      )}
-                      Balance
-                    </span>
-                    <span>R{booking.balance_amount?.toLocaleString()}</span>
-                  </div>
+                <div className="flex justify-between text-sm pt-2 border-t">
+                  <span className="flex items-center gap-2 text-emerald-600">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Payment Status
+                  </span>
+                  <span className="font-medium">{booking.payment_status === 'paid' ? 'Paid' : 'Pending'}</span>
                 </div>
               </CardContent>
             </Card>
@@ -437,13 +413,6 @@ export default function SupplierJobDetails() {
                 <CardTitle className="text-lg">Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {!booking.driver_name && booking.status === 'confirmed' && (
-                  <Button className="w-full" onClick={() => setDriverDialog(true)}>
-                    <User className="w-4 h-4 mr-2" />
-                    Assign Driver
-                  </Button>
-                )}
-
                 {canUpdateStatus && (
                   <Button 
                     className="w-full bg-black text-white hover:bg-gray-800"
