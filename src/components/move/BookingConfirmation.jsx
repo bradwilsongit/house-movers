@@ -102,8 +102,9 @@ export default function BookingConfirmation({
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Time Window</p>
+              <p className="text-sm text-gray-500">Time Window (Preference)</p>
               <p className="font-medium capitalize">{moveRequest?.time_window || 'Morning'}</p>
+              <p className="text-xs text-gray-400">Not guaranteed</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Move Type</p>
