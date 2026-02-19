@@ -80,9 +80,15 @@ export default function QuoteComparison({
   const calculateQuotePrice = (quote) => {
     const distanceKm = moveRequest?.distance_km || 0;
     const supplier = suppliers[quote.supplier_id];
-    const supplierKmRate = supplier?.pricing?.rate_per_km || 0;
     
-    const supplierBasePrice = distanceKm * supplierKmRate;
+    // Use vehicle-specific rate if available, fallback to supplier-level rate
+    const fleet = supplier?.fleet || [];
+    const matchedVehicle = fleet.find(v => v.vehicle_type === quote.vehicle_type) || fleet[0];
+    const kmRate = matchedVehicle?.rate_per_km ?? supplier?.pricing?.rate_per_km ?? 0;
+    const crewRate = matchedVehicle?.crew_member_rate ?? supplier?.pricing?.crew_member_rate ?? 0;
+    const crewSize = matchedVehicle?.crew_size || quote.crew_size || 0;
+    
+    const supplierBasePrice = (distanceKm * kmRate) + (crewSize * crewRate);
     
     // Calculate packaging costs from supplier's pricing
     let packagingTotal = 0;
