@@ -60,6 +60,8 @@ export default function AdminSuppliers() {
   const [editSaving, setEditSaving] = useState(false);
   const [editNewVehicle, setEditNewVehicle] = useState({ vehicle_type:'',make:'',model:'',year:'',capacity_m3:'',crew_size:'',rate_per_km:'',crew_member_rate:'',plate_number:'' });
   const [editNewPkg, setEditNewPkg] = useState({ name: '', unit_price: '' });
+  const [uploadingInsurance, setUploadingInsurance] = useState(false);
+  const [uploadingCompliance, setUploadingCompliance] = useState(false);
 
   useEffect(() => {
     loadSuppliers();

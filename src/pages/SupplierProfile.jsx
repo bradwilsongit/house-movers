@@ -74,6 +74,8 @@ export default function SupplierProfile() {
     unit_price: '',
     in_stock: true,
   });
+  const [uploadingInsurance, setUploadingInsurance] = useState(false);
+  const [uploadingCompliance, setUploadingCompliance] = useState(false);
 
   useEffect(() => {
     loadData();
