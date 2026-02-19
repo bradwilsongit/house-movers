@@ -214,44 +214,56 @@ export default function QuoteComparison({
                         </div>
 
                         {/* Quote Details */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                              <Truck className="w-4 h-4" />
+                        {(() => {
+                          // Find the specific vehicle from supplier fleet that matches quote vehicle_type
+                          const fleet = supplier?.fleet || [];
+                          const matchedVehicle = fleet.find(v => v.vehicle_type === quote.vehicle_type) || fleet[0];
+                          const isPremium = matchedVehicle?.year && matchedVehicle.year > 2021;
+                          const vehicleLabel = matchedVehicle
+                            ? `${matchedVehicle.vehicle_type}${matchedVehicle.make ? ` • ${matchedVehicle.make}` : ''}${matchedVehicle.model ? ` ${matchedVehicle.model}` : ''}`
+                            : (quote.vehicle_type || 'Standard');
+                          const crewSize = matchedVehicle?.crew_size || quote.crew_size || 2;
+
+                          return (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                                  <Truck className="w-4 h-4" />
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-500">Vehicle</p>
+                                  <div className="flex items-center gap-1.5">
+                                    <p className="text-sm font-medium">{vehicleLabel}</p>
+                                    {matchedVehicle?.year && (
+                                      <span className="text-xs text-gray-400">({matchedVehicle.year})</span>
+                                    )}
+                                    {isPremium && (
+                                      <Badge className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0">Premium</Badge>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                                  <Users className="w-4 h-4" />
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-500">Crew</p>
+                                  <p className="text-sm font-medium">{crewSize} men</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                                  <Shield className="w-4 h-4" />
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-500">Insurance</p>
+                                  <p className="text-sm font-medium">Included</p>
+                                </div>
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-xs text-gray-500">Vehicle</p>
-                              <p className="text-sm font-medium">{quote.vehicle_type || 'Standard'}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                              <Users className="w-4 h-4" />
-                            </div>
-                            <div>
-                              <p className="text-xs text-gray-500">Crew</p>
-                              <p className="text-sm font-medium">{quote.crew_size || 2} men</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                              <Clock className="w-4 h-4" />
-                            </div>
-                            <div>
-                              <p className="text-xs text-gray-500">Duration</p>
-                              <p className="text-sm font-medium">~{quote.estimated_duration_hours || 4} hours</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                              <Shield className="w-4 h-4" />
-                            </div>
-                            <div>
-                              <p className="text-xs text-gray-500">Insurance</p>
-                              <p className="text-sm font-medium">Included</p>
-                            </div>
-                          </div>
-                        </div>
+                          );
+                        })()}
 
                         {/* Included Services */}
                         {quote.included_services?.length > 0 && (
