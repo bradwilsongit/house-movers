@@ -440,17 +440,43 @@ export default function AdminSuppliers() {
                 {/* Documents */}
                 <div>
                   <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wide mb-3">Documents</h4>
-                  <div className="flex gap-3">
-                    {editForm.insurance_doc_url ? (
-                      <a href={editForm.insurance_doc_url} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" size="sm" type="button"><FileText className="w-4 h-4 mr-2" />View Insurance Doc</Button>
-                      </a>
-                    ) : <span className="text-sm text-gray-400">No insurance document uploaded</span>}
-                    {editForm.compliance_doc_url && (
-                      <a href={editForm.compliance_doc_url} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" size="sm" type="button"><FileText className="w-4 h-4 mr-2" />View Compliance Doc</Button>
-                      </a>
-                    )}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Insurance Document</Label>
+                      <div className="mt-1 space-y-1.5">
+                        {editForm.insurance_doc_url && (
+                          <a href={editForm.insurance_doc_url} target="_blank" rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 text-sm text-blue-600 hover:underline">
+                            <FileText className="w-3.5 h-3.5" /> View Current
+                          </a>
+                        )}
+                        <label className="flex items-center justify-center gap-2 h-9 border-2 border-dashed rounded cursor-pointer hover:bg-gray-50 text-sm text-gray-500">
+                          <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden"
+                            onChange={(e) => e.target.files?.[0] && handleDocUpload(e.target.files[0], 'insurance')}
+                            disabled={uploadingInsurance} />
+                          <Upload className="w-3.5 h-3.5" />
+                          {uploadingInsurance ? 'Uploading...' : editForm.insurance_doc_url ? 'Replace' : 'Upload'}
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Compliance Document</Label>
+                      <div className="mt-1 space-y-1.5">
+                        {editForm.compliance_doc_url && (
+                          <a href={editForm.compliance_doc_url} target="_blank" rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 text-sm text-blue-600 hover:underline">
+                            <FileText className="w-3.5 h-3.5" /> View Current
+                          </a>
+                        )}
+                        <label className="flex items-center justify-center gap-2 h-9 border-2 border-dashed rounded cursor-pointer hover:bg-gray-50 text-sm text-gray-500">
+                          <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden"
+                            onChange={(e) => e.target.files?.[0] && handleDocUpload(e.target.files[0], 'compliance')}
+                            disabled={uploadingCompliance} />
+                          <Upload className="w-3.5 h-3.5" />
+                          {uploadingCompliance ? 'Uploading...' : editForm.compliance_doc_url ? 'Replace' : 'Upload'}
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
