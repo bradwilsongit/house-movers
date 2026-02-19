@@ -198,7 +198,7 @@ export default function AdminSuppliers() {
                             <div className="flex flex-wrap gap-1 mt-1">
                               {supplier.capability_classes?.map(c => (
                                 <Badge key={c} variant="secondary" className="text-xs capitalize">
-                                  {c.replace('_', ' ')}
+                                  {c.replace(/_/g, ' ')}
                                 </Badge>
                               ))}
                             </div>
