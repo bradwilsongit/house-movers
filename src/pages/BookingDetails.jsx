@@ -14,6 +14,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import SupportTicketDialog from '@/components/SupportTicketDialog';
+import RatingDialog from '@/components/RatingDialog';
+import { generateInvoicePDF } from '@/components/InvoicePDF';
 
 const statusSteps = [
   { id: 'confirmed', label: 'Confirmed', icon: CheckCircle2 },
@@ -30,6 +33,8 @@ export default function BookingDetails() {
   const [supplier, setSupplier] = useState(null);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [supportDialogOpen, setSupportDialogOpen] = useState(false);
+  const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
 
   useEffect(() => {
     loadBooking();
@@ -350,16 +355,27 @@ export default function BookingDetails() {
             {/* Actions */}
             <Card>
               <CardContent className="py-4 space-y-2">
-                <Button variant="outline" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => setSupportDialogOpen(true)}
+                >
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Contact Support
                 </Button>
-                <Button variant="outline" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => generateInvoicePDF(booking, moveRequest, supplier, quote)}
+                >
                   <FileText className="w-4 h-4 mr-2" />
                   View Invoice
                 </Button>
                 {booking.status === 'completed' && (
-                  <Button className="w-full justify-start bg-black text-white hover:bg-gray-800">
+                  <Button 
+                    className="w-full justify-start bg-black text-white hover:bg-gray-800"
+                    onClick={() => setRatingDialogOpen(true)}
+                  >
                     <Star className="w-4 h-4 mr-2" />
                     Rate Your Move
                   </Button>
@@ -384,6 +400,18 @@ export default function BookingDetails() {
           </div>
         </div>
       </div>
+
+      <SupportTicketDialog 
+        open={supportDialogOpen}
+        onOpenChange={setSupportDialogOpen}
+        bookingId={booking.id}
+      />
+      <RatingDialog 
+        open={ratingDialogOpen}
+        onOpenChange={setRatingDialogOpen}
+        booking={booking}
+        supplier={supplier}
+      />
     </div>
   );
 }
