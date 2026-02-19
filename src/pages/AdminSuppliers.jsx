@@ -167,6 +167,20 @@ export default function AdminSuppliers() {
     setEditForm({ ...editForm, service_regions: regions.includes(region) ? regions.filter(r => r !== region) : [...regions, region] });
   };
 
+  const handleDocUpload = async (file, docType) => {
+    if (docType === 'insurance') setUploadingInsurance(true);
+    else setUploadingCompliance(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setEditForm({ ...editForm, [docType === 'insurance' ? 'insurance_doc_url' : 'compliance_doc_url']: file_url });
+    } catch (e) {
+      console.error('Error uploading document:', e);
+    } finally {
+      if (docType === 'insurance') setUploadingInsurance(false);
+      else setUploadingCompliance(false);
+    }
+  };
+
   const toggleEditCapability = (cap) => {
     const caps = editForm.capability_classes || [];
     setEditForm({ ...editForm, capability_classes: caps.includes(cap) ? caps.filter(c => c !== cap) : [...caps, cap] });

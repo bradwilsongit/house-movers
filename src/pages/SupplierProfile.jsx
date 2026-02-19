@@ -241,6 +241,20 @@ export default function SupplierProfile() {
     });
   };
 
+  const handleDocUpload = async (file, docType) => {
+    if (docType === 'insurance') setUploadingInsurance(true);
+    else setUploadingCompliance(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setFormData({ ...formData, [docType === 'insurance' ? 'insurance_doc_url' : 'compliance_doc_url']: file_url });
+    } catch (e) {
+      console.error('Error uploading document:', e);
+    } finally {
+      if (docType === 'insurance') setUploadingInsurance(false);
+      else setUploadingCompliance(false);
+    }
+  };
+
   const updatePricing = (field, value) => {
     setFormData({
       ...formData,
