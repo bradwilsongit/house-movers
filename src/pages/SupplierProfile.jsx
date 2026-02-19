@@ -59,6 +59,8 @@ export default function SupplierProfile() {
       year: '',
       capacity_m3: '',
       crew_size: '',
+      rate_per_km: '',
+      crew_member_rate: '',
       plate_number: '',
       front_photo_url: '',
       back_photo_url: '',
@@ -451,7 +453,7 @@ export default function SupplierProfile() {
                   onChange={(e) => setNewVehicle({ ...newVehicle, model: e.target.value })}
                 />
               </div>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 <Input
                   placeholder="Year"
                   type="number"
@@ -475,8 +477,22 @@ export default function SupplierProfile() {
                   value={newVehicle.plate_number}
                   onChange={(e) => setNewVehicle({ ...newVehicle, plate_number: e.target.value })}
                 />
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <Input
+                  placeholder="Rate per KM (R)"
+                  type="number"
+                  value={newVehicle.rate_per_km}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, rate_per_km: e.target.value })}
+                />
+                <Input
+                  placeholder="Crew Member Rate (R)"
+                  type="number"
+                  value={newVehicle.crew_member_rate}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, crew_member_rate: e.target.value })}
+                />
                 <Button onClick={addVehicle} disabled={!newVehicle.vehicle_type || !newVehicle.capacity_m3 || !newVehicle.front_photo_url || !newVehicle.back_photo_url}>
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-4 h-4" /> Add Vehicle
                 </Button>
               </div>
               <div className="grid grid-cols-2 gap-2">
