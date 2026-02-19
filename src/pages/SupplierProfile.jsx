@@ -65,6 +65,8 @@ export default function SupplierProfile() {
       front_photo_url: '',
       back_photo_url: '',
     });
+  const [editingVehicleIndex, setEditingVehicleIndex] = useState(null);
+  const [editingVehicle, setEditingVehicle] = useState(null);
   const [uploadingFront, setUploadingFront] = useState(false);
   const [uploadingBack, setUploadingBack] = useState(false);
   const [newPackagingItem, setNewPackagingItem] = useState({
