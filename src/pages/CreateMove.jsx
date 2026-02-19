@@ -362,8 +362,13 @@ export default function CreateMove() {
         return;
       }
 
-      // Calculate pricing with commission — use supplier-specific pricing (same as BookingConfirmation)
-      const supplierBasePrice = distanceKm * supplierKmRate;
+      // Calculate pricing — use vehicle-specific rates (same as BookingConfirmation & QuoteComparison)
+      const fleet = supplier?.fleet || [];
+      const matchedVehicle = fleet.find(v => v.vehicle_type === selectedQuote?.vehicle_type) || fleet[0];
+      const kmRate = matchedVehicle?.rate_per_km ?? supplier?.pricing?.rate_per_km ?? 0;
+      const crewRate = matchedVehicle?.crew_member_rate ?? supplier?.pricing?.crew_member_rate ?? 0;
+      const crewSize = matchedVehicle?.crew_size || selectedQuote?.crew_size || 0;
+      const supplierBasePrice = (distanceKm * kmRate) + (crewSize * crewRate);
       let packagingTotal = 0;
       if (packagingOrder?.items?.length > 0 && supplier?.pricing?.packaging_items) {
         packagingOrder.items.forEach(selectedItem => {
