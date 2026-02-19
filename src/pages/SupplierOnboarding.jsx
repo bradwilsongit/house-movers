@@ -626,7 +626,7 @@ export default function SupplierOnboarding() {
                 </div>
 
                 <div>
-                  <Label className="mb-3 block">Compliance Documents (Optional)</Label>
+                  <Label className="mb-3 block">Business Owner ID (Optional)</Label>
                   <div className="border-2 border-dashed rounded-xl p-6 text-center">
                     {formData.compliance_doc_url ? (
                       <div className="flex items-center justify-center gap-2 text-emerald-600">
