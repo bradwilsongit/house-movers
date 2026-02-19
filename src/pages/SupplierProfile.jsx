@@ -181,6 +181,31 @@ export default function SupplierProfile() {
     });
   };
 
+  const startEditVehicle = (index) => {
+    setEditingVehicleIndex(index);
+    setEditingVehicle({ ...formData.fleet[index] });
+  };
+
+  const saveEditVehicle = () => {
+    const updatedFleet = [...(formData.fleet || [])];
+    updatedFleet[editingVehicleIndex] = {
+      ...editingVehicle,
+      capacity_m3: parseFloat(editingVehicle.capacity_m3) || 0,
+      year: editingVehicle.year ? parseInt(editingVehicle.year) : null,
+      crew_size: editingVehicle.crew_size ? parseInt(editingVehicle.crew_size) : null,
+      rate_per_km: editingVehicle.rate_per_km ? parseFloat(editingVehicle.rate_per_km) : null,
+      crew_member_rate: editingVehicle.crew_member_rate ? parseFloat(editingVehicle.crew_member_rate) : null,
+    };
+    setFormData({ ...formData, fleet: updatedFleet });
+    setEditingVehicleIndex(null);
+    setEditingVehicle(null);
+  };
+
+  const cancelEditVehicle = () => {
+    setEditingVehicleIndex(null);
+    setEditingVehicle(null);
+  };
+
   const addPackagingItem = () => {
     if (newPackagingItem.name && newPackagingItem.unit_price) {
       const pricing = formData.pricing || {};
