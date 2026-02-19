@@ -3,13 +3,14 @@ import { base44 } from '@/api/base44Client';
 import { format } from 'date-fns';
 import { 
   Building2, Search, Clock, CheckCircle2, XCircle, 
-  Star, Truck, MapPin, FileText, ChevronDown
+  Star, Truck, MapPin, FileText, ChevronDown, Pencil
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Label } from '@/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,9 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+
+const REGIONS = ['Cape Town','Johannesburg','Pretoria','Durban','Port Elizabeth','Bloemfontein','East London','Polokwane','Nelspruit','Kimberley'];
+const CAPABILITY_CLASSES = ['apartment','house','office','long_distance'];
 
 export default function AdminSuppliers() {
   const [suppliers, setSuppliers] = useState([]);
