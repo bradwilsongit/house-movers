@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
 import { 
-  Building2, MapPin, Truck, Users, Save, Check, Plus, X, Upload, DollarSign, Package
+  Building2, MapPin, Truck, Users, Save, Check, Plus, X, Upload, DollarSign, Package, Pencil
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
