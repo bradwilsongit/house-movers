@@ -617,29 +617,31 @@ export default function SupplierOnboarding() {
                 <div>
                   <Label className="mb-3 block">Insurance Document *</Label>
                   <div className="border-2 border-dashed rounded-xl p-6 text-center">
-                    {formData.insurance_doc_url ? (
-                      <div className="flex items-center justify-center gap-2 text-emerald-600">
-                        <CheckCircle2 className="w-5 h-5" />
-                        <span>Document uploaded</span>
+                    {uploadingInsuranceDoc ? (
+                      <div className="flex items-center justify-center gap-2 text-gray-500">
+                        <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                        <span>Uploading...</span>
+                      </div>
+                    ) : formData.insurance_doc_url ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-center gap-2 text-emerald-600">
+                          <CheckCircle2 className="w-5 h-5" />
+                          <span>Document uploaded</span>
+                        </div>
+                        <Label className="cursor-pointer">
+                          <span className="text-black underline text-sm">Replace file</span>
+                          <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'insurance_doc_url')} />
+                        </Label>
                       </div>
                     ) : (
                       <>
                         <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500 mb-2">
-                          Upload your insurance certificate
-                        </p>
+                        <p className="text-sm text-gray-500 mb-2">Upload your insurance certificate</p>
                         <Label className="cursor-pointer">
                           <span className="text-black underline">Choose file</span>
-                          <input
-                            type="file"
-                            className="hidden"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={(e) => {
-                              if (e.target.files?.[0]) {
-                                handleFileUpload(e.target.files[0], 'insurance_doc_url');
-                              }
-                            }}
-                          />
+                          <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'insurance_doc_url')} />
                         </Label>
                       </>
                     )}
@@ -649,29 +651,31 @@ export default function SupplierOnboarding() {
                 <div>
                   <Label className="mb-3 block">Business Owner ID *</Label>
                   <div className="border-2 border-dashed rounded-xl p-6 text-center">
-                    {formData.compliance_doc_url ? (
-                      <div className="flex items-center justify-center gap-2 text-emerald-600">
-                        <CheckCircle2 className="w-5 h-5" />
-                        <span>Document uploaded</span>
+                    {uploadingComplianceDoc ? (
+                      <div className="flex items-center justify-center gap-2 text-gray-500">
+                        <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                        <span>Uploading...</span>
+                      </div>
+                    ) : formData.compliance_doc_url ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-center gap-2 text-emerald-600">
+                          <CheckCircle2 className="w-5 h-5" />
+                          <span>Document uploaded</span>
+                        </div>
+                        <Label className="cursor-pointer">
+                          <span className="text-black underline text-sm">Replace file</span>
+                          <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'compliance_doc_url')} />
+                        </Label>
                       </div>
                     ) : (
                       <>
                         <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500 mb-2">
-                          Upload business owner ID document
-                        </p>
+                        <p className="text-sm text-gray-500 mb-2">Upload business owner ID document</p>
                         <Label className="cursor-pointer">
                           <span className="text-black underline">Choose file</span>
-                          <input
-                            type="file"
-                            className="hidden"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={(e) => {
-                              if (e.target.files?.[0]) {
-                                handleFileUpload(e.target.files[0], 'compliance_doc_url');
-                              }
-                            }}
-                          />
+                          <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'compliance_doc_url')} />
                         </Label>
                       </>
                     )}
