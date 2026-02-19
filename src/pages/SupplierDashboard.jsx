@@ -345,6 +345,9 @@ export default function SupplierDashboard() {
             </CardContent>
           </Card>
         )}
+
+        {/* Reviews */}
+        <ReviewsTable supplierId={supplier.id} />
       </div>
     </div>
   );
