@@ -208,22 +208,20 @@ export default function AdminBookings() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            {booking.deposit_paid ? (
+                            {booking.payment_status === 'paid' ? (
                               <Badge variant="outline" className="text-emerald-600 border-emerald-200">
                                 <CheckCircle2 className="w-3 h-3 mr-1" />
-                                Deposit
+                                Paid
                               </Badge>
                             ) : (
-                              <Badge variant="outline" className="text-gray-500">
-                                <Clock className="w-3 h-3 mr-1" />
-                                Pending
-                              </Badge>
-                            )}
-                            {booking.balance_paid && (
-                              <Badge variant="outline" className="text-emerald-600 border-emerald-200">
-                                <CheckCircle2 className="w-3 h-3 mr-1" />
-                                Balance
-                              </Badge>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleMarkAsPaid(booking)}
+                                disabled={updatingId === booking.id}
+                              >
+                                Mark Paid
+                              </Button>
                             )}
                           </div>
                         </td>
