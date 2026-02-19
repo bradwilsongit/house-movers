@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
 import md5 from 'crypto-js/md5';
+import { createPageUrl } from '@/utils';
 
 export default function PayFastPayment({ booking, settings, onPaymentInitiated }) {
   const formRef = useRef(null);
