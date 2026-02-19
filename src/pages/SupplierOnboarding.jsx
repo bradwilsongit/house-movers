@@ -413,7 +413,7 @@ export default function SupplierOnboarding() {
 
                 {/* Fleet */}
                 <div>
-                  <Label className="mb-3 block">Your Fleet</Label>
+                  <Label className="mb-3 block">Your Fleet *</Label>
                   {formData.fleet.map((vehicle, index) => (
                     <div key={index} className="p-3 bg-gray-50 rounded-lg mb-2">
                       <div className="flex items-center gap-2 mb-2">
@@ -572,7 +572,7 @@ export default function SupplierOnboarding() {
                   </Button>
                   <Button 
                     onClick={() => setStep(4)}
-                    disabled={formData.service_regions.length === 0 || formData.capability_classes.length === 0}
+                    disabled={formData.service_regions.length === 0 || formData.capability_classes.length === 0 || formData.fleet.length === 0}
                     className="bg-black text-white hover:bg-gray-800"
                   >
                     Continue
@@ -594,7 +594,7 @@ export default function SupplierOnboarding() {
               <div className="space-y-6">
                 {/* Document Uploads */}
                 <div>
-                  <Label className="mb-3 block">Insurance Document (Optional)</Label>
+                  <Label className="mb-3 block">Insurance Document *</Label>
                   <div className="border-2 border-dashed rounded-xl p-6 text-center">
                     {formData.insurance_doc_url ? (
                       <div className="flex items-center justify-center gap-2 text-emerald-600">
@@ -626,7 +626,7 @@ export default function SupplierOnboarding() {
                 </div>
 
                 <div>
-                  <Label className="mb-3 block">Business Owner ID (Optional)</Label>
+                  <Label className="mb-3 block">Business Owner ID *</Label>
                   <div className="border-2 border-dashed rounded-xl p-6 text-center">
                     {formData.compliance_doc_url ? (
                       <div className="flex items-center justify-center gap-2 text-emerald-600">
@@ -687,7 +687,7 @@ export default function SupplierOnboarding() {
                   </Button>
                   <Button 
                     onClick={handleSubmit}
-                    disabled={!formData.agreement_accepted || loading}
+                    disabled={!formData.agreement_accepted || !formData.insurance_doc_url || !formData.compliance_doc_url || loading}
                     className="bg-black text-white hover:bg-gray-800 min-w-[150px]"
                   >
                     {loading ? (
