@@ -418,39 +418,23 @@ export default function AdminSuppliers() {
                       <Label>Email</Label>
                       <Input className="mt-1" value={editForm.contact_email || ''} onChange={e => setEditForm({ ...editForm, contact_email: e.target.value })} />
                     </div>
-                    <div>
-                      <Label>Max Crew Capacity</Label>
-                      <Input className="mt-1" type="number" value={editForm.crew_capacity || ''} onChange={e => setEditForm({ ...editForm, crew_capacity: parseInt(e.target.value) || 0 })} />
-                    </div>
                   </div>
                 </div>
 
                 {/* Documents */}
                 <div>
                   <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wide mb-3">Documents</h4>
-                  <div className="space-y-3">
-                    <div>
-                      <Label>Insurance Document URL</Label>
-                      <div className="flex gap-2 mt-1">
-                        <Input value={editForm.insurance_doc_url || ''} onChange={e => setEditForm({ ...editForm, insurance_doc_url: e.target.value })} placeholder="https://..." />
-                        {editForm.insurance_doc_url && (
-                          <a href={editForm.insurance_doc_url} target="_blank" rel="noopener noreferrer">
-                            <Button variant="outline" size="sm" type="button">View</Button>
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      <Label>Compliance Document URL</Label>
-                      <div className="flex gap-2 mt-1">
-                        <Input value={editForm.compliance_doc_url || ''} onChange={e => setEditForm({ ...editForm, compliance_doc_url: e.target.value })} placeholder="https://..." />
-                        {editForm.compliance_doc_url && (
-                          <a href={editForm.compliance_doc_url} target="_blank" rel="noopener noreferrer">
-                            <Button variant="outline" size="sm" type="button">View</Button>
-                          </a>
-                        )}
-                      </div>
-                    </div>
+                  <div className="flex gap-3">
+                    {editForm.insurance_doc_url ? (
+                      <a href={editForm.insurance_doc_url} target="_blank" rel="noopener noreferrer">
+                        <Button variant="outline" size="sm" type="button"><FileText className="w-4 h-4 mr-2" />View Insurance Doc</Button>
+                      </a>
+                    ) : <span className="text-sm text-gray-400">No insurance document uploaded</span>}
+                    {editForm.compliance_doc_url && (
+                      <a href={editForm.compliance_doc_url} target="_blank" rel="noopener noreferrer">
+                        <Button variant="outline" size="sm" type="button"><FileText className="w-4 h-4 mr-2" />View Compliance Doc</Button>
+                      </a>
+                    )}
                   </div>
                 </div>
 
