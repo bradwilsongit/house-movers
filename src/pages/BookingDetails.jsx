@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 
 const statusSteps = [
   { id: 'confirmed', label: 'Confirmed', icon: CheckCircle2 },
-  { id: 'driver_assigned', label: 'Driver Assigned', icon: User },
+  { id: 'mover_accepted', label: 'Mover Accepted', icon: User },
   { id: 'arrived', label: 'Mover Arrived', icon: Truck },
   { id: 'in_transit', label: 'In Transit', icon: Truck },
   { id: 'completed', label: 'Completed', icon: CheckCircle2 },
@@ -73,7 +73,7 @@ export default function BookingDetails() {
   };
 
   const getCurrentStepIndex = () => {
-    const statusOrder = ['confirmed', 'driver_assigned', 'on_route', 'arrived', 'loading', 'in_transit', 'unloading', 'completed'];
+    const statusOrder = ['confirmed', 'mover_accepted', 'on_route', 'arrived', 'loading', 'in_transit', 'unloading', 'completed'];
     const index = statusOrder.indexOf(booking?.status);
     if (index <= 0) return 0;
     if (index <= 1) return 1;

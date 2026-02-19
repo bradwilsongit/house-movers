@@ -144,7 +144,7 @@ export default function AdminBookings() {
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="pending_deposit">Pending Payment</SelectItem>
                   <SelectItem value="confirmed">Confirmed</SelectItem>
-                  <SelectItem value="driver_assigned">Driver Assigned</SelectItem>
+                  <SelectItem value="mover_accepted">Mover Accepted</SelectItem>
                   <SelectItem value="in_transit">In Transit</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
                   <SelectItem value="cancelled">Cancelled</SelectItem>
