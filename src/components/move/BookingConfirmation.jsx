@@ -270,6 +270,7 @@ export default function BookingConfirmation({
                 <li>• Only inventoried items will be moved. Request changes in-app if needed.</li>
                 <li>• Any extras must be authorised by House Moves before payment.</li>
                 <li>• Free cancellation up to 72 hours before move date.</li>
+                <li>• Your selected date may not always be available. If unavailable, a full refund will be initiated within 24 hours.</li>
               </ul>
             </div>
           </div>
