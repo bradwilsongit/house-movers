@@ -29,7 +29,9 @@ export default function RatingDialog({ open, onOpenChange, booking, supplier, on
     setLoading(true);
     try {
       const user = await base44.auth.me();
-      await base44.entities.Rating.create({
+      
+      // Create rating
+      const rating = await base44.entities.Rating.create({
         booking_id: booking.id,
         supplier_id: booking.supplier_id,
         customer_id: user.id,
@@ -39,6 +41,36 @@ export default function RatingDialog({ open, onOpenChange, booking, supplier, on
         communication_rating: form.communication_rating || form.overall_rating,
         review_text: form.review_text,
       });
+
+      // Get supplier email
+      const suppliers = await base44.entities.Supplier.filter({ id: booking.supplier_id });
+      const supplier = suppliers.length > 0 ? suppliers[0] : null;
+
+      // Notify supplier
+      if (supplier?.contact_email) {
+        await base44.entities.Notification.create({
+          user_email: supplier.contact_email,
+          title: 'New Rating Received',
+          message: `You received a ${form.overall_rating}-star rating on booking ${booking.booking_reference}`,
+          type: 'booking',
+          link_page: 'SupplierJobDetails',
+          link_id: booking.id,
+        });
+      }
+
+      // Notify admins
+      const adminUsers = await base44.entities.User.list();
+      const admins = adminUsers.filter(u => u.role === 'admin');
+      for (const admin of admins) {
+        await base44.entities.Notification.create({
+          user_email: admin.email,
+          title: 'New Rating Submitted',
+          message: `A new ${form.overall_rating}-star rating was submitted for ${supplier?.company_name || 'a supplier'} on booking ${booking.booking_reference}`,
+          type: 'booking',
+          link_page: 'AdminBookings',
+        });
+      }
+
       onOpenChange(false);
       if (onSuccess) onSuccess();
     } catch (e) {
