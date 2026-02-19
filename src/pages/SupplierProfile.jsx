@@ -144,9 +144,11 @@ export default function SupplierProfile() {
             capacity_m3: parseFloat(newVehicle.capacity_m3),
             year: newVehicle.year ? parseInt(newVehicle.year) : null,
             crew_size: newVehicle.crew_size ? parseInt(newVehicle.crew_size) : null,
+            rate_per_km: newVehicle.rate_per_km ? parseFloat(newVehicle.rate_per_km) : null,
+            crew_member_rate: newVehicle.crew_member_rate ? parseFloat(newVehicle.crew_member_rate) : null,
           }]
         });
-        setNewVehicle({ vehicle_type: '', make: '', model: '', year: '', capacity_m3: '', crew_size: '', plate_number: '', front_photo_url: '', back_photo_url: '' });
+        setNewVehicle({ vehicle_type: '', make: '', model: '', year: '', capacity_m3: '', crew_size: '', rate_per_km: '', crew_member_rate: '', plate_number: '', front_photo_url: '', back_photo_url: '' });
     }
   };
 
