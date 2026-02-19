@@ -29,6 +29,11 @@ const CAPABILITY_CLASSES = [
   { id: 'long_distance', label: 'Long Distance', description: 'Inter-city moves' },
 ];
 
+const CAPABILITY_LABEL_MAP = {
+  micro: 'Micro', small: 'Small', family: 'Family',
+  apartment: 'Apartment', house: 'House', office: 'Office', long_distance: 'Long Distance',
+};
+
 const REGIONS = [
   'Cape Town',
   'Johannesburg',
