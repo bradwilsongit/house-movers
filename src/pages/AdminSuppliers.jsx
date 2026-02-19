@@ -110,16 +110,8 @@ export default function AdminSuppliers() {
   const handleEditSave = async () => {
     setEditSaving(true);
     try {
-      await base44.entities.Supplier.update(editForm.id, {
-        company_name: editForm.company_name,
-        contact_person: editForm.contact_person,
-        contact_email: editForm.contact_email,
-        contact_phone: editForm.contact_phone,
-        registration_number: editForm.registration_number,
-        service_regions: editForm.service_regions,
-        capability_classes: editForm.capability_classes,
-        crew_capacity: editForm.crew_capacity,
-      });
+      const { id, ...dataToSave } = editForm;
+      await base44.entities.Supplier.update(id, dataToSave);
       setSuppliers(suppliers.map(s => s.id === editForm.id ? { ...s, ...editForm } : s));
       setEditDialog({ open: false });
     } catch (e) {
@@ -127,6 +119,43 @@ export default function AdminSuppliers() {
     } finally {
       setEditSaving(false);
     }
+  };
+
+  const updateEditPricing = (field, value) => {
+    setEditForm({ ...editForm, pricing: { ...(editForm.pricing || {}), [field]: value ? parseFloat(value) : 0 } });
+  };
+
+  const addEditVehicle = () => {
+    if (editNewVehicle.vehicle_type && editNewVehicle.capacity_m3) {
+      const fleet = editForm.fleet || [];
+      setEditForm({ ...editForm, fleet: [...fleet, {
+        ...editNewVehicle,
+        capacity_m3: parseFloat(editNewVehicle.capacity_m3),
+        year: editNewVehicle.year ? parseInt(editNewVehicle.year) : null,
+        crew_size: editNewVehicle.crew_size ? parseInt(editNewVehicle.crew_size) : null,
+        rate_per_km: editNewVehicle.rate_per_km ? parseFloat(editNewVehicle.rate_per_km) : null,
+        crew_member_rate: editNewVehicle.crew_member_rate ? parseFloat(editNewVehicle.crew_member_rate) : null,
+      }] });
+      setEditNewVehicle({ vehicle_type:'',make:'',model:'',year:'',capacity_m3:'',crew_size:'',rate_per_km:'',crew_member_rate:'',plate_number:'' });
+    }
+  };
+
+  const removeEditVehicle = (idx) => {
+    setEditForm({ ...editForm, fleet: (editForm.fleet || []).filter((_, i) => i !== idx) });
+  };
+
+  const addEditPackaging = () => {
+    if (editNewPkg.name && editNewPkg.unit_price) {
+      const opt = PACKAGING_OPTIONS.find(o => o.name === editNewPkg.name);
+      const items = editForm.pricing?.packaging_items || [];
+      setEditForm({ ...editForm, pricing: { ...(editForm.pricing || {}), packaging_items: [...items, { name: editNewPkg.name, category: opt?.category || 'boxes', unit_price: parseFloat(editNewPkg.unit_price), in_stock: true }] } });
+      setEditNewPkg({ name: '', unit_price: '' });
+    }
+  };
+
+  const removeEditPackaging = (idx) => {
+    const items = (editForm.pricing?.packaging_items || []).filter((_, i) => i !== idx);
+    setEditForm({ ...editForm, pricing: { ...(editForm.pricing || {}), packaging_items: items } });
   };
 
   const toggleEditRegion = (region) => {
