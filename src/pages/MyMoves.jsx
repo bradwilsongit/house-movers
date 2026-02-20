@@ -179,20 +179,7 @@ export default function MyMoves() {
             )}
           </TabsContent>
 
-          {/* Drafts */}
-          <TabsContent value="drafts" className="space-y-4">
-            {drafts.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <p className="text-gray-500">No drafts</p>
-                </CardContent>
-              </Card>
-            ) : (
-              drafts.map(move => (
-                <MoveRequestCard key={move.id} move={move} />
-              ))
-            )}
-          </TabsContent>
+
         </Tabs>
       </div>
     </div>
