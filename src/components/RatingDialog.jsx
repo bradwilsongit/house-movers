@@ -77,9 +77,9 @@ export default function RatingDialog({ open, onOpenChange, booking, supplier, on
       if (supplier?.contact_email) {
         emailSupplierNewReview({ supplierEmail: supplier.contact_email, supplierName: supplier.company_name, booking, rating: { overall_rating: form.overall_rating, review_text: form.review_text } });
       }
-      const adminUsers = await base44.entities.User.list();
-      const admins = adminUsers.filter(u => u.role === 'admin');
-      emailAdminsNewReview({ admins, booking, supplierName: supplier?.company_name, rating: { overall_rating: form.overall_rating, review_text: form.review_text } });
+      const allUsersForEmail = await base44.entities.User.list();
+      const adminsForEmail = allUsersForEmail.filter(u => u.role === 'admin');
+      emailAdminsNewReview({ admins: adminsForEmail, booking, supplierName: supplier?.company_name, rating: { overall_rating: form.overall_rating, review_text: form.review_text } });
 
       if (onSuccess) onSuccess();
       onOpenChange(false);
