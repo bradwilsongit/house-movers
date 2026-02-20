@@ -226,9 +226,16 @@ function BookingCard({ booking }) {
               <p className="text-2xl font-bold">
                 R{booking.total_amount?.toLocaleString()}
               </p>
-              <p className="text-sm text-gray-500">
-                {booking.payment_status === 'paid' ? 'Paid' : 'Payment pending'}
-              </p>
+              {booking.payment_status === 'paid' ? (
+                <p className="text-sm text-emerald-600 font-medium">Paid</p>
+              ) : (() => {
+                const hoursSince = (Date.now() - new Date(booking.created_date).getTime()) / (1000 * 60 * 60);
+                return hoursSince > 24 ? (
+                  <p className="text-sm text-red-500 font-medium">Payment expired</p>
+                ) : (
+                  <p className="text-sm text-amber-600 font-medium">Payment pending</p>
+                );
+              })()}
             </div>
 
             <ChevronRight className="w-5 h-5 text-gray-400 ml-4" />
