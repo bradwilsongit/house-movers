@@ -219,12 +219,24 @@ export default function QuoteComparison({
                                ) : null;
                              })()}
                              <div className="flex items-center gap-3 text-sm">
-                               <span className="flex items-center gap-1.5 px-2 py-1 bg-amber-50 rounded-lg">
-                                 <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                                 <span className="font-medium text-amber-900">
-                                   {supplier?.rating_average > 0 ? supplier.rating_average.toFixed(1) : 'New'}
-                                 </span>
-                               </span>
+                               {(() => {
+                                 const ratingInfo = supplierRatings[quote.supplier_id];
+                                 if (ratingInfo) {
+                                   return (
+                                     <span className="flex items-center gap-1.5 px-2 py-1 bg-amber-50 rounded-lg">
+                                       <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                                       <span className="font-medium text-amber-900">{ratingInfo.average.toFixed(1)}</span>
+                                       <span className="text-amber-700 text-xs">({ratingInfo.count})</span>
+                                     </span>
+                                   );
+                                 }
+                                 return (
+                                   <span className="flex items-center gap-1.5 px-2 py-1 bg-gray-100 rounded-lg">
+                                     <Star className="w-4 h-4 text-gray-400" />
+                                     <span className="text-gray-500 text-xs">No ratings yet</span>
+                                   </span>
+                                 );
+                               })()}
                                {supplier?.total_jobs > 0 && (
                                  <span className="text-gray-500">{supplier.total_jobs} moves</span>
                                )}
