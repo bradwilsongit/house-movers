@@ -73,6 +73,7 @@ export default function RatingDialog({ open, onOpenChange, booking, supplier, on
       }
 
       if (onSuccess) onSuccess();
+      onOpenChange(false);
     } catch (e) {
       console.error('Error submitting rating:', e);
     } finally {
