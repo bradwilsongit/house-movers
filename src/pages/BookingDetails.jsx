@@ -354,12 +354,22 @@ export default function BookingDetails() {
                 </div>
 
                 <div className="flex justify-between text-sm pt-2">
-                  <span className="flex items-center gap-2 text-emerald-600">
-                    <CheckCircle2 className="w-4 h-4" />
+                  <span className={cn("flex items-center gap-2", booking.payment_status === 'paid' ? 'text-emerald-600' : 'text-amber-600')}>
+                    {booking.payment_status === 'paid' ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
                     Payment Status
                   </span>
                   <span className="font-medium">{booking.payment_status === 'paid' ? 'Paid' : 'Pending'}</span>
                 </div>
+
+                {booking.payment_status !== 'paid' && (
+                  <Button 
+                    className="w-full bg-black text-white hover:bg-gray-800 mt-2"
+                    onClick={() => window.location.href = createPageUrl('Payment') + `?booking_id=${booking.id}`}
+                  >
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Pay Now
+                  </Button>
+                )}
               </CardContent>
             </Card>
 
