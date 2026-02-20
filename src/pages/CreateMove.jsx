@@ -438,6 +438,10 @@ export default function CreateMove() {
         emailCustomerBookingConfirmed({ customerEmail: customer.email, customerName: customer.full_name, booking });
       }
       emailAdminsNewBooking({ admins, booking });
+      // Notify supplier
+      if (supplier?.contact_email) {
+        emailSupplierNewBooking({ supplierEmail: supplier.contact_email, supplierName: supplier.company_name, booking });
+      }
 
       // Navigate to payment page
       navigate(createPageUrl('Payment') + `?booking_id=${booking.id}`);
