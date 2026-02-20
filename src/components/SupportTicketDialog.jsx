@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { emailCustomerSupportTicketCreated, emailAdminsNewSupportTicket } from '@/components/emailUtils';
 
 export default function SupportTicketDialog({ open, onOpenChange, bookingId }) {
   const [loading, setLoading] = useState(false);
