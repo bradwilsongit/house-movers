@@ -20,6 +20,7 @@ export default function QuoteComparison({
   commissionRate = 10
 }) {
   const [suppliers, setSuppliers] = useState({});
+  const [supplierRatings, setSupplierRatings] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,17 +32,26 @@ export default function QuoteComparison({
     try {
       const supplierIds = [...new Set(quotes.map(q => q.supplier_id))];
       const supplierData = {};
-      for (const id of supplierIds) {
+      const ratingsData = {};
+
+      await Promise.all(supplierIds.map(async (id) => {
         try {
-          const supplier = await base44.entities.Supplier.filter({ id });
-          if (supplier.length > 0) {
-            supplierData[id] = supplier[0];
+          const [supplierList, ratings] = await Promise.all([
+            base44.entities.Supplier.filter({ id }),
+            base44.entities.Rating.filter({ supplier_id: id })
+          ]);
+          if (supplierList.length > 0) supplierData[id] = supplierList[0];
+          if (ratings.length > 0) {
+            const avg = ratings.reduce((sum, r) => sum + (r.overall_rating || 0), 0) / ratings.length;
+            ratingsData[id] = { average: avg, count: ratings.length };
           }
         } catch (e) {
           console.error('Error loading supplier:', e);
         }
-      }
+      }));
+
       setSuppliers(supplierData);
+      setSupplierRatings(ratingsData);
     } catch (e) {
       console.error('Error loading suppliers:', e);
     } finally {
