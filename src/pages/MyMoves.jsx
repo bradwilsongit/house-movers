@@ -135,12 +135,7 @@ export default function MyMoves() {
               )}
             </TabsTrigger>
             <TabsTrigger value="past">Past</TabsTrigger>
-            <TabsTrigger value="drafts">
-              Drafts
-              {drafts.length > 0 && (
-                <Badge className="ml-2 bg-gray-200 text-gray-700">{drafts.length}</Badge>
-              )}
-            </TabsTrigger>
+  
           </TabsList>
 
           {/* Upcoming */}
