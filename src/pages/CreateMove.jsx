@@ -430,6 +430,15 @@ export default function CreateMove() {
         status: 'initiated',
       });
 
+      // Send email notifications
+      const allUsers = await base44.entities.User.list();
+      const admins = allUsers.filter(u => u.role === 'admin');
+      const customer = allUsers.find(u => u.id === user?.id);
+      if (customer?.email) {
+        emailCustomerBookingConfirmed({ customerEmail: customer.email, customerName: customer.full_name, booking });
+      }
+      emailAdminsNewBooking({ admins, booking });
+
       // Navigate to payment page
       navigate(createPageUrl('Payment') + `?booking_id=${booking.id}`);
     } catch (e) {
