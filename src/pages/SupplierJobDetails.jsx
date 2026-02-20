@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { emailCustomerBookingAccepted, emailCustomerBookingCompleted, emailSupplierBookingCompleted, emailAdminsBookingAccepted, emailSupplierNewBooking } from '@/components/emailUtils';
 
 const statusConfig = {
   pending_deposit: { label: 'Awaiting Payment', color: 'bg-gray-100 text-gray-700', next: null },
