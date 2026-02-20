@@ -26,13 +26,28 @@ export default function SupportTicketDialog({ open, onOpenChange, bookingId }) {
     setLoading(true);
     try {
       const user = await base44.auth.me();
-      await base44.entities.SupportTicket.create({
+      const ticket = await base44.entities.SupportTicket.create({
         booking_id: bookingId,
         customer_id: user.id,
         ticket_type: 'general',
         subject: form.subject,
         description: form.description,
       });
+
+      // Notify all admins
+      const allUsers = await base44.entities.User.list();
+      const admins = allUsers.filter(u => u.role === 'admin');
+      await Promise.all(admins.map(admin =>
+        base44.entities.Notification.create({
+          user_email: admin.email,
+          title: 'New Support Ticket',
+          message: `A customer has raised a new support ticket: "${form.subject}"`,
+          type: 'support',
+          link_page: 'AdminSupport',
+          link_id: ticket.id,
+        })
+      ));
+
       setForm({ subject: '', description: '' });
       onOpenChange(false);
     } catch (e) {
