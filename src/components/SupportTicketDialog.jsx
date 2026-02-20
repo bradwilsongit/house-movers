@@ -49,6 +49,10 @@ export default function SupportTicketDialog({ open, onOpenChange, bookingId }) {
         })
       ));
 
+      // Send email notifications
+      emailAdminsNewSupportTicket({ admins, ticket: { ...ticket, subject: form.subject, description: form.description }, customerName: user.full_name });
+      emailCustomerSupportTicketCreated({ customerEmail: user.email, customerName: user.full_name, subject: form.subject });
+
       setForm({ subject: '', description: '' });
       onOpenChange(false);
     } catch (e) {
