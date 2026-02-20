@@ -123,6 +123,31 @@ export default function SupplierJobDetails() {
 
       await base44.entities.Booking.update(booking.id, updateData);
       setBooking({ ...booking, ...updateData });
+
+      // Send email notifications on key status changes
+      const allUsers = await base44.entities.User.list();
+      const admins = allUsers.filter(u => u.role === 'admin');
+      const customer = allUsers.find(u => u.id === booking.customer_id);
+
+      if (newStatus === 'mover_accepted') {
+        const supplierList = await base44.entities.Supplier.filter({ id: booking.supplier_id });
+        const supplier = supplierList[0];
+        if (customer?.email) {
+          emailCustomerBookingAccepted({ customerEmail: customer.email, customerName: customer.full_name, booking, supplierName: supplier?.company_name });
+        }
+        emailAdminsBookingAccepted({ admins, booking, supplierName: supplier?.company_name });
+      }
+
+      if (newStatus === 'completed') {
+        const supplierList = await base44.entities.Supplier.filter({ id: booking.supplier_id });
+        const supplier = supplierList[0];
+        if (customer?.email) {
+          emailCustomerBookingCompleted({ customerEmail: customer.email, customerName: customer.full_name, booking });
+        }
+        if (supplier?.contact_email) {
+          emailSupplierBookingCompleted({ supplierEmail: supplier.contact_email, supplierName: supplier.company_name, booking });
+        }
+      }
     } catch (e) {
       console.error('Error updating status:', e);
     } finally {
