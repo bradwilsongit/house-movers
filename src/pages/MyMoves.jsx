@@ -245,7 +245,7 @@ function BookingCard({ booking }) {
                 R{booking.total_amount?.toLocaleString()}
               </p>
               <p className="text-sm text-gray-500">
-                {booking.deposit_paid ? 'Deposit paid' : 'Deposit pending'}
+                {booking.payment_status === 'paid' ? 'Paid' : 'Payment pending'}
               </p>
             </div>
 
