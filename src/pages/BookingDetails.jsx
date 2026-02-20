@@ -266,8 +266,20 @@ export default function BookingDetails() {
                           {supplier.rating_average.toFixed(1)}
                         </span>
                       )}
-                      <span>• {quote?.vehicle_type}</span>
-                      <span>• {quote?.crew_size} crew members</span>
+                      {(() => {
+                        const fleet = supplier?.fleet || [];
+                        const matchedVehicle = fleet.find(v => v.vehicle_type === quote?.vehicle_type) || fleet[0];
+                        const crewSize = matchedVehicle?.crew_size || quote?.crew_size;
+                        const vehicleLabel = matchedVehicle
+                          ? `${matchedVehicle.vehicle_type}${matchedVehicle.make ? ` ${matchedVehicle.make}` : ''}${matchedVehicle.model ? ` ${matchedVehicle.model}` : ''}`
+                          : quote?.vehicle_type;
+                        return (
+                          <>
+                            {vehicleLabel && <span>• {vehicleLabel}</span>}
+                            {crewSize && <span>• {crewSize} crew members</span>}
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>
