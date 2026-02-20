@@ -113,7 +113,7 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
   const cancelPage = createPageUrl('PaymentCancelled');
   const return_url = `${window.location.origin}${returnPage}?booking_id=${booking.id}`;
   const cancel_url = `${window.location.origin}${cancelPage}?booking_id=${booking.id}`;
-  const notify_url = `${window.location.origin}/api/payfast-itn`;
+  const notify_url = `https://housemovers.base44.app/api/functions/payfastITN`;
 
   const fieldsToPost = {
     merchant_id,
