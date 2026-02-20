@@ -187,7 +187,12 @@ export default function MyMoves() {
 }
 
 function BookingCard({ booking }) {
-  const status = bookingStatusConfig[booking.status] || bookingStatusConfig.pending_deposit;
+  const isPendingPayment = booking.status === 'pending_payment' || booking.status === 'pending_deposit';
+  const paymentExpired = isPendingPayment && (Date.now() - new Date(booking.created_date).getTime()) / (1000 * 60 * 60) > 24;
+  const baseStatus = bookingStatusConfig[booking.status] || bookingStatusConfig.pending_deposit;
+  const status = paymentExpired
+    ? { label: 'Payment Expired', color: 'bg-red-100 text-red-700', icon: AlertCircle }
+    : baseStatus;
   const StatusIcon = status.icon;
 
   return (
