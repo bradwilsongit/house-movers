@@ -33,6 +33,7 @@ export default function Branding() {
         setSettings(allSettings[0]);
         setFormData({
           logo_url: allSettings[0].logo_url || '',
+          icon_url: allSettings[0].icon_url || '',
           company_name: allSettings[0].company_name || '',
           logo_height: allSettings[0].logo_height || 40,
         });
