@@ -116,6 +116,9 @@ export default function Support() {
         emailBody: `Hi {adminName},\n\nA new support ticket has been submitted by <strong>${user.full_name || 'a customer'}</strong>.\n\n<strong>Subject:</strong> ${ticketForm.subject}<br/><strong>Description:</strong> ${ticketForm.description}\n\n<a href="https://app.base44.app/AdminSupport">View in dashboard</a>`,
       });
 
+      // Email the customer confirmation
+      emailCustomerSupportTicketCreated({ customerEmail: user.email, customerName: user.full_name, subject: ticketForm.subject });
+
       setSubmitted(true);
       setTicketForm({
         ticket_type: '',
