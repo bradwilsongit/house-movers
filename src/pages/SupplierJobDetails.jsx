@@ -125,28 +125,49 @@ export default function SupplierJobDetails() {
       setBooking({ ...booking, ...updateData });
 
       // Send email notifications on key status changes
-      const allUsers = await base44.entities.User.list();
-      const admins = allUsers.filter(u => u.role === 'admin');
-      const customer = allUsers.find(u => u.id === booking.customer_id);
-
       if (newStatus === 'mover_accepted') {
         const supplierList = await base44.entities.Supplier.filter({ id: booking.supplier_id });
-        const supplier = supplierList[0];
-        if (customer?.email) {
-          emailCustomerBookingAccepted({ customerEmail: customer.email, customerName: customer.full_name, booking, supplierName: supplier?.company_name });
-        }
-        emailAdminsBookingAccepted({ admins, booking, supplierName: supplier?.company_name });
+        const supplierData = supplierList[0];
+        // Notify customer via backend (bypasses RLS to fetch customer email)
+        await base44.functions.invoke('notifyAdmins', {
+          title: `Booking Accepted by Supplier – #${booking.booking_reference}`,
+          message: `${supplierData?.company_name} has accepted booking #${booking.booking_reference}.`,
+          type: 'booking',
+          link_page: 'AdminBookings',
+          link_id: booking.id,
+          emailSubject: `✅ Booking Accepted by Supplier – #${booking.booking_reference}`,
+          emailBody: `Hi {adminName},\n\n<strong>${supplierData?.company_name}</strong> has accepted booking <strong>#${booking.booking_reference}</strong>.\n\n<a href="https://app.base44.app/AdminBookings">View in dashboard</a>`,
+        });
+        // Email customer directly via notifyCustomer
+        await base44.functions.invoke('notifyCustomer', {
+          customer_id: booking.customer_id,
+          title: 'Your Move Has Been Accepted',
+          message: `Your move has been accepted by ${supplierData?.company_name}. Booking #${booking.booking_reference}`,
+          type: 'booking',
+          link_page: 'BookingDetails',
+          link_id: booking.id,
+          emailSubject: `🚛 Your Move Has Been Accepted – #${booking.booking_reference}`,
+          emailBody: `Hi there,\n\nYour move has been accepted by <strong>${supplierData?.company_name}</strong>!\n\n<strong>Booking:</strong> #${booking.booking_reference}<br/><strong>Move Date:</strong> ${booking.move_date}\n\nYou can track your move status in the app.\n\nHouse Movers Team`,
+        });
       }
 
       if (newStatus === 'completed') {
         const supplierList = await base44.entities.Supplier.filter({ id: booking.supplier_id });
-        const supplier = supplierList[0];
-        if (customer?.email) {
-          emailCustomerBookingCompleted({ customerEmail: customer.email, customerName: customer.full_name, booking });
+        const supplierData = supplierList[0];
+        if (supplierData?.contact_email) {
+          emailSupplierBookingCompleted({ supplierEmail: supplierData.contact_email, supplierName: supplierData.company_name, booking });
         }
-        if (supplier?.contact_email) {
-          emailSupplierBookingCompleted({ supplierEmail: supplier.contact_email, supplierName: supplier.company_name, booking });
-        }
+        // Email customer via backend
+        await base44.functions.invoke('notifyCustomer', {
+          customer_id: booking.customer_id,
+          title: 'Your Move Is Complete!',
+          message: `Booking #${booking.booking_reference} has been completed. Please rate your experience.`,
+          type: 'booking',
+          link_page: 'BookingDetails',
+          link_id: booking.id,
+          emailSubject: `🎉 Move Completed – #${booking.booking_reference}`,
+          emailBody: `Hi there,\n\nYour move has been successfully completed! We hope everything went smoothly.\n\nPlease take a moment to <strong>rate your experience</strong>.\n\n<a href="https://app.base44.app/BookingDetails?id=${booking.id}">Rate your move</a>\n\nHouse Movers Team`,
+        });
       }
     } catch (e) {
       console.error('Error updating status:', e);
