@@ -60,26 +60,20 @@ export default function RatingDialog({ open, onOpenChange, booking, supplier, on
         });
       }
 
-      // Notify admins
-      const adminUsers = await base44.entities.User.list();
-      const admins = adminUsers.filter(u => u.role === 'admin');
-      for (const admin of admins) {
-        await base44.entities.Notification.create({
-          user_email: admin.email,
-          title: 'New Rating Submitted',
-          message: `A new ${form.overall_rating}-star rating was submitted for ${supplier?.company_name || 'a supplier'} on booking ${booking.booking_reference}`,
-          type: 'booking',
-          link_page: 'AdminBookings',
-        });
-      }
-
-      // Send email notifications
+      // Notify supplier via email
       if (supplier?.contact_email) {
         emailSupplierNewReview({ supplierEmail: supplier.contact_email, supplierName: supplier.company_name, booking, rating: { overall_rating: form.overall_rating, review_text: form.review_text } });
       }
-      const allUsersForEmail = await base44.entities.User.list();
-      const adminsForEmail = allUsersForEmail.filter(u => u.role === 'admin');
-      emailAdminsNewReview({ admins: adminsForEmail, booking, supplierName: supplier?.company_name, rating: { overall_rating: form.overall_rating, review_text: form.review_text } });
+
+      // Notify admins via backend (bypasses RLS)
+      await base44.functions.invoke('notifyAdmins', {
+        title: 'New Review Submitted',
+        message: `A new ${form.overall_rating}-star rating was submitted for ${supplier?.company_name || 'a supplier'} on booking ${booking.booking_reference}`,
+        type: 'booking',
+        link_page: 'AdminBookings',
+        emailSubject: `⭐ New Review Submitted – ${supplier?.company_name}`,
+        emailBody: `Hi {adminName},\n\nA new <strong>${form.overall_rating}-star</strong> review has been submitted for <strong>${supplier?.company_name}</strong> (booking #${booking.booking_reference}).\n\n${form.review_text ? `"${form.review_text}"` : 'No written review.'}\n\n<a href="https://app.base44.app/AdminBookings">View in dashboard</a>`,
+      });
 
       if (onSuccess) onSuccess();
       onOpenChange(false);
