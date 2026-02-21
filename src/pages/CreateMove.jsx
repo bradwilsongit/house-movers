@@ -431,13 +431,20 @@ export default function CreateMove() {
       });
 
       // Send email notifications
-      const allUsers = await base44.entities.User.list();
-      const admins = allUsers.filter(u => u.role === 'admin');
-      const customer = allUsers.find(u => u.id === user?.id);
-      if (customer?.email) {
-        emailCustomerBookingConfirmed({ customerEmail: customer.email, customerName: customer.full_name, booking });
-      }
-      emailAdminsNewBooking({ admins, booking });
+      // Customer confirmation email (use current user directly — no RLS issue)
+      emailCustomerBookingConfirmed({ customerEmail: user.email, customerName: user.full_name, booking });
+
+      // Notify admins via backend function (bypasses RLS)
+      await base44.functions.invoke('notifyAdmins', {
+        title: 'New Booking Created',
+        message: `A new booking #${bookingRef} has been confirmed and is awaiting payment.`,
+        type: 'booking',
+        link_page: 'AdminBookings',
+        link_id: booking.id,
+        emailSubject: `📦 New Booking Created – #${bookingRef}`,
+        emailBody: `Hi {adminName},\n\nA new booking has been created.\n\n<strong>Booking:</strong> #${bookingRef}<br/><strong>Move Date:</strong> ${moveDetails.move_date}<br/><strong>Amount:</strong> R${totalAmount?.toLocaleString()}\n\n<a href="https://app.base44.app/AdminBookings">View in dashboard</a>`,
+      });
+
       // Notify supplier
       if (supplier?.contact_email) {
         emailSupplierNewBooking({ supplierEmail: supplier.contact_email, supplierName: supplier.company_name, booking });
