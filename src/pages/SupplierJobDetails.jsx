@@ -146,7 +146,7 @@ export default function SupplierJobDetails() {
       await base44.entities.Booking.update(booking.id, updateData);
       setBooking({ ...booking, ...updateData });
 
-      // Start tracking when on_route, stop when arrived or completed
+      // Start tracking when on_route (heading to pickup), stop when arrived
       if (newStatus === 'on_route') {
         startTracking(booking.id);
       } else if (newStatus === 'arrived' || newStatus === 'completed') {
