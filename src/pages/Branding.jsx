@@ -76,8 +76,24 @@ export default function Branding() {
     }
   };
 
+  const handleIconUpload = async (file) => {
+    setUploadingIcon(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setFormData({ ...formData, icon_url: file_url });
+    } catch (e) {
+      console.error('Error uploading icon:', e);
+    } finally {
+      setUploadingIcon(false);
+    }
+  };
+
   const handleRemoveLogo = () => {
     setFormData({ ...formData, logo_url: '' });
+  };
+
+  const handleRemoveIcon = () => {
+    setFormData({ ...formData, icon_url: '' });
   };
 
   if (loading) {
