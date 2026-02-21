@@ -10,18 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import PayFastPayment from '@/components/PayFastPayment';
 
-const DEFAULT_PACKAGING = [
-  { id: '1', name: 'Large Box', description: '60x40x40cm - Ideal for bedding, clothes', category: 'boxes', unit_price: 45 },
-  { id: '2', name: 'Medium Box', description: '40x30x30cm - Books, kitchen items', category: 'boxes', unit_price: 35 },
-  { id: '3', name: 'Small Box', description: '30x20x20cm - Fragile items', category: 'boxes', unit_price: 25 },
-  { id: '4', name: 'Wardrobe Box', description: 'Hanging clothes box', category: 'boxes', unit_price: 120 },
-  { id: '5', name: 'Bubble Wrap (10m)', description: 'Protection for fragile items', category: 'wrapping', unit_price: 85 },
-  { id: '6', name: 'Packing Paper (5kg)', description: 'For wrapping items', category: 'wrapping', unit_price: 65 },
-  { id: '7', name: 'Packing Tape', description: 'Heavy duty tape roll', category: 'tape', unit_price: 35 },
-  { id: '8', name: 'Moving Blanket', description: 'Furniture protection', category: 'blankets', unit_price: 80 },
-  { id: '9', name: 'Mattress Cover', description: 'Single/Double size', category: 'specialty', unit_price: 95 },
-  { id: '10', name: 'TV Box', description: 'For 50"+ screens', category: 'specialty', unit_price: 150 },
-];
+
 
 const CATEGORIES = [
   { id: 'boxes', label: 'Boxes', icon: '📦' },
