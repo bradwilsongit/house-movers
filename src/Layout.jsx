@@ -50,8 +50,8 @@ export default function Layout({ children, currentPageName }) {
     try {
       const settings = await base44.entities.AppSettings.list();
       if (settings.length > 0) {
-        setAppSettings(settings[0]);
-      }
+              setAppSettings(settings[0]);
+            }
     } catch (e) {
       console.error('Error loading app settings:', e);
     }
