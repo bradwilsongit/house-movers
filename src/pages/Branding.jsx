@@ -208,6 +208,73 @@ export default function Branding() {
           </CardContent>
         </Card>
 
+        {/* App Icon Upload */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg">App Icon</CardTitle>
+            <p className="text-sm text-gray-500">Square icon used on the login page. Should be 1:1 ratio.</p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label className="mb-3 block">Current Icon</Label>
+              {formData.icon_url ? (
+                <div className="relative inline-block">
+                  <img
+                    src={formData.icon_url}
+                    alt="Icon"
+                    className="w-16 h-16 object-cover rounded-xl border-2 border-gray-200 bg-white"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute -top-2 -right-2 bg-white border shadow-sm hover:bg-red-50"
+                    onClick={handleRemoveIcon}
+                  >
+                    <X className="w-4 h-4 text-red-500" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="w-16 h-16 bg-black rounded-xl flex items-center justify-center">
+                  <span className="text-white text-2xl font-bold">
+                    {formData.company_name?.charAt(0) || 'H'}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <Label className="mb-3 block">Upload New Icon</Label>
+              <div className="border-2 border-dashed rounded-xl p-6 text-center">
+                {uploadingIcon ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full animate-spin" />
+                    <p className="text-sm text-gray-500">Uploading...</p>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500 mb-2">Upload a square icon (PNG, JPG, or SVG)</p>
+                    <p className="text-xs text-gray-400 mb-4">Recommended: 200×200px, 1:1 ratio</p>
+                    <Label className="cursor-pointer">
+                      <span className="inline-flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
+                        Choose File
+                      </span>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files?.[0]) handleIconUpload(e.target.files[0]);
+                        }}
+                      />
+                    </Label>
+                  </>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Company Name */}
         <Card className="mb-6">
           <CardHeader>
