@@ -62,6 +62,11 @@ export default function NotificationBell({ user }) {
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
   };
 
+  const clearAll = async () => {
+    await Promise.all(notifications.map(n => base44.entities.Notification.delete(n.id)));
+    setNotifications([]);
+  };
+
   const handleClick = async (notif) => {
     if (!notif.is_read) {
       await base44.entities.Notification.update(notif.id, { is_read: true });
