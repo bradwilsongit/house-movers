@@ -3,9 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from './utils';
 import { 
-  Home, Package, Truck, ClipboardList, Settings, Menu, X, 
-  LogOut, User, Building2, Shield, ChevronDown
-} from 'lucide-react';
+    Home, Package, Truck, ClipboardList, Settings, Menu, X, 
+    LogOut, User, Building2, Shield, ChevronDown, Search
+  } from 'lucide-react';
 import NotificationBell from './components/NotificationBell';
 import SeoMetaInjector from './components/seo/SeoMetaInjector';
 import { Button } from '@/components/ui/button';
