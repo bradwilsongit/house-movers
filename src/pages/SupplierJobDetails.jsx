@@ -110,6 +110,38 @@ export default function SupplierJobDetails() {
     }
   };
 
+  const startTracking = (bookingId) => {
+    if (!navigator.geolocation) return;
+    
+    const sendLocation = () => {
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        await base44.functions.invoke('updateDriverLocation', {
+          booking_id: bookingId,
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          is_active: true,
+        });
+      });
+    };
+
+    sendLocation(); // send immediately
+    trackingIntervalRef.current = setInterval(sendLocation, 15000); // every 15 seconds
+  };
+
+  const stopTracking = async (bookingId) => {
+    if (trackingIntervalRef.current) {
+      clearInterval(trackingIntervalRef.current);
+      trackingIntervalRef.current = null;
+    }
+    // Mark tracking as inactive
+    await base44.functions.invoke('updateDriverLocation', {
+      booking_id: bookingId,
+      latitude: 0,
+      longitude: 0,
+      is_active: false,
+    }).catch(() => {});
+  };
+
   const handleUpdateStatus = async (newStatus) => {
     setProcessing(true);
     try {
@@ -124,6 +156,13 @@ export default function SupplierJobDetails() {
 
       await base44.entities.Booking.update(booking.id, updateData);
       setBooking({ ...booking, ...updateData });
+
+      // Start tracking when on_route, stop when arrived or completed
+      if (newStatus === 'on_route') {
+        startTracking(booking.id);
+      } else if (newStatus === 'arrived' || newStatus === 'completed') {
+        stopTracking(booking.id);
+      }
 
       // Send email notifications on key status changes
       if (newStatus === 'mover_accepted') {
