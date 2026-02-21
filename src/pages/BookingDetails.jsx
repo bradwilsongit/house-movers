@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 import SupportTicketDialog from '@/components/SupportTicketDialog';
 import RatingDialog from '@/components/RatingDialog';
 import { generateInvoicePDF } from '@/components/InvoicePDF';
-import LiveTrackingMap from '@/components/LiveTrackingMap';
+import LiveTrackingMap from '@/components/LiveTrackingMap.jsx';
 
 const statusSteps = [
   { id: 'confirmed', label: 'Confirmed', icon: CheckCircle2 },
