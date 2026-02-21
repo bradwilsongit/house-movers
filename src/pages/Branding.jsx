@@ -13,8 +13,10 @@ export default function Branding() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingIcon, setUploadingIcon] = useState(false);
   const [formData, setFormData] = useState({
     logo_url: '',
+    icon_url: '',
     company_name: '',
     logo_height: 40,
   });
