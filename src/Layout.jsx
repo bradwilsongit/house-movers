@@ -130,16 +130,23 @@ export default function Layout({ children, currentPageName }) {
             >
               {appSettings?.logo_url ? (
                 <img 
-                  src={appSettings.logo_url} 
-                  alt="Logo" 
-                  className="object-contain"
-                  style={{ height: `${appSettings.logo_height || 40}px` }}
-                />
-              ) : (
-                <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
-                  <Truck className="w-5 h-5 text-white" />
-                </div>
-              )}
+                    src={appSettings.logo_url} 
+                    alt="Logo" 
+                    className="object-contain"
+                    style={{ height: `${appSettings.logo_height || 40}px` }}
+                  />
+                ) : appSettings?.icon_url ? (
+                  <img
+                    src={appSettings.icon_url}
+                    alt="Icon"
+                    className="object-cover rounded-xl"
+                    style={{ height: `${appSettings.logo_height || 40}px`, width: `${appSettings.logo_height || 40}px` }}
+                  />
+                ) : (
+                  <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
+                    <Truck className="w-5 h-5 text-white" />
+                  </div>
+                )}
               {appSettings?.company_name && (
                 <span className="font-semibold text-xl tracking-tight">
                   {appSettings.company_name}
