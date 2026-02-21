@@ -492,7 +492,20 @@ export default function SupplierJobDetails() {
                   </Button>
                 )}
 
-
+                {/* Show share location button when in transit (on_route) */}
+                {booking.status === 'on_route' && (
+                  <Button
+                    variant={isTracking ? 'destructive' : 'outline'}
+                    className="w-full"
+                    onClick={handleToggleTracking}
+                  >
+                    {isTracking ? (
+                      <><NavigationOff className="w-4 h-4 mr-2" />Stop Sharing Location</>
+                    ) : (
+                      <><Navigation className="w-4 h-4 mr-2" />Share My Location</>
+                    )}
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </div>
