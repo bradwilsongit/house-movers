@@ -111,7 +111,10 @@ export default function CustomerExtras() {
 
   const getQuantity = (itemId) => selectedItems.find(i => i.packaging_item_id === itemId)?.quantity || 0;
 
-  const totalAmount = selectedItems.reduce((sum, i) => sum + (i.unit_price * i.quantity), 0);
+  const commissionRate = settings?.commission_rate || 10;
+  const subtotal = selectedItems.reduce((sum, i) => sum + (i.unit_price * i.quantity), 0);
+  const commissionAmount = Math.round(subtotal * commissionRate / 100);
+  const totalAmount = subtotal + commissionAmount;
 
   const handleProceedToPayment = async () => {
     if (selectedItems.length === 0 || !selectedBooking) return;
