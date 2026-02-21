@@ -74,6 +74,7 @@ import SupplierOnboarding from './pages/SupplierOnboarding';
 import SupplierProfile from './pages/SupplierProfile';
 import Support from './pages/Support';
 import Terms from './pages/Terms';
+import ExtrasPaymentReturn from './pages/ExtrasPaymentReturn';
 import __Layout from './Layout.jsx';
 
 
@@ -105,6 +106,7 @@ export const PAGES = {
     "SupplierProfile": SupplierProfile,
     "Support": Support,
     "Terms": Terms,
+    "ExtrasPaymentReturn": ExtrasPaymentReturn,
 }
 
 export const pagesConfig = {
