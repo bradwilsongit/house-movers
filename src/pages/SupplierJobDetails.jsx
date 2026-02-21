@@ -226,26 +226,7 @@ export default function SupplierJobDetails() {
    }
   };
 
-  const handleSubmitExtra = async () => {
-    setProcessing(true);
-    try {
-      const user = await base44.auth.me();
-      await base44.entities.ExtraRequest.create({
-        booking_id: booking.id,
-        supplier_id: user.supplier_id,
-        request_type: extraForm.request_type,
-        description: extraForm.description,
-        amount: parseFloat(extraForm.amount),
-        status: 'pending',
-      });
-      setExtraDialog(false);
-      setExtraForm({ request_type: '', description: '', amount: '' });
-    } catch (e) {
-      console.error('Error submitting extra request:', e);
-    } finally {
-      setProcessing(false);
-    }
-  };
+
 
   if (loading) {
     return (
