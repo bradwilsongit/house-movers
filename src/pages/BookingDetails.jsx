@@ -22,8 +22,8 @@ import LiveTrackingMap from '@/components/LiveTrackingMap.jsx';
 const statusSteps = [
   { id: 'confirmed', label: 'Confirmed', icon: CheckCircle2 },
   { id: 'mover_accepted', label: 'Mover Accepted', icon: User },
+  { id: 'on_route', label: 'In Transit', icon: Truck },
   { id: 'arrived', label: 'Mover Arrived', icon: Truck },
-  { id: 'in_transit', label: 'In Transit', icon: Truck },
   { id: 'completed', label: 'Completed', icon: CheckCircle2 },
 ];
 
