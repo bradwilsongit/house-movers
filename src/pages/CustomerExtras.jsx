@@ -67,7 +67,22 @@ export default function CustomerExtras() {
     setSelectedBooking(booking);
     // Load supplier for this booking
     const suppliers = await base44.entities.Supplier.filter({ id: booking.supplier_id });
-    if (suppliers.length > 0) setSupplier(suppliers[0]);
+    if (suppliers.length > 0) {
+      const sup = suppliers[0];
+      setSupplier(sup);
+      // Use supplier's own packaging items if available, otherwise fall back to global items
+      const supplierItems = sup.pricing?.packaging_items;
+      if (supplierItems && supplierItems.length > 0) {
+        setPackagingItems(supplierItems.map((item, idx) => ({
+          id: item.name + idx,
+          name: item.name,
+          description: '',
+          category: item.category || 'specialty',
+          unit_price: item.unit_price,
+          in_stock: item.in_stock !== false,
+        })));
+      }
+    }
     setStep('select_items');
   };
 
