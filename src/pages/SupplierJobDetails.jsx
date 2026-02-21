@@ -56,6 +56,7 @@ export default function SupplierJobDetails() {
     driver_phone: '',
     vehicle_details: '',
   });
+  const [isTracking, setIsTracking] = useState(false);
 
 
 
