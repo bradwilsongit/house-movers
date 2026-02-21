@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Star } from 'lucide-react';
-import { emailSupplierNewReview, emailAdminsNewReview } from '@/components/emailUtils';
+import { emailSupplierNewReview } from '@/components/emailUtils';
 
 export default function RatingDialog({ open, onOpenChange, booking, supplier, onSuccess }) {
   const [loading, setLoading] = useState(false);
