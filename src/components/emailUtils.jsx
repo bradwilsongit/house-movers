@@ -1,11 +1,11 @@
 import { base44 } from '@/api/base44Client';
 
 /**
- * Send an email via the backend function
+ * Send an email via the Core integration (frontend, uses app context)
  */
 export async function sendEmail({ to, subject, body, from_name }) {
   try {
-    await base44.functions.invoke('sendEmailNotification', { to, subject, body, from_name });
+    await base44.integrations.Core.SendEmail({ to, subject, body, from_name: from_name || 'House Movers' });
   } catch (e) {
     console.error('Email send failed:', e);
   }
