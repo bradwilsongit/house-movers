@@ -549,70 +549,7 @@ export default function SupplierJobDetails() {
           </DialogContent>
         </Dialog>
 
-        {/* Extra Request Dialog */}
-        <Dialog open={extraDialog} onOpenChange={setExtraDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Request Extra Charge</DialogTitle>
-              <DialogDescription>
-                This request will be sent to House Moves for authorisation
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label>Request Type</Label>
-                <Select
-                  value={extraForm.request_type}
-                  onValueChange={(v) => setExtraForm({ ...extraForm, request_type: v })}
-                >
-                  <SelectTrigger className="mt-1.5">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="additional_materials">Additional Materials</SelectItem>
-                    <SelectItem value="additional_trip">Additional Trip</SelectItem>
-                    <SelectItem value="additional_service">Additional Service</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="extra_description">Description</Label>
-                <Textarea
-                  id="extra_description"
-                  value={extraForm.description}
-                  onChange={(e) => setExtraForm({ ...extraForm, description: e.target.value })}
-                  placeholder="Describe the extra charge..."
-                  className="mt-1.5"
-                  rows={3}
-                />
-              </div>
-              <div>
-                <Label htmlFor="extra_amount">Amount (R)</Label>
-                <Input
-                  id="extra_amount"
-                  type="number"
-                  value={extraForm.amount}
-                  onChange={(e) => setExtraForm({ ...extraForm, amount: e.target.value })}
-                  placeholder="500"
-                  className="mt-1.5"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setExtraDialog(false)}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleSubmitExtra}
-                disabled={processing || !extraForm.request_type || !extraForm.description || !extraForm.amount}
-                className="bg-black text-white hover:bg-gray-800"
-              >
-                {processing ? 'Submitting...' : 'Submit Request'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+
       </div>
     </div>
   );
