@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
+import { emailCustomerSupportTicketCreated } from '@/components/emailUtils';
 import { 
   MessageSquare, HelpCircle, Phone, Mail, Send,
   ChevronRight, Clock, CheckCircle2
