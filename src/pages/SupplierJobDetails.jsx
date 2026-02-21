@@ -63,12 +63,7 @@ export default function SupplierJobDetails() {
     vehicle_details: '',
   });
 
-  const [extraDialog, setExtraDialog] = useState(false);
-  const [extraForm, setExtraForm] = useState({
-    request_type: '',
-    description: '',
-    amount: '',
-  });
+
 
   useEffect(() => {
     loadData();
