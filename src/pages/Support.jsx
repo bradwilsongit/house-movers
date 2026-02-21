@@ -97,12 +97,24 @@ export default function Support() {
 
     setSubmitting(true);
     try {
-      await base44.entities.SupportTicket.create({
+      const ticket = await base44.entities.SupportTicket.create({
         ...ticketForm,
         customer_id: user.id,
         status: 'open',
         priority: ticketForm.ticket_type === 'damage_claim' ? 'high' : 'medium',
       });
+
+      // Notify all admins via backend function (bypasses RLS)
+      await base44.functions.invoke('notifyAdmins', {
+        title: 'New Support Ticket',
+        message: `A customer has raised a new support ticket: "${ticketForm.subject}"`,
+        type: 'support',
+        link_page: 'AdminSupport',
+        link_id: ticket.id,
+        emailSubject: `🎫 New Support Ticket – "${ticketForm.subject}"`,
+        emailBody: `Hi {adminName},\n\nA new support ticket has been submitted by <strong>${user.full_name || 'a customer'}</strong>.\n\n<strong>Subject:</strong> ${ticketForm.subject}<br/><strong>Description:</strong> ${ticketForm.description}\n\n<a href="https://app.base44.app/AdminSupport">View in dashboard</a>`,
+      });
+
       setSubmitted(true);
       setTicketForm({
         ticket_type: '',
