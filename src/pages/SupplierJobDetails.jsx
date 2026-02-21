@@ -511,12 +511,7 @@ export default function SupplierJobDetails() {
                   </Button>
                 )}
 
-                {['arrived', 'loading', 'in_transit', 'unloading'].includes(booking.status) && (
-                  <Button variant="outline" className="w-full" onClick={() => setExtraDialog(true)}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Request Extra
-                  </Button>
-                )}
+
               </CardContent>
             </Card>
           </div>
