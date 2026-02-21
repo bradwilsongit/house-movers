@@ -142,6 +142,11 @@ export default function CustomerExtras() {
         pickup_address: 'Extra Materials',
         dropoff_address: description,
         extra_request_id: extraRequest.id,
+        // Flag so ITN knows this is an extras payment
+        custom_str3: 'extra',
+        // Override return/cancel URLs for extras
+        _return_url_override: `${window.location.origin}${createPageUrl('ExtrasPaymentReturn')}?extra_id=${extraRequest.id}&booking_id=${selectedBooking.id}`,
+        _cancel_url_override: `${window.location.origin}${createPageUrl('CustomerExtras')}`,
       });
 
       setStep('payment');
