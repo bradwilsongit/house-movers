@@ -7,6 +7,7 @@ import {
   LogOut, User, Building2, Shield, ChevronDown
 } from 'lucide-react';
 import NotificationBell from './components/NotificationBell';
+import SeoMetaInjector from './components/seo/SeoMetaInjector';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
