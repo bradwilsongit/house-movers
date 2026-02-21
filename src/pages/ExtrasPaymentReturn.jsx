@@ -5,7 +5,7 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Loader2, FileText, Package } from 'lucide-react';
-import { generateExtrasInvoicePDF } from '@/components/ExtrasInvoicePDF';
+import { generateExtrasInvoicePDF } from '@/components/ExtrasInvoicePDF.js';
 
 export default function ExtrasPaymentReturn() {
   const navigate = useNavigate();
