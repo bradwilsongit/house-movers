@@ -54,6 +54,7 @@ export default function SupplierJobDetails() {
   const [packagingOrder, setPackagingOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const trackingIntervalRef = React.useRef(null);
   
   const [driverDialog, setDriverDialog] = useState(false);
   const [driverForm, setDriverForm] = useState({
