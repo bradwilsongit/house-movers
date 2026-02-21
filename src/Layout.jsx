@@ -88,10 +88,11 @@ export default function Layout({ children, currentPageName }) {
     }
 
     return [
-      { name: 'Home', href: createPageUrl('Home'), icon: Home },
-      { name: 'My Moves', href: createPageUrl('MyMoves'), icon: Truck },
-      { name: 'New Move', href: createPageUrl('CreateMove'), icon: Package },
-    ];
+          { name: 'Home', href: createPageUrl('Home'), icon: Home },
+          { name: 'My Moves', href: createPageUrl('MyMoves'), icon: Truck },
+          { name: 'New Move', href: createPageUrl('CreateMove'), icon: Package },
+          { name: 'Order Extras', href: createPageUrl('CustomerExtras'), icon: Package },
+        ];
   };
 
   const navigation = getNavigation();
