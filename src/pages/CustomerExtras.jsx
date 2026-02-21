@@ -317,6 +317,10 @@ export default function CustomerExtras() {
                     <span className="font-medium">R{(i.unit_price * i.quantity).toLocaleString()}</span>
                   </div>
                 ))}
+                <div className="flex justify-between text-sm py-1 text-gray-500">
+                  <span>Platform fee ({commissionRate}%)</span>
+                  <span>R{commissionAmount.toLocaleString()}</span>
+                </div>
                 <div className="border-t mt-2 pt-2 flex justify-between font-bold">
                   <span>Total</span>
                   <span>R{totalAmount.toLocaleString()}</span>
