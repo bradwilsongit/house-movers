@@ -49,14 +49,48 @@ Deno.serve(async (req) => {
       return new Response('OK', { status: 200 });
     }
 
-    // --- 3. Find booking from m_payment_id ---
-    // m_payment_id is set to booking_id in the PayFast form
-    const bookingId = data.m_payment_id;
-    if (!bookingId) {
-      console.error('No booking ID in ITN');
-      return new Response('No booking ID', { status: 400 });
+    // --- 3. Detect payment type via custom_str3 ---
+    // custom_str3 = 'extra' for extras payments, absent for regular bookings
+    const paymentType = data.custom_str3 || 'booking';
+    const recordId = data.m_payment_id;
+
+    if (!recordId) {
+      console.error('No payment ID in ITN');
+      return new Response('No payment ID', { status: 400 });
     }
 
+    if (paymentType === 'extra') {
+      // --- Extra request payment ---
+      const extras = await base44.asServiceRole.entities.ExtraRequest.filter({ id: recordId });
+      const extra = extras[0];
+      if (!extra) {
+        console.error('ExtraRequest not found:', recordId);
+        return new Response('ExtraRequest not found', { status: 404 });
+      }
+
+      await base44.asServiceRole.entities.ExtraRequest.update(recordId, {
+        status: 'paid',
+        payment_id: data.pf_payment_id,
+      });
+
+      // Log the payment
+      await base44.asServiceRole.entities.PaymentLog.create({
+        booking_id: extra.booking_id,
+        payfast_reference: recordId,
+        payfast_payment_id: data.pf_payment_id,
+        amount: parseFloat(data.amount_gross || 0),
+        status: 'completed',
+        itn_payload: JSON.stringify(data),
+        itn_timestamp: new Date().toISOString(),
+        signature_valid: true,
+      });
+
+      console.log('ExtraRequest paid via ITN:', recordId);
+      return new Response('OK', { status: 200 });
+    }
+
+    // --- Regular booking payment ---
+    const bookingId = recordId;
     const bookings = await base44.asServiceRole.entities.Booking.filter({ id: bookingId });
     const booking = bookings[0];
 
