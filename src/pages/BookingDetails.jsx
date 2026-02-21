@@ -199,6 +199,13 @@ export default function BookingDetails() {
           </CardContent>
         </Card>
 
+        {/* Live Tracking Map */}
+        {['on_route', 'arrived'].includes(booking.status) && (
+          <div className="mb-6">
+            <LiveTrackingMap bookingId={booking.id} bookingStatus={booking.status} />
+          </div>
+        )}
+
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
