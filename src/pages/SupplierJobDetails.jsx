@@ -116,6 +116,7 @@ export default function SupplierJobDetails() {
 
     sendLocation(); // send immediately
     trackingIntervalRef.current = setInterval(sendLocation, 15000); // every 15 seconds
+    setIsTracking(true);
   };
 
   const stopTracking = async (bookingId) => {
@@ -123,6 +124,7 @@ export default function SupplierJobDetails() {
       clearInterval(trackingIntervalRef.current);
       trackingIntervalRef.current = null;
     }
+    setIsTracking(false);
     // Mark tracking as inactive
     await base44.functions.invoke('updateDriverLocation', {
       booking_id: bookingId,
@@ -130,6 +132,14 @@ export default function SupplierJobDetails() {
       longitude: 0,
       is_active: false,
     }).catch(() => {});
+  };
+
+  const handleToggleTracking = () => {
+    if (isTracking) {
+      stopTracking(booking.id);
+    } else {
+      startTracking(booking.id);
+    }
   };
 
   const handleUpdateStatus = async (newStatus) => {
