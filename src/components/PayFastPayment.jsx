@@ -111,8 +111,8 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
 
   const returnPage = createPageUrl('PaymentReturn');
   const cancelPage = createPageUrl('PaymentCancelled');
-  const return_url = `${window.location.origin}${returnPage}?booking_id=${booking.id}`;
-  const cancel_url = `${window.location.origin}${cancelPage}?booking_id=${booking.id}`;
+  const return_url = booking._return_url_override || `${window.location.origin}${returnPage}?booking_id=${booking.id}`;
+  const cancel_url = booking._cancel_url_override || `${window.location.origin}${cancelPage}?booking_id=${booking.id}`;
   const notify_url = `https://housemovers.base44.app/api/functions/payfastITN`;
 
   const fieldsToPost = {
@@ -123,17 +123,22 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     notify_url,
 
     name_first: booking.customer_name || 'Customer',
-    name_last: booking.customer_surname || '', // will be dropped if empty
+    name_last: booking.customer_surname || '',
     email_address: booking.customer_email || 'customer@example.com',
 
     m_payment_id: booking.id,
     amount: Number(booking.total_amount).toFixed(2),
 
-    item_name: `Move Booking ${booking.booking_reference}`,
-    item_description: `Moving service from ${booking.pickup_address} to ${booking.dropoff_address}`,
+    item_name: booking.custom_str3 === 'extra'
+      ? `Extra Materials – ${booking.booking_reference}`
+      : `Move Booking ${booking.booking_reference}`,
+    item_description: booking.custom_str3 === 'extra'
+      ? booking.dropoff_address
+      : `Moving service from ${booking.pickup_address} to ${booking.dropoff_address}`,
 
     custom_str1: booking.id,
     custom_str2: booking.booking_reference,
+    ...(booking.custom_str3 ? { custom_str3: booking.custom_str3 } : {}),
   };
 
   const { cleanFieldsToPost, signature, paramString } = buildPayfastSignature(fieldsToPost, passphrase);
