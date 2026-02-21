@@ -77,6 +77,7 @@ export default function Layout({ children, currentPageName }) {
         { name: 'Bookings', href: createPageUrl('AdminBookings'), icon: ClipboardList },
         { name: 'Extras', href: createPageUrl('AdminExtras'), icon: Package },
         { name: 'Support', href: createPageUrl('AdminSupport'), icon: Shield },
+        { name: 'SEO', href: createPageUrl('AdminSeo'), icon: Search },
       ];
     }
 
