@@ -90,13 +90,13 @@ export default function BookingDetails() {
   };
 
   const getCurrentStepIndex = () => {
-    const statusOrder = ['confirmed', 'mover_accepted', 'on_route', 'arrived', 'loading', 'in_transit', 'unloading', 'completed'];
-    const index = statusOrder.indexOf(booking?.status);
-    if (index <= 0) return 0;
-    if (index <= 1) return 1;
-    if (index <= 3) return 2;
-    if (index <= 5) return 3;
-    return 4;
+    const s = booking?.status;
+    if (!s || s === 'confirmed' || s === 'pending_payment') return 0;
+    if (s === 'mover_accepted' || s === 'driver_assigned') return 1;
+    if (s === 'on_route') return 2;
+    if (s === 'arrived' || s === 'loading' || s === 'in_transit' || s === 'unloading') return 3;
+    if (s === 'completed') return 4;
+    return 0;
   };
 
   if (loading) {
@@ -199,8 +199,8 @@ export default function BookingDetails() {
           </CardContent>
         </Card>
 
-        {/* Live Tracking Map */}
-        {['on_route', 'arrived'].includes(booking.status) && (
+        {/* Live Tracking Map - show when movers are on their way */}
+        {['on_route'].includes(booking.status) && (
           <div className="mb-6">
             <LiveTrackingMap bookingId={booking.id} bookingStatus={booking.status} />
           </div>
