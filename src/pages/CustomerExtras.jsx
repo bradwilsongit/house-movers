@@ -290,6 +290,7 @@ export default function CustomerExtras() {
                     {selectedItems.map(i => (
                       <p key={i.packaging_item_id}>{i.quantity}x {i.name} — R{(i.unit_price * i.quantity).toLocaleString()}</p>
                     ))}
+                    <p className="text-gray-400">Platform fee ({commissionRate}%) — R{commissionAmount.toLocaleString()}</p>
                   </div>
                 )}
                 <Button
