@@ -58,6 +58,7 @@ import BookingDetails from './pages/BookingDetails';
 import Branding from './pages/Branding';
 import CreateMove from './pages/CreateMove';
 import CustomerExtras from './pages/CustomerExtras';
+import ExtrasPaymentReturn from './pages/ExtrasPaymentReturn';
 import Home from './pages/Home';
 import MyMoves from './pages/MyMoves';
 import PayFastITN from './pages/PayFastITN';
@@ -74,7 +75,6 @@ import SupplierOnboarding from './pages/SupplierOnboarding';
 import SupplierProfile from './pages/SupplierProfile';
 import Support from './pages/Support';
 import Terms from './pages/Terms';
-import ExtrasPaymentReturn from './pages/ExtrasPaymentReturn';
 import __Layout from './Layout.jsx';
 
 
@@ -90,6 +90,7 @@ export const PAGES = {
     "Branding": Branding,
     "CreateMove": CreateMove,
     "CustomerExtras": CustomerExtras,
+    "ExtrasPaymentReturn": ExtrasPaymentReturn,
     "Home": Home,
     "MyMoves": MyMoves,
     "PayFastITN": PayFastITN,
@@ -106,7 +107,6 @@ export const PAGES = {
     "SupplierProfile": SupplierProfile,
     "Support": Support,
     "Terms": Terms,
-    "ExtrasPaymentReturn": ExtrasPaymentReturn,
 }
 
 export const pagesConfig = {
