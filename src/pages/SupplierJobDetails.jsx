@@ -5,7 +5,7 @@ import { createPageUrl } from '@/utils';
 import { format } from 'date-fns';
 import { 
   Truck, Calendar, MapPin, Phone, User, Clock, Package,
-  CheckCircle2, AlertCircle, ChevronRight, Camera, Plus,
+  CheckCircle2, AlertCircle, ChevronRight, Camera,
   Play, Flag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,13 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { emailSupplierBookingCompleted } from '@/components/emailUtils';
