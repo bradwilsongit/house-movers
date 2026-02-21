@@ -35,22 +35,18 @@ export default function SupportTicketDialog({ open, onOpenChange, bookingId }) {
         description: form.description,
       });
 
-      // Notify all admins
-      const allUsers = await base44.entities.User.list();
-      const admins = allUsers.filter(u => u.role === 'admin');
-      await Promise.all(admins.map(admin =>
-        base44.entities.Notification.create({
-          user_email: admin.email,
-          title: 'New Support Ticket',
-          message: `A customer has raised a new support ticket: "${form.subject}"`,
-          type: 'support',
-          link_page: 'AdminSupport',
-          link_id: ticket.id,
-        })
-      ));
+      // Notify all admins via backend function (bypasses RLS)
+      await base44.functions.invoke('notifyAdmins', {
+        title: 'New Support Ticket',
+        message: `A customer has raised a new support ticket: "${form.subject}"`,
+        type: 'support',
+        link_page: 'AdminSupport',
+        link_id: ticket.id,
+        emailSubject: `🎫 New Support Ticket – "${form.subject}"`,
+        emailBody: `Hi {adminName},\n\nA new support ticket has been submitted by <strong>${user.full_name || 'a customer'}</strong>.\n\n<strong>Subject:</strong> ${form.subject}<br/><strong>Description:</strong> ${form.description}\n\n<a href="https://app.base44.app/AdminSupport">View in dashboard</a>`,
+      });
 
-      // Send email notifications
-      emailAdminsNewSupportTicket({ admins, ticket: { ...ticket, subject: form.subject, description: form.description }, customerName: user.full_name });
+      // Send email to customer
       emailCustomerSupportTicketCreated({ customerEmail: user.email, customerName: user.full_name, subject: form.subject });
 
       setForm({ subject: '', description: '' });
