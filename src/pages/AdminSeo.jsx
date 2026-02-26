@@ -76,8 +76,9 @@ export default function AdminSeo() {
         </div>
 
         <Tabs defaultValue="pages">
-          <TabsList className="grid grid-cols-4 w-full max-w-2xl mb-8">
+          <TabsList className="grid grid-cols-5 w-full max-w-3xl mb-8">
             <TabsTrigger value="pages"><Search className="w-4 h-4 mr-2" />Pages</TabsTrigger>
+            <TabsTrigger value="locations"><MapPin className="w-4 h-4 mr-2" />Locations</TabsTrigger>
             <TabsTrigger value="organization"><Building2 className="w-4 h-4 mr-2" />Organisation</TabsTrigger>
             <TabsTrigger value="redirects"><ArrowLeftRight className="w-4 h-4 mr-2" />Redirects</TabsTrigger>
             <TabsTrigger value="sitemap"><Map className="w-4 h-4 mr-2" />Sitemap</TabsTrigger>
