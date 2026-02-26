@@ -45,10 +45,14 @@ export default function AdminSeo() {
   const [apiKey, setApiKey] = useState(null);
 
   useEffect(() => {
-    base44.entities.SeoSettings.list().then(data => {
+    Promise.all([
+      base44.entities.SeoSettings.list(),
+      base44.entities.AppSettings.list()
+    ]).then(([seoData, appData]) => {
       const map = {};
-      data.forEach(s => { map[s.page_name] = s; });
+      seoData.forEach(s => { map[s.page_name] = s; });
       setSeoMap(map);
+      if (appData[0]?.google_maps_api_key) setApiKey(appData[0].google_maps_api_key);
     }).finally(() => setLoading(false));
   }, []);
 
