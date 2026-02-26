@@ -33,15 +33,30 @@ export default function LocationPageGenerator({ apiKey }) {
   }, [apiKey]);
 
   const initAutocomplete = async () => {
-    await new Promise((resolve) => {
-      const check = setInterval(() => {
-        if (window.google?.maps?.places?.Autocomplete) {
-          clearInterval(check);
-          resolve();
-        }
-      }, 100);
-      setTimeout(() => { clearInterval(check); resolve(); }, 8000);
-    });
+    // Load Google Maps script with places library if not already loaded
+    if (!window.google?.maps?.places?.Autocomplete) {
+      const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+      if (!existingScript) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+          script.async = true;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+      // Wait for places to be available
+      await new Promise((resolve) => {
+        const check = setInterval(() => {
+          if (window.google?.maps?.places?.Autocomplete) {
+            clearInterval(check);
+            resolve();
+          }
+        }, 100);
+        setTimeout(() => { clearInterval(check); resolve(); }, 8000);
+      });
+    }
 
     if (!inputRef.current || !window.google?.maps?.places?.Autocomplete) return;
 
