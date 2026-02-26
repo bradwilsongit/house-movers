@@ -82,14 +82,15 @@ export default function SeoSitemapPanel() {
   const generate = async () => {
     setLoading(true);
     try {
-      const [allSeo, orgData] = await Promise.all([
+      const [allSeo, orgData, locationPages] = await Promise.all([
         base44.entities.SeoSettings.list(),
         base44.entities.SeoOrganization.list(),
+        base44.entities.LocationPage.list(),
       ]);
       const seoMap = {};
       allSeo.forEach(s => { seoMap[s.page_name] = s; });
 
-      const xml = generateSitemap(ALL_PAGES, seoMap, baseUrl);
+      const xml = generateSitemap(ALL_PAGES, seoMap, baseUrl, locationPages);
       setSitemap(xml);
 
       const org = orgData?.[0];
