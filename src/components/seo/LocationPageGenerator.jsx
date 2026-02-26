@@ -33,30 +33,34 @@ export default function LocationPageGenerator({ apiKey }) {
   }, [apiKey]);
 
   const initAutocomplete = async () => {
-    // Load Google Maps script with places library if not already loaded
-    if (!window.google?.maps?.places?.Autocomplete) {
+    // Use same pattern as GooglePlacesAutocomplete component
+    await new Promise((resolve, reject) => {
       const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
-      if (!existingScript) {
-        await new Promise((resolve, reject) => {
-          const script = document.createElement('script');
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-          script.async = true;
-          script.onload = resolve;
-          script.onerror = reject;
-          document.head.appendChild(script);
-        });
-      }
-      // Wait for places to be available
-      await new Promise((resolve) => {
+
+      const waitForPlaces = () => {
         const check = setInterval(() => {
           if (window.google?.maps?.places?.Autocomplete) {
             clearInterval(check);
             resolve();
           }
-        }, 100);
-        setTimeout(() => { clearInterval(check); resolve(); }, 8000);
-      });
-    }
+        }, 50);
+        setTimeout(() => { clearInterval(check); if (!window.google?.maps?.places?.Autocomplete) reject(new Error('timeout')); }, 10000);
+      };
+
+      if (existingScript) {
+        if (window.google?.maps?.places?.Autocomplete) resolve();
+        else waitForPlaces();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async`;
+      script.async = true;
+      script.defer = true;
+      script.onload = waitForPlaces;
+      script.onerror = () => reject(new Error('Failed to load Google Maps API'));
+      document.head.appendChild(script);
+    });
 
     if (!inputRef.current || !window.google?.maps?.places?.Autocomplete) return;
 
