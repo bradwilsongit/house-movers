@@ -42,6 +42,7 @@ export default function AdminSeo() {
   const [seoMap, setSeoMap] = useState({});
   const [selectedPage, setSelectedPage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [apiKey, setApiKey] = useState(null);
 
   useEffect(() => {
     base44.entities.SeoSettings.list().then(data => {
