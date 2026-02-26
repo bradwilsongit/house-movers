@@ -9,6 +9,7 @@ import SeoPageEditor from '@/components/seo/SeoPageEditor';
 import SeoOrganizationEditor from '@/components/seo/SeoOrganizationEditor';
 import SeoRedirectsManager from '@/components/seo/SeoRedirectsManager';
 import SeoSitemapPanel from '@/components/seo/SeoSitemapPanel';
+import LocationPageGenerator from '@/components/seo/LocationPageGenerator';
 
 const ALL_PAGES = [
   { page_name: 'Home', page_label: 'Home', group: 'Public' },
