@@ -87,7 +87,7 @@ Make all content natural, helpful, and specific to ${location_name}, South Afric
     const pageData = {
       ...llmResult,
       popular_routes,
-      canonical_url: `${siteUrl}/movers/${slug}`,
+      canonical_url: `${siteUrl}/LocationLanding?slug=${slug}`,
       generation_status: 'complete',
       is_published: true
     };
