@@ -166,6 +166,21 @@ export default function AdminSeo() {
             )}
           </TabsContent>
 
+          {/* ── Locations Tab ──────────────────────────── */}
+          <TabsContent value="locations">
+            <Card>
+              <CardHeader>
+                <CardTitle>Location SEO Pages</CardTitle>
+                <CardDescription>
+                  Auto-generate SEO landing pages for any suburb or city. AI writes all content, FAQs, and schema automatically.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <LocationPageGenerator apiKey={apiKey} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* ── Organisation Tab ───────────────────────── */}
           <TabsContent value="organization">
             <Card>
