@@ -14,9 +14,10 @@ const ALL_PAGES = [
   { page_name: 'Privacy', path: '/Privacy', default_priority: 0.3, default_changefreq: 'yearly' },
 ];
 
-function generateSitemap(pages, seoMap, baseUrl) {
+function generateSitemap(pages, seoMap, baseUrl, locationPages = []) {
   const today = new Date().toISOString().split('T')[0];
-  const urls = pages
+
+  const staticUrls = pages
     .filter(p => {
       const seo = seoMap[p.page_name];
       return seo ? seo.include_in_sitemap !== false : true;
@@ -31,11 +32,22 @@ function generateSitemap(pages, seoMap, baseUrl) {
     <changefreq>${changefreq}</changefreq>
     <priority>${priority.toFixed(1)}</priority>
   </url>`;
-    }).join('\n');
+    });
+
+  const locationUrls = locationPages
+    .filter(lp => lp.is_published)
+    .map(lp => `  <url>
+    <loc>${baseUrl}/LocationLanding?slug=${lp.slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>`);
+
+  const allUrls = [...staticUrls, ...locationUrls].join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
+${allUrls}
 </urlset>`;
 }
 
