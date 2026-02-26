@@ -38,7 +38,10 @@ export default function LocationLanding() {
 
     setMeta('name', 'description', page.meta_description);
     setMeta('name', 'robots', 'index, follow');
-    setLink('canonical', page.canonical_url || window.location.href.split('?')[0]);
+    // Canonical should be the actual working URL with slug param
+    const canonicalUrl = `${window.location.origin}/LocationLanding?slug=${slug}`;
+    setLink('canonical', canonicalUrl);
+    setMeta('property', 'og:url', canonicalUrl);
     setMeta('property', 'og:title', page.seo_title);
     setMeta('property', 'og:description', page.meta_description);
     setMeta('property', 'og:type', 'website');
