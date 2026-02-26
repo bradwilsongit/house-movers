@@ -52,6 +52,7 @@ import AdminCommission from './pages/AdminCommission';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminExtras from './pages/AdminExtras';
 import AdminPayFast from './pages/AdminPayFast';
+import AdminSeo from './pages/AdminSeo';
 import AdminSuppliers from './pages/AdminSuppliers';
 import AdminSupport from './pages/AdminSupport';
 import BookingDetails from './pages/BookingDetails';
@@ -75,7 +76,7 @@ import SupplierOnboarding from './pages/SupplierOnboarding';
 import SupplierProfile from './pages/SupplierProfile';
 import Support from './pages/Support';
 import Terms from './pages/Terms';
-import AdminSeo from './pages/AdminSeo';
+import LocationLanding from './pages/LocationLanding';
 import __Layout from './Layout.jsx';
 
 
@@ -85,6 +86,7 @@ export const PAGES = {
     "AdminDashboard": AdminDashboard,
     "AdminExtras": AdminExtras,
     "AdminPayFast": AdminPayFast,
+    "AdminSeo": AdminSeo,
     "AdminSuppliers": AdminSuppliers,
     "AdminSupport": AdminSupport,
     "BookingDetails": BookingDetails,
@@ -108,7 +110,7 @@ export const PAGES = {
     "SupplierProfile": SupplierProfile,
     "Support": Support,
     "Terms": Terms,
-    "AdminSeo": AdminSeo,
+    "LocationLanding": LocationLanding,
 }
 
 export const pagesConfig = {
