@@ -10,13 +10,11 @@ Deno.serve(async (req) => {
 
     const { location_name, city, province, lat, lng, place_id, slug, apiKey } = await req.json();
 
-    // Get app settings for site URL
-    const appSettingsList = await base44.asServiceRole.entities.AppSettings.list();
-    const appSettings = appSettingsList[0] || {};
-    const siteUrl = `https://housemovers.base44.app`;
+    const siteUrl = 'https://housemovers.base44.app';
 
     // 1) Generate content via LLM
-    const llmPrompt = `You are an SEO content writer for a South African moving company. Generate comprehensive SEO content for a location landing page.
+    const llmResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
+      prompt: `You are an SEO content writer for a South African moving company. Generate comprehensive SEO content for a location landing page.
 
 Location: ${location_name}
 City/Metro: ${city || location_name}
@@ -31,10 +29,7 @@ Return a JSON object with EXACTLY these fields:
 - nearby_areas: Array of 8 real suburbs or areas near ${location_name} in South Africa (just the suburb/area names as strings)
 - faqs: Array of 8 FAQ objects with "question" and "answer" fields, tailored to moving in ${location_name}. Answers should be 2-3 sentences.
 
-Make all content natural, helpful, and specific to ${location_name}, South Africa. Do not use generic placeholder text.`;
-
-    const llmResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: llmPrompt,
+Make all content natural, helpful, and specific to ${location_name}, South Africa. Do not use generic placeholder text.`,
       response_json_schema: {
         type: 'object',
         properties: {
@@ -72,7 +67,6 @@ Make all content natural, helpful, and specific to ${location_name}, South Afric
         'Nelspruit'
       ];
 
-      // Filter out destinations that are the same as origin city
       const destinations = majorDestinations.filter(d =>
         !d.toLowerCase().includes((city || location_name).toLowerCase())
       ).slice(0, 6);
@@ -99,15 +93,6 @@ Make all content natural, helpful, and specific to ${location_name}, South Afric
       } catch (e) {
         // Routes are optional
       }
-    }
-
-    // Fallback routes if API failed
-    if (popular_routes.length === 0) {
-      popular_routes = [
-        { destination: 'Cape Town CBD', distance_km: null, duration_minutes: null },
-        { destination: 'Johannesburg CBD', distance_km: null, duration_minutes: null },
-        { destination: 'Pretoria CBD', distance_km: null, duration_minutes: null },
-      ];
     }
 
     const canonical_url = `${siteUrl}/movers/${slug}`;
