@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Search, Globe, ArrowLeftRight, Building2, Map, ChevronRight, CheckCircle2, XCircle } from 'lucide-react';
+import { Search, Globe, ArrowLeftRight, Building2, Map, ChevronRight, CheckCircle2, XCircle, MapPin } from 'lucide-react';
 import SeoPageEditor from '@/components/seo/SeoPageEditor';
 import SeoOrganizationEditor from '@/components/seo/SeoOrganizationEditor';
 import SeoRedirectsManager from '@/components/seo/SeoRedirectsManager';
