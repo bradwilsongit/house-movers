@@ -8,16 +8,15 @@ import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
 
 const DEFAULT_PACKAGING = [
-  { id: '1', name: 'Large Box', description: '60x40x40cm - Ideal for bedding, clothes', category: 'boxes', unit_price: 45 },
-  { id: '2', name: 'Medium Box', description: '40x30x30cm - Books, kitchen items', category: 'boxes', unit_price: 35 },
-  { id: '3', name: 'Small Box', description: '30x20x20cm - Fragile items', category: 'boxes', unit_price: 25 },
-  { id: '4', name: 'Wardrobe Box', description: 'Hanging clothes box', category: 'boxes', unit_price: 120 },
+  { id: '1', name: 'Box 1', description: 'Max 10kg · 43(L) x 28(W) x 28(H) cm', category: 'boxes', unit_price: 45 },
+  { id: '2', name: 'Box 2', description: 'Max 10kg · 56(L) x 40(W) x 28(H) cm', category: 'boxes', unit_price: 55 },
+  { id: '3', name: 'Box 3', description: 'Max 10kg · 42(L) x 42(W) x 48(H) cm', category: 'boxes', unit_price: 60 },
+  { id: '4', name: 'Box 4', description: 'Max 15kg · 50(L) x 45(W) x 66(H) cm', category: 'boxes', unit_price: 75 },
   { id: '5', name: 'Bubble Wrap (10m)', description: 'Protection for fragile items', category: 'wrapping', unit_price: 85 },
   { id: '6', name: 'Packing Paper (5kg)', description: 'For wrapping items', category: 'wrapping', unit_price: 65 },
   { id: '7', name: 'Packing Tape', description: 'Heavy duty tape roll', category: 'tape', unit_price: 35 },
-  { id: '8', name: 'Moving Blanket', description: 'Furniture protection', category: 'blankets', unit_price: 80 },
-  { id: '9', name: 'Mattress Cover', description: 'Single/Double size', category: 'specialty', unit_price: 95 },
-  { id: '10', name: 'TV Box', description: 'For 50"+ screens', category: 'specialty', unit_price: 150 },
+  { id: '8', name: 'Mattress Cover', description: 'Single/Double size', category: 'specialty', unit_price: 95 },
+  { id: '9', name: 'TV Box', description: 'For 50"+ screens', category: 'specialty', unit_price: 150 },
 ];
 
 export default function PackagingSelector({ 

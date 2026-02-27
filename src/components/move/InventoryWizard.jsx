@@ -58,6 +58,7 @@ const COMMON_ITEMS = {
     { name: 'Boxes (toiletries)', volume: 0.2, weight: 8 },
   ],
   dining_room: [
+    { name: 'Dining Table (8-seater)', volume: 2.5, weight: 25 },
     { name: 'Dining Table (6-seater)', volume: 2.0, weight: 80 },
     { name: 'Dining Table (4-seater)', volume: 1.5, weight: 55 },
     { name: 'Dining Chair', volume: 0.3, weight: 12 },

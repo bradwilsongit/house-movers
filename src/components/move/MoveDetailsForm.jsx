@@ -225,6 +225,13 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
     { value: 'full_day', label: 'Full Day', time: 'Flexible timing' },
   ];
 
+  // Minimum date: 1 week from today
+  const minDate = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return d.toISOString().split('T')[0];
+  })();
+
   const handleNext = async () => {
     console.log('[MoveDetailsForm] Validating form data:', {
       move_type: data.move_type,
