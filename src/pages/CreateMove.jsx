@@ -413,8 +413,9 @@ export default function CreateMove() {
         commissionRate > 0 &&
         commissionRate <= 100
       );
+      const supplierPercentage = 100 - commissionRate;
       const splitSetupPayload = splitEnabled
-        ? JSON.stringify({ split_payment: { merchant_id: String(supplierMerchantId), percentage: commissionRate } })
+        ? JSON.stringify({ split_payment: { merchant_id: String(supplierMerchantId), percentage: supplierPercentage } })
         : null;
 
       // Create booking with commission details
