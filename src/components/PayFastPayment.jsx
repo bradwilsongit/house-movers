@@ -15,10 +15,11 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
       .replace(/~/g, '%7E');
 
   const buildPayfastSignature = (fieldsToPost, passphrase) => {
-    // 1) remove empty + NEVER include signature
+    // 1) remove empty + NEVER include signature or setup (setup is excluded from hash)
     const clean = Object.fromEntries(
       Object.entries(fieldsToPost).filter(([k, v]) => {
         if (k === 'signature') return false;
+        if (k === 'setup') return false;
         if (v === null || v === undefined) return false;
         if (String(v).trim() === '') return false;
         return true;
