@@ -694,6 +694,50 @@ export default function SupplierProfile() {
           </CardContent>
         </Card>
 
+        {/* PayFast Split Payment */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <CreditCard className="w-5 h-5" />
+              PayFast Payment Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
+              Provide your PayFast Merchant ID to enable automatic payment splitting on each booking.
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="payfast_merchant_id">PayFast Merchant ID</Label>
+                <Input
+                  id="payfast_merchant_id"
+                  placeholder="Numeric ID only"
+                  value={formData.payfast_merchant_id || ''}
+                  onChange={(e) => setFormData({ ...formData, payfast_merchant_id: e.target.value.replace(/\D/g, '') })}
+                  className="mt-1.5"
+                />
+                <p className="text-xs text-gray-500 mt-1">Numbers only — found in your PayFast merchant account</p>
+              </div>
+              <div className="flex flex-col justify-center">
+                <Label className="mb-2">Enable Split Payments</Label>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, payfast_split_enabled: !formData.payfast_split_enabled })}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.payfast_split_enabled ? 'bg-blue-600' : 'bg-gray-200'}`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.payfast_split_enabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                  </button>
+                  <span className="text-sm">{formData.payfast_split_enabled ? 'Enabled' : 'Disabled'}</span>
+                </div>
+                {formData.payfast_split_enabled && !formData.payfast_merchant_id && (
+                  <p className="text-xs text-red-600 mt-1">Merchant ID required to enable split payments</p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Pricing Rates */}
         <Card className="mb-6">
           <CardHeader>
