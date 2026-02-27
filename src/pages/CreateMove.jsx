@@ -437,7 +437,7 @@ export default function CreateMove() {
         payment_status: 'pending',
         split_enabled: splitEnabled,
         split_receiver_merchant_id: splitEnabled ? String(supplierMerchantId) : null,
-        split_percentage: splitEnabled ? commissionRate : null,
+        split_percentage: splitEnabled ? supplierPercentage : null,
         split_setup_payload: splitSetupPayload,
       });
 
