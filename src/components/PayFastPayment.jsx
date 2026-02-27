@@ -196,6 +196,9 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
             {Object.entries(cleanFieldsToPost).map(([key, value]) => (
               <input key={key} type="hidden" name={key} value={value} />
             ))}
+            {setupPayload && (
+              <input type="hidden" name="setup" value={setupPayload} />
+            )}
             <input type="hidden" name="signature" value={signature} />
           </form>
 
