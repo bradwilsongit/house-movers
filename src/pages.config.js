@@ -61,6 +61,7 @@ import CreateMove from './pages/CreateMove';
 import CustomerExtras from './pages/CustomerExtras';
 import ExtrasPaymentReturn from './pages/ExtrasPaymentReturn';
 import Home from './pages/Home';
+import LocationLanding from './pages/LocationLanding';
 import MyMoves from './pages/MyMoves';
 import PayFastITN from './pages/PayFastITN';
 import Payment from './pages/Payment';
@@ -76,7 +77,6 @@ import SupplierOnboarding from './pages/SupplierOnboarding';
 import SupplierProfile from './pages/SupplierProfile';
 import Support from './pages/Support';
 import Terms from './pages/Terms';
-import LocationLanding from './pages/LocationLanding';
 import __Layout from './Layout.jsx';
 
 
@@ -95,6 +95,7 @@ export const PAGES = {
     "CustomerExtras": CustomerExtras,
     "ExtrasPaymentReturn": ExtrasPaymentReturn,
     "Home": Home,
+    "LocationLanding": LocationLanding,
     "MyMoves": MyMoves,
     "PayFastITN": PayFastITN,
     "Payment": Payment,
@@ -110,7 +111,6 @@ export const PAGES = {
     "SupplierProfile": SupplierProfile,
     "Support": Support,
     "Terms": Terms,
-    "LocationLanding": LocationLanding,
 }
 
 export const pagesConfig = {

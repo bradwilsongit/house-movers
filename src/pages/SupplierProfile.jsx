@@ -33,14 +33,13 @@ const CAPABILITY_CLASSES = [
 ];
 
 const PACKAGING_OPTIONS = [
-  { name: 'Large Box', category: 'boxes' },
-  { name: 'Medium Box', category: 'boxes' },
-  { name: 'Small Box', category: 'boxes' },
-  { name: 'Wardrobe Box', category: 'boxes' },
+  { name: 'Box 1', category: 'boxes', description: 'Max 10kg · 43×28×28cm' },
+  { name: 'Box 2', category: 'boxes', description: 'Max 10kg · 56×40×28cm' },
+  { name: 'Box 3', category: 'boxes', description: 'Max 10kg · 42×42×48cm' },
+  { name: 'Box 4', category: 'boxes', description: 'Max 15kg · 50×45×66cm' },
   { name: 'Bubble Wrap (10m)', category: 'wrapping' },
   { name: 'Packing Paper (5kg)', category: 'wrapping' },
   { name: 'Packing Tape', category: 'tape' },
-  { name: 'Moving Blanket', category: 'blankets' },
   { name: 'Mattress Cover', category: 'specialty' },
   { name: 'TV Box', category: 'specialty' },
 ];
