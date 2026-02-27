@@ -256,7 +256,7 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
       newErrors.dropoff = 'Please select dropoff address from dropdown';
     }
     
-    if (!data.move_date) newErrors.move_date = 'Select move date';
+    if (!data.move_date && !data.date_flexible) newErrors.move_date = 'Select a move date or mark as flexible';
 
     if (Object.keys(newErrors).length > 0) {
       console.log('[MoveDetailsForm] ❌ Validation errors:', newErrors);
@@ -278,7 +278,7 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
   const canContinue = data.move_type && 
                       data.pickup_place_id && 
                       data.dropoff_place_id && 
-                      data.move_date;
+                      (data.move_date || data.date_flexible);
 
   return (
     <div className="space-y-8">
@@ -571,16 +571,36 @@ export default function MoveDetailsForm({ data, onChange, onNext }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div>
-            <Label htmlFor="move_date">Move Date</Label>
-            <Input
-              id="move_date"
-              type="date"
-              value={data.move_date || ''}
-              min={new Date().toISOString().split('T')[0]}
-              onChange={(e) => handleChange('move_date', e.target.value)}
-              className="mt-1.5 max-w-xs"
-            />
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="move_date">Move Date <span className="text-gray-400 font-normal text-xs ml-1">(min. 1 week from today)</span></Label>
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="date_flexible"
+                  checked={data.date_flexible || false}
+                  onCheckedChange={(v) => {
+                    handleChange('date_flexible', v);
+                    if (v) handleChange('move_date', '');
+                  }}
+                />
+                <Label htmlFor="date_flexible" className="cursor-pointer text-sm font-normal">Flexible date</Label>
+              </div>
+            </div>
+            {data.date_flexible ? (
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-800">
+                ✓ Your date is flexible — suppliers will contact you to agree on a suitable date.
+              </div>
+            ) : (
+              <Input
+                id="move_date"
+                type="date"
+                value={data.move_date || ''}
+                min={minDate}
+                onChange={(e) => handleChange('move_date', e.target.value)}
+                className="max-w-xs"
+              />
+            )}
+            {errors.move_date && <p className="text-sm text-red-500">{errors.move_date}</p>}
           </div>
 
           <div>
