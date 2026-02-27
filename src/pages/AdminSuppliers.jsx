@@ -34,14 +34,13 @@ const REGIONS = ['Cape Town','Johannesburg','Pretoria','Durban','Port Elizabeth'
 const CAPABILITY_CLASSES = ['apartment','house','office','long_distance'];
 const VEHICLE_TYPES = ['1-ton Bakkie','2-ton Truck','3-ton Truck','4-ton Truck','5-ton Truck','6-ton Truck','7-ton Truck','8-ton Truck','9-ton Truck','10-ton Truck'];
 const PACKAGING_OPTIONS = [
-  { name: 'Large Box', category: 'boxes' },
-  { name: 'Medium Box', category: 'boxes' },
-  { name: 'Small Box', category: 'boxes' },
-  { name: 'Wardrobe Box', category: 'boxes' },
+  { name: 'Box 1', category: 'boxes' },
+  { name: 'Box 2', category: 'boxes' },
+  { name: 'Box 3', category: 'boxes' },
+  { name: 'Box 4', category: 'boxes' },
   { name: 'Bubble Wrap (10m)', category: 'wrapping' },
   { name: 'Packing Paper (5kg)', category: 'wrapping' },
   { name: 'Packing Tape', category: 'tape' },
-  { name: 'Moving Blanket', category: 'blankets' },
   { name: 'Mattress Cover', category: 'specialty' },
   { name: 'TV Box', category: 'specialty' },
 ];
@@ -566,6 +565,45 @@ export default function AdminSuppliers() {
                       <Input placeholder="Rate/km (R)" type="number" value={editNewVehicle.rate_per_km} onChange={e => setEditNewVehicle({ ...editNewVehicle, rate_per_km: e.target.value })} />
                       <Input placeholder="Crew rate (R)" type="number" value={editNewVehicle.crew_member_rate} onChange={e => setEditNewVehicle({ ...editNewVehicle, crew_member_rate: e.target.value })} />
                       <Button onClick={addEditVehicle} disabled={!editNewVehicle.vehicle_type || !editNewVehicle.capacity_m3} size="sm">Add</Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* PayFast Split Payment */}
+                <div>
+                  <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wide mb-3">PayFast Split Payments</h4>
+                  <div className="space-y-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-xs text-blue-700">When enabled, the platform commission % is automatically split to this supplier's PayFast account on each booking payment.</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>PayFast Merchant ID</Label>
+                        <Input
+                          className="mt-1"
+                          placeholder="Numeric ID only"
+                          value={editForm.payfast_merchant_id || ''}
+                          onChange={e => setEditForm({ ...editForm, payfast_merchant_id: e.target.value.replace(/\D/g, '') })}
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Numbers only — from supplier's PayFast account</p>
+                      </div>
+                      <div className="flex flex-col justify-center">
+                        <Label className="mb-2">Split Payment Enabled</Label>
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => setEditForm({ ...editForm, payfast_split_enabled: !editForm.payfast_split_enabled })}
+                            className={cn(
+                              'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
+                              editForm.payfast_split_enabled ? 'bg-blue-600' : 'bg-gray-200'
+                            )}
+                          >
+                            <span className={cn('inline-block h-4 w-4 transform rounded-full bg-white transition-transform', editForm.payfast_split_enabled ? 'translate-x-6' : 'translate-x-1')} />
+                          </button>
+                          <span className="text-sm">{editForm.payfast_split_enabled ? 'Enabled' : 'Disabled'}</span>
+                        </div>
+                        {editForm.payfast_split_enabled && !editForm.payfast_merchant_id && (
+                          <p className="text-xs text-red-600 mt-1">Merchant ID required to enable split</p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
