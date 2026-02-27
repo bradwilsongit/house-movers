@@ -115,6 +115,21 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
   const cancel_url = booking._cancel_url_override || `${window.location.origin}${cancelPage}?booking_id=${booking.id}`;
   const notify_url = `https://housemovers.base44.app/api/functions/payfastITN`;
 
+  // --- Split Payment setup ---
+  const splitMerchantId = booking.split_receiver_merchant_id;
+  const splitPercentage = booking.split_percentage;
+  const splitEnabled = booking.split_enabled && splitMerchantId && splitPercentage > 0 && splitPercentage <= 100;
+
+  let setupPayload = null;
+  if (splitEnabled) {
+    setupPayload = JSON.stringify({
+      split_payment: {
+        merchant_id: String(splitMerchantId),
+        percentage: Number(splitPercentage),
+      }
+    });
+  }
+
   const fieldsToPost = {
     merchant_id,
     merchant_key,
@@ -139,6 +154,7 @@ export default function PayFastPayment({ booking, settings, onPaymentInitiated }
     custom_str1: booking.id,
     custom_str2: booking.booking_reference,
     ...(booking.custom_str3 ? { custom_str3: booking.custom_str3 } : {}),
+    ...(setupPayload ? { setup: setupPayload } : {}),
   };
 
   const { cleanFieldsToPost, signature, paramString } = buildPayfastSignature(fieldsToPost, passphrase);

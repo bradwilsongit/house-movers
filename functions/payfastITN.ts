@@ -105,6 +105,8 @@ Deno.serve(async (req) => {
       status: booking.status === 'pending_payment' ? 'confirmed' : booking.status,
       payfast_payment_id: data.pf_payment_id,
       paid_at: new Date().toISOString(),
+      // Split payment audit fields (already locked at checkout, just confirm via ITN data)
+      ...(data.split_payment_merchant_id ? { split_receiver_merchant_id: data.split_payment_merchant_id } : {}),
     });
 
     // --- 5. Log the payment ---
