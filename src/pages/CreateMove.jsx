@@ -404,6 +404,19 @@ export default function CreateMove() {
         status: 'selected',
       });
 
+      // --- Split Payment: lock at checkout ---
+      const supplierMerchantId = supplier?.payfast_merchant_id;
+      const splitEnabled = !!(
+        supplier?.payfast_split_enabled &&
+        supplierMerchantId &&
+        /^\d+$/.test(supplierMerchantId) &&
+        commissionRate > 0 &&
+        commissionRate <= 100
+      );
+      const splitSetupPayload = splitEnabled
+        ? JSON.stringify({ split_payment: { merchant_id: String(supplierMerchantId), percentage: commissionRate } })
+        : null;
+
       // Create booking with commission details
       const bookingRef = `HM${Date.now().toString(36).toUpperCase()}`;
       const booking = await base44.entities.Booking.create({
@@ -421,6 +434,10 @@ export default function CreateMove() {
         commission_amount: commissionAmount,
         total_amount: totalAmount,
         payment_status: 'pending',
+        split_enabled: splitEnabled,
+        split_receiver_merchant_id: splitEnabled ? String(supplierMerchantId) : null,
+        split_percentage: splitEnabled ? commissionRate : null,
+        split_setup_payload: splitSetupPayload,
       });
 
       // Log payment initiation
