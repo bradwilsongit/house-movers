@@ -176,7 +176,6 @@ export default function PackagingSelector({
     { id: 'boxes', label: 'Boxes', icon: '📦' },
     { id: 'wrapping', label: 'Wrapping', icon: '🎁' },
     { id: 'tape', label: 'Tape & Supplies', icon: '🔧' },
-    { id: 'blankets', label: 'Blankets', icon: '🛡️' },
     { id: 'specialty', label: 'Specialty', icon: '⭐' },
   ];
 
