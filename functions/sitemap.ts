@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
     const locationUrls = locationPages
       .filter(lp => lp.is_published && lp.slug)
       .map(lp => `  <url>
-    <loc>${baseUrl}/location/${lp.slug}</loc>
+    <loc>${baseUrl}/LocationLanding?slug=${lp.slug}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
