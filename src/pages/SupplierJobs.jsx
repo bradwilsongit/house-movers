@@ -15,7 +15,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 const statusConfig = {
-  pending_deposit: { label: 'Awaiting Payment', color: 'bg-gray-100 text-gray-700' },
+  pending_supplier_acceptance: { label: 'Needs Acceptance', color: 'bg-amber-100 text-amber-700' },
+  pending_payment: { label: 'Awaiting Payment', color: 'bg-gray-100 text-gray-700' },
   confirmed: { label: 'Confirmed', color: 'bg-blue-100 text-blue-700' },
   mover_accepted: { label: 'Accepted', color: 'bg-emerald-100 text-emerald-700' },
   on_route: { label: 'On Route', color: 'bg-blue-100 text-blue-700' },
