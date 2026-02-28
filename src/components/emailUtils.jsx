@@ -100,6 +100,25 @@ export async function sendEmail({ to, subject, body, from_name }) {
 
 // ─── CUSTOMER EMAILS ─────────────────────────────────────────────────
 
+export async function emailCustomerQuoteAccepted({ customerEmail, customerName, booking }) {
+  const body = emailTemplate({
+    preheader: `Your quote for booking #${booking.booking_reference} has been submitted!`,
+    content: `
+      ${greeting(customerName)}
+      ${row('Your quote has been <strong>submitted to the moving company</strong>. They will review and confirm availability shortly — you\'ll receive an email and notification once they accept, with a link to pay.')}
+      ${divider()}
+      ${infoRow('Booking Reference', `#${booking.booking_reference}`)}
+      ${infoRow('Move Date', booking.move_date)}
+      ${infoRow('Total (on acceptance)', `R${booking.total_amount?.toLocaleString()}`)}
+      ${divider()}
+      ${row('No payment is required until the mover accepts your job.')}
+    `,
+    ctaText: 'View My Booking',
+    ctaUrl: `https://app.base44.app/BookingDetails?id=${booking.id}`,
+  });
+  await sendEmail({ to: customerEmail, subject: `📋 Quote Submitted – #${booking.booking_reference}`, body });
+}
+
 export async function emailCustomerBookingConfirmed({ customerEmail, customerName, booking }) {
   const body = emailTemplate({
     preheader: `Your booking #${booking.booking_reference} is confirmed!`,
