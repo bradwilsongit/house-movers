@@ -29,8 +29,9 @@ import { cn } from '@/lib/utils';
 import { emailSupplierBookingCompleted } from '@/components/emailUtils';
 
 const statusConfig = {
-  pending_deposit: { label: 'Awaiting Payment', color: 'bg-gray-100 text-gray-700', next: null },
-  confirmed: { label: 'Confirmed', color: 'bg-blue-100 text-blue-700', next: 'mover_accepted' },
+  pending_supplier_acceptance: { label: 'Pending Your Acceptance', color: 'bg-amber-100 text-amber-700', next: 'pending_payment' },
+  pending_payment: { label: 'Awaiting Customer Payment', color: 'bg-gray-100 text-gray-700', next: null },
+  confirmed: { label: 'Confirmed', color: 'bg-blue-100 text-blue-700', next: 'on_route' },
   mover_accepted: { label: 'Accepted', color: 'bg-emerald-100 text-emerald-700', next: 'on_route' },
   on_route: { label: 'In Transit', color: 'bg-blue-100 text-blue-700', next: 'arrived' },
   arrived: { label: 'Arrived', color: 'bg-amber-100 text-amber-700', next: 'completed' },
