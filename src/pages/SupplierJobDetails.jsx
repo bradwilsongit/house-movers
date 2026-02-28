@@ -260,8 +260,8 @@ export default function SupplierJobDetails() {
   }
 
   const status = statusConfig[booking.status] || statusConfig.confirmed;
-  const canUpdateStatus = status.next && booking.payment_status === 'paid';
-  const needsAcceptance = booking.status === 'confirmed';
+  const needsAcceptance = booking.status === 'pending_supplier_acceptance';
+  const canUpdateStatus = status.next && !needsAcceptance && booking.payment_status === 'paid';
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
