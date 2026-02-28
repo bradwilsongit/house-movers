@@ -5,8 +5,8 @@ import { createPageUrl } from '@/utils';
 import { format } from 'date-fns';
 import { 
   Truck, Calendar, MapPin, Phone, User, Clock, Package,
-  CheckCircle2, AlertCircle, ChevronRight, Camera,
-  Play, Flag, Navigation, NavigationOff
+  CheckCircle2, AlertCircle, ChevronRight,
+  Play, Navigation, NavigationOff
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
