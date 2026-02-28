@@ -86,7 +86,7 @@ export default function MyMoves() {
   };
 
   const upcomingBookings = bookings.filter(b => 
-    ['pending_payment', 'pending_deposit', 'confirmed', 'driver_assigned', 'on_route', 'arrived', 'loading', 'in_transit', 'unloading'].includes(b.status)
+    ['pending_supplier_acceptance', 'pending_payment', 'pending_deposit', 'confirmed', 'driver_assigned', 'on_route', 'arrived', 'loading', 'in_transit', 'unloading'].includes(b.status)
   );
   const pastBookings = bookings.filter(b => 
     ['completed', 'cancelled'].includes(b.status)
