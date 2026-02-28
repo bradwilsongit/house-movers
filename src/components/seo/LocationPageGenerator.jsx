@@ -271,7 +271,7 @@ export default function LocationPageGenerator({ apiKey }) {
                         {page.is_published ? 'Unpublish' : 'Publish'}
                       </Button>
                       <a
-                        href={`/location/${page.slug}`}
+                        href={`/LocationLanding?slug=${page.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
