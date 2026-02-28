@@ -185,8 +185,21 @@ export default function LocationLanding() {
             <div className="flex-1 max-w-lg w-full">
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80"
-                  alt={`House Movers in ${page.location_name}`}
+                  src={(() => {
+                    const photos = [
+                      'https://images.unsplash.com/photo-1600518464441-9154a4dea21b?w=800&q=80',
+                      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+                      'https://images.unsplash.com/photo-1603796846097-bee99e4a601f?w=800&q=80',
+                      'https://images.unsplash.com/photo-1464082354059-27db6ce50048?w=800&q=80',
+                      'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&q=80',
+                      'https://images.unsplash.com/photo-1572373625060-0d9d1b84eff4?w=800&q=80',
+                      'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80',
+                      'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80',
+                    ];
+                    const hash = (page.slug || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+                    return photos[hash % photos.length];
+                  })()}
+                  alt={`Moving companies in ${page.location_name}`}
                   className="w-full h-64 object-cover"
                 />
                 {/* Move confirmed card */}
