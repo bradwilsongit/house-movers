@@ -255,7 +255,7 @@ export default function LocationPageGenerator({ apiKey }) {
                       </Badge>
                     )}
                   </div>
-                  <p className="text-xs text-gray-400">/movers/{page.slug}</p>
+                  <p className="text-xs text-gray-400">/location/{page.slug}</p>
                   {page.seo_title && <p className="text-xs text-gray-500 truncate mt-0.5">{page.seo_title}</p>}
                 </div>
                 <div className="flex items-center gap-2 shrink-0">

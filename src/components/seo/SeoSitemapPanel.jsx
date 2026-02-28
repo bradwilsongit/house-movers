@@ -37,7 +37,7 @@ function generateSitemap(pages, seoMap, baseUrl, locationPages = []) {
   const locationUrls = locationPages
     .filter(lp => lp.is_published)
     .map(lp => `  <url>
-    <loc>${baseUrl}/LocationLanding?slug=${lp.slug}</loc>
+    <loc>${baseUrl}/location/${lp.slug}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
