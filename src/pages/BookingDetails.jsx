@@ -91,10 +91,10 @@ export default function BookingDetails() {
 
   const getCurrentStepIndex = () => {
     const s = booking?.status;
-    if (!s || s === 'confirmed' || s === 'pending_payment') return 0;
-    if (s === 'mover_accepted' || s === 'driver_assigned') return 1;
-    if (s === 'on_route') return 2;
-    if (s === 'arrived' || s === 'loading' || s === 'in_transit' || s === 'unloading') return 3;
+    if (!s || s === 'pending_supplier_acceptance') return 0;
+    if (s === 'pending_payment') return 1;
+    if (s === 'confirmed' || s === 'driver_assigned' || s === 'mover_accepted') return 2;
+    if (s === 'on_route' || s === 'arrived' || s === 'loading' || s === 'in_transit' || s === 'unloading') return 3;
     if (s === 'completed') return 4;
     return 0;
   };
