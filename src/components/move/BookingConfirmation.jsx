@@ -301,7 +301,7 @@ export default function BookingConfirmation({
             </span>
           ) : (
             <>
-              Proceed to Payment R{grandTotal.toFixed(2)}
+              Submit to Mover – R{grandTotal.toFixed(2)}
             </>
           )}
         </Button>
