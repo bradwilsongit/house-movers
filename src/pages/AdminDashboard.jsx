@@ -35,11 +35,13 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       // Load all data in parallel
-      const [bookings, suppliers, extras] = await Promise.all([
+      const [bookings, suppliers, extras, ratingsData] = await Promise.all([
         base44.entities.Booking.list('-created_date', 100),
         base44.entities.Supplier.list('-created_date', 50),
         base44.entities.ExtraRequest.filter({ status: 'pending' }, '-created_date', 20),
+        base44.entities.Rating.list('-created_date', 50),
       ]);
+      setReviews(ratingsData);
 
       setRecentBookings(bookings.slice(0, 10));
       setPendingSuppliers(suppliers.filter(s => s.status === 'pending'));
