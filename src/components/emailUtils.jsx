@@ -98,7 +98,7 @@ export async function sendEmail({ to, subject, body, from_name }) {
   }
 }
 
-// ─── CUSTOMER EMAILS ─────────────────────────────────────────────────
+// ─── CUSTOMER EMAILS ──────────────────────────────────────────────────
 
 export async function emailCustomerQuoteAccepted({ customerEmail, customerName, booking }) {
   const body = emailTemplate({
