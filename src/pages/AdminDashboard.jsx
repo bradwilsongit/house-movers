@@ -218,6 +218,45 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
+        {/* Customer Reviews */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg">Customer Reviews</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-gray-500">
+                    <th className="text-left py-2 pr-4 font-normal">Customer</th>
+                    <th className="text-left py-2 pr-4 font-normal">Overall</th>
+                    <th className="text-left py-2 pr-4 font-normal">Punctuality</th>
+                    <th className="text-left py-2 pr-4 font-normal">Care</th>
+                    <th className="text-left py-2 pr-4 font-normal">Communication</th>
+                    <th className="text-left py-2 pr-4 font-normal">Review</th>
+                    <th className="text-left py-2 font-normal">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reviews.length === 0 ? (
+                    <tr><td colSpan={7} className="py-8 text-center text-gray-400">No reviews yet</td></tr>
+                  ) : reviews.map(r => (
+                    <tr key={r.id} className="border-b last:border-0">
+                      <td className="py-3 pr-4 font-medium">{r.customer_name || r.customer_id || '—'}</td>
+                      <td className="py-3 pr-4">{'★'.repeat(r.overall_rating || 0)}<span className="text-gray-300">{'★'.repeat(5 - (r.overall_rating || 0))}</span></td>
+                      <td className="py-3 pr-4">{'★'.repeat(r.punctuality_rating || 0)}<span className="text-gray-300">{'★'.repeat(5 - (r.punctuality_rating || 0))}</span></td>
+                      <td className="py-3 pr-4">{'★'.repeat(r.care_rating || 0)}<span className="text-gray-300">{'★'.repeat(5 - (r.care_rating || 0))}</span></td>
+                      <td className="py-3 pr-4">{'★'.repeat(r.communication_rating || 0)}<span className="text-gray-300">{'★'.repeat(5 - (r.communication_rating || 0))}</span></td>
+                      <td className="py-3 pr-4 text-gray-600">{r.review_text || '—'}</td>
+                      <td className="py-3 text-gray-500">{r.created_date ? format(new Date(r.created_date), 'M/d/yyyy') : '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Recent Bookings */}
           <Card>
