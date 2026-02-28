@@ -20,10 +20,10 @@ import { generateInvoicePDF } from '@/components/InvoicePDF';
 import LiveTrackingMap from '@/components/LiveTrackingMap.jsx';
 
 const statusSteps = [
-  { id: 'confirmed', label: 'Confirmed', icon: CheckCircle2 },
-  { id: 'mover_accepted', label: 'Mover Accepted', icon: User },
+  { id: 'pending_supplier_acceptance', label: 'Quote Submitted', icon: CheckCircle2 },
+  { id: 'pending_payment', label: 'Mover Accepted', icon: User },
+  { id: 'confirmed', label: 'Payment Received', icon: CreditCard },
   { id: 'on_route', label: 'In Transit', icon: Truck },
-  { id: 'arrived', label: 'Mover Arrived', icon: Truck },
   { id: 'completed', label: 'Completed', icon: CheckCircle2 },
 ];
 
