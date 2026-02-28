@@ -9,27 +9,29 @@ Deno.serve(async (req) => {
     }
 
     const { location_name, city, province, lat, lng, slug, apiKey } = await req.json();
-
     const siteUrl = 'https://housemovers.base44.app';
 
     // 1) Generate content via LLM
     const llmResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `You are an SEO content writer for a South African moving company. Generate comprehensive SEO content for a location landing page.
+      prompt: `You are an SEO content writer for House Movers — a South African online platform that connects customers to vetted, partnered moving suppliers. Write a conversion-focused service landing page (NOT a blog post or guide).
 
 Location: ${location_name}
 City/Metro: ${city || location_name}
 Province: ${province || 'South Africa'}
 
 Return a JSON object with EXACTLY these fields:
-- seo_title: Page title tag (max 60 chars), include "Movers ${location_name}" naturally
-- meta_description: Meta description (max 155 chars), compelling, include location
-- h1: H1 heading with primary keyword + location (max 70 chars)
-- hero_paragraph: 2-3 sentence intro paragraph mentioning ${location_name} naturally, talking about professional moving services
-- services: Array of 5 services offered (strings), each under 60 chars, specific to moving e.g. "Residential house moving in ${location_name}"
-- nearby_areas: Array of 8 real suburbs or areas near ${location_name} in South Africa (just the suburb/area names as strings)
-- faqs: Array of 8 FAQ objects with "question" and "answer" fields, tailored to moving in ${location_name}. Answers should be 2-3 sentences.
 
-Make all content natural, helpful, and specific to ${location_name}, South Africa.`,
+- seo_title: "House Movers in ${location_name} | Book Vetted Movers Online" (max 65 chars)
+- meta_description: 150-160 chars; include location + booking angle, e.g. "Compare vetted moving companies in ${location_name}. Book online, get matched to the right truck size, and track your move. House Movers South Africa."
+- h1: "House Movers in ${location_name}" or "Moving Company in ${location_name}" (max 60 chars)
+- hero_paragraph: 2 sentences. Direct, service-led tone. Mention House Movers connects customers to partnered moving suppliers. Include: "Compare vetted movers. Book online. Track your move."
+- local_intro: 3-4 paragraphs (300-400 words total). Direct, service-led tone — NOT bloggy, NOT "this guide will help you". Mention: (1) House Movers is a platform connecting customers to partnered moving suppliers, (2) we handle booking + coordination, (3) common move types in ${location_name} (home, office, small load, long-distance). End with: "Start your booking above to compare movers in ${location_name}."
+- service_blocks: Array of exactly 4 objects, each with: { title: string, description: string (2-3 sentences, service-led, mention platform), cta: "Book a move in minutes." }. Titles must be: "Home Moves in ${location_name}", "Office Moves in ${location_name}", "Small Loads & Single Items", "Long-distance Moves from ${location_name}"
+- moving_tips: Array of 5-6 practical, location-specific tips as strings. Each tip should be 1-2 sentences. Cover: best times to move (traffic/month-end/weekends), parking/access for apartments/complexes in ${location_name}, security considerations, weather if relevant, booking-ahead advice.
+- nearby_areas: Array of 12-18 real suburb/area names near ${location_name} in South Africa (just the names as strings)
+- faqs: Array of 8 FAQ objects with "question" and "answer". Questions must include: "How much do movers cost in ${location_name}?", "Do you cover ${location_name} to Cape Town moves?", "How far in advance should I book?", "Do you offer packing services?", "Are your movers vetted?", "What size truck do I need?", plus 2 more location-specific questions. All answers must reference booking via House Movers platform and mention vetted suppliers.
+
+Write like a converting service page. Mention "House Movers" and "partnered suppliers" naturally throughout. Never write "this guide", "essential tips", or editorial filler.`,
       response_json_schema: {
         type: 'object',
         properties: {
@@ -37,7 +39,19 @@ Make all content natural, helpful, and specific to ${location_name}, South Afric
           meta_description: { type: 'string' },
           h1: { type: 'string' },
           hero_paragraph: { type: 'string' },
-          services: { type: 'array', items: { type: 'string' } },
+          local_intro: { type: 'string' },
+          service_blocks: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                title: { type: 'string' },
+                description: { type: 'string' },
+                cta: { type: 'string' }
+              }
+            }
+          },
+          moving_tips: { type: 'array', items: { type: 'string' } },
           nearby_areas: { type: 'array', items: { type: 'string' } },
           faqs: {
             type: 'array',
@@ -58,11 +72,11 @@ Make all content natural, helpful, and specific to ${location_name}, South Afric
     if (lat && lng && apiKey) {
       const majorDestinations = [
         'Cape Town CBD', 'Johannesburg CBD', 'Pretoria CBD',
-        'Durban CBD', 'Port Elizabeth', 'Bloemfontein CBD', 'East London', 'Nelspruit'
+        'Durban CBD', 'Port Elizabeth', 'Bloemfontein CBD', 'East London', 'Nelspruit', 'Polokwane CBD'
       ];
       const destinations = majorDestinations
         .filter(d => !d.toLowerCase().includes((city || location_name).toLowerCase()))
-        .slice(0, 6);
+        .slice(0, 7);
 
       try {
         const origins = `${lat},${lng}`;
@@ -84,8 +98,12 @@ Make all content natural, helpful, and specific to ${location_name}, South Afric
       } catch (_e) { /* Routes are optional */ }
     }
 
+    // Build services array from service_blocks for backward compatibility
+    const services = llmResult.service_blocks?.map(b => b.title) || [];
+
     const pageData = {
       ...llmResult,
+      services,
       popular_routes,
       canonical_url: `${siteUrl}/LocationLanding?slug=${slug}`,
       generation_status: 'complete',
