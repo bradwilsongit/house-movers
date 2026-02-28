@@ -293,15 +293,28 @@ export default function SupplierJobDetails() {
                 <div className="flex items-center gap-3">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                   <div>
-                    <p className="font-medium text-emerald-900">Ready to Accept</p>
+                    <p className="font-medium text-emerald-900">New Job – Awaiting Your Acceptance</p>
                     <p className="text-sm text-emerald-700">
-                      Click below to accept this job
+                      Accept to confirm you can do this job. The customer will then be notified to make payment.
                     </p>
                   </div>
                 </div>
-                <Button onClick={() => handleUpdateStatus('mover_accepted')} disabled={processing} className="bg-emerald-600 hover:bg-emerald-700">
+                <Button onClick={() => handleUpdateStatus('pending_payment')} disabled={processing} className="bg-emerald-600 hover:bg-emerald-700">
                   Accept Job
                 </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        {booking.status === 'pending_payment' && (
+          <Card className="bg-blue-50 border-blue-200 mb-6">
+            <CardContent className="py-4">
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 text-blue-600" />
+                <div>
+                  <p className="font-medium text-blue-900">Waiting for Customer Payment</p>
+                  <p className="text-sm text-blue-700">You accepted this job. The customer has been notified to pay.</p>
+                </div>
               </div>
             </CardContent>
           </Card>
