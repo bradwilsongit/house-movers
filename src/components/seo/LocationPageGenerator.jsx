@@ -209,8 +209,8 @@ export default function LocationPageGenerator({ apiKey }) {
               </div>
               {selectedPlace && (
                 <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
-                  {selectedPlace.location_name}{selectedPlace.city && selectedPlace.city !== selectedPlace.location_name ? `, ${selectedPlace.city}` : ''}{selectedPlace.province ? ` · ${selectedPlace.province}` : ''} · slug: /movers/{selectedPlace.slug}
+                <CheckCircle2 className="w-3 h-3" />
+                {selectedPlace.location_name}{selectedPlace.city && selectedPlace.city !== selectedPlace.location_name ? `, ${selectedPlace.city}` : ''}{selectedPlace.province ? ` · ${selectedPlace.province}` : ''} · slug: /location/{selectedPlace.slug}
                 </p>
               )}
               {error && (
@@ -271,7 +271,7 @@ export default function LocationPageGenerator({ apiKey }) {
                         {page.is_published ? 'Unpublish' : 'Publish'}
                       </Button>
                       <a
-                        href={`${createPageUrl('LocationLanding')}?slug=${page.slug}`}
+                        href={`/location/${page.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
