@@ -77,7 +77,7 @@ export default function SupplierJobs() {
   };
 
   const upcomingBookings = bookings.filter(b => 
-    ['pending_deposit', 'confirmed', 'mover_accepted'].includes(b.status)
+    ['pending_supplier_acceptance', 'pending_payment', 'pending_deposit', 'confirmed', 'mover_accepted'].includes(b.status)
   );
   const activeBookings = bookings.filter(b => 
     ['on_route', 'arrived', 'loading', 'in_transit', 'unloading'].includes(b.status)
