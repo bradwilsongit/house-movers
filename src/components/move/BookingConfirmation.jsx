@@ -59,8 +59,8 @@ export default function BookingConfirmation({
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold mb-2">Confirm Your Booking</h2>
-        <p className="text-gray-500">Review your move details before proceeding to payment</p>
+        <h2 className="text-2xl font-bold mb-2">Confirm Your Quote</h2>
+        <p className="text-gray-500">Review your move details. The mover will confirm availability, then you'll be prompted to pay.</p>
       </div>
 
       {/* Move Summary */}
