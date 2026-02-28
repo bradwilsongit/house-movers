@@ -9,7 +9,7 @@ import InventoryWizard from '@/components/move/InventoryWizard';
 import PackagingSelector from '@/components/move/PackagingSelector';
 import QuoteComparison from '@/components/move/QuoteComparison';
 import BookingConfirmation from '@/components/move/BookingConfirmation';
-import { emailCustomerBookingConfirmed, emailSupplierNewBooking } from '@/components/emailUtils';
+import { emailCustomerQuoteAccepted, emailSupplierNewBooking } from '@/components/emailUtils';
 
 const STEPS = [
   { id: 'details', title: 'Move Details', description: 'Pickup & dropoff' },
