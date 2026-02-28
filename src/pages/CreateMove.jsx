@@ -418,14 +418,14 @@ export default function CreateMove() {
         ? JSON.stringify({ split_payment: { merchant_id: String(supplierMerchantId), percentage: supplierPercentage } })
         : null;
 
-      // Create booking with commission details
+      // Create booking — starts as pending_supplier_acceptance (supplier must accept before payment)
       const bookingRef = `HM${Date.now().toString(36).toUpperCase()}`;
       const booking = await base44.entities.Booking.create({
         move_request_id: moveRequestId,
         quote_id: selectedQuoteId,
         supplier_id: selectedQuote.supplier_id,
         customer_id: user?.id,
-        status: 'pending_payment',
+        status: 'pending_supplier_acceptance',
         booking_reference: bookingRef,
         move_date: moveDetails.move_date,
         time_window: moveDetails.time_window,
@@ -441,35 +441,27 @@ export default function CreateMove() {
         split_setup_payload: splitSetupPayload,
       });
 
-      // Log payment initiation
-      await base44.entities.PaymentLog.create({
-        booking_id: booking.id,
-        amount: totalAmount,
-        status: 'initiated',
-      });
-
-      // Send email notifications
-      // Customer confirmation email (use current user directly — no RLS issue)
-      emailCustomerBookingConfirmed({ customerEmail: user.email, customerName: user.full_name, booking });
-
-      // Notify admins via backend function (bypasses RLS)
-      await base44.functions.invoke('notifyAdmins', {
-        title: 'New Booking Created',
-        message: `A new booking #${bookingRef} has been confirmed and is awaiting payment.`,
-        type: 'booking',
-        link_page: 'AdminBookings',
-        link_id: booking.id,
-        emailSubject: `📦 New Booking Created – #${bookingRef}`,
-        emailBody: `Hi {adminName},\n\nA new booking has been created.\n\n<strong>Booking:</strong> #${bookingRef}<br/><strong>Move Date:</strong> ${moveDetails.move_date}<br/><strong>Amount:</strong> R${totalAmount?.toLocaleString()}\n\n<a href="https://app.base44.app/AdminBookings">View in dashboard</a>`,
-      });
-
-      // Notify supplier
+      // Notify supplier to accept the job
       if (supplier?.contact_email) {
         emailSupplierNewBooking({ supplierEmail: supplier.contact_email, supplierName: supplier.company_name, booking });
       }
 
-      // Navigate to payment page
-      navigate(createPageUrl('Payment') + `?booking_id=${booking.id}`);
+      // Notify admins
+      await base44.functions.invoke('notifyAdmins', {
+        title: 'New Booking Awaiting Supplier Acceptance',
+        message: `Booking #${bookingRef} created and awaiting supplier acceptance.`,
+        type: 'booking',
+        link_page: 'AdminBookings',
+        link_id: booking.id,
+        emailSubject: `📦 New Booking – #${bookingRef} (Awaiting Supplier)`,
+        emailBody: `Hi {adminName},\n\nA new booking has been created and is awaiting supplier acceptance.\n\n<strong>Booking:</strong> #${bookingRef}<br/><strong>Move Date:</strong> ${moveDetails.move_date}<br/><strong>Amount:</strong> R${totalAmount?.toLocaleString()}\n\n<a href="https://app.base44.app/AdminBookings">View in dashboard</a>`,
+      });
+
+      // Email customer to let them know we're waiting for the supplier
+      emailCustomerQuoteAccepted({ customerEmail: user.email, customerName: user.full_name, booking });
+
+      // Navigate to booking details page
+      navigate(createPageUrl('BookingDetails') + `?id=${booking.id}`);
     } catch (e) {
       console.error('Error creating booking:', e);
     } finally {
