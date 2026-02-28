@@ -24,6 +24,7 @@ export default function AdminDashboard() {
   const [recentBookings, setRecentBookings] = useState([]);
   const [pendingSuppliers, setPendingSuppliers] = useState([]);
   const [pendingExtras, setPendingExtras] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
