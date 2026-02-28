@@ -381,24 +381,20 @@ export default function BookingDetails() {
                   <span className="font-medium">{booking.payment_status === 'paid' ? 'Paid' : 'Pending'}</span>
                 </div>
 
-                {booking.payment_status !== 'paid' && (() => {
-                  const createdAt = new Date(booking.created_date);
-                  const hoursSinceCreated = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60);
-                  const paymentExpired = hoursSinceCreated > 24;
-                  return paymentExpired ? (
-                    <div className="mt-2 p-3 bg-red-50 rounded-lg text-sm text-red-600 text-center">
-                      Payment window expired. Please contact support.
-                    </div>
-                  ) : (
-                    <Button 
-                      className="w-full bg-black text-white hover:bg-gray-800 mt-2"
-                      onClick={() => window.location.href = createPageUrl('Payment') + `?booking_id=${booking.id}`}
-                    >
-                      <CreditCard className="w-4 h-4 mr-2" />
-                      Pay Now
-                    </Button>
-                  );
-                })()}
+                {booking.status === 'pending_supplier_acceptance' && (
+                  <div className="mt-2 p-3 bg-amber-50 rounded-lg text-sm text-amber-700 text-center">
+                    Awaiting mover acceptance — payment will be required once confirmed.
+                  </div>
+                )}
+                {booking.status === 'pending_payment' && booking.payment_status !== 'paid' && (
+                  <Button 
+                    className="w-full bg-black text-white hover:bg-gray-800 mt-2"
+                    onClick={() => window.location.href = createPageUrl('Payment') + `?booking_id=${booking.id}`}
+                  >
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Pay Now to Confirm
+                  </Button>
+                )}
               </CardContent>
             </Card>
 
