@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { 
   Truck, Calendar, MapPin, Phone, User, Clock, Package,
   CheckCircle2, AlertCircle, CreditCard, MessageSquare, Star,
-  ChevronRight, FileText, Shield, ArrowRight
+  ChevronRight, FileText, Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
