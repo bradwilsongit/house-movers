@@ -166,29 +166,29 @@ export default function SupplierJobDetails() {
       }
 
       // Send email notifications on key status changes
-      if (newStatus === 'mover_accepted') {
+      if (newStatus === 'pending_payment') {
         const supplierList = await base44.entities.Supplier.filter({ id: booking.supplier_id });
         const supplierData = supplierList[0];
-        // Notify customer via backend (bypasses RLS to fetch customer email)
+        // Notify customer to make payment
+        await base44.functions.invoke('notifyCustomer', {
+          customer_id: booking.customer_id,
+          title: 'Your Mover Confirmed – Please Pay Now',
+          message: `${supplierData?.company_name} has accepted your job. Please complete payment to confirm your booking #${booking.booking_reference}.`,
+          type: 'payment',
+          link_page: 'BookingDetails',
+          link_id: booking.id,
+          emailSubject: `💳 Payment Required – Booking #${booking.booking_reference}`,
+          emailBody: `Hi there,\n\n<strong>${supplierData?.company_name}</strong> has accepted your move!\n\nPlease complete payment to confirm your booking.\n\n<strong>Booking:</strong> #${booking.booking_reference}<br/><strong>Move Date:</strong> ${booking.move_date}\n\n<a href="https://app.base44.app/BookingDetails?id=${booking.id}">Pay Now</a>\n\nHouse Movers Team`,
+        });
+        // Notify admins
         await base44.functions.invoke('notifyAdmins', {
-          title: `Booking Accepted by Supplier – #${booking.booking_reference}`,
-          message: `${supplierData?.company_name} has accepted booking #${booking.booking_reference}.`,
+          title: `Supplier Accepted – Payment Pending – #${booking.booking_reference}`,
+          message: `${supplierData?.company_name} accepted booking #${booking.booking_reference}. Waiting for customer payment.`,
           type: 'booking',
           link_page: 'AdminBookings',
           link_id: booking.id,
-          emailSubject: `✅ Booking Accepted by Supplier – #${booking.booking_reference}`,
-          emailBody: `Hi {adminName},\n\n<strong>${supplierData?.company_name}</strong> has accepted booking <strong>#${booking.booking_reference}</strong>.\n\n<a href="https://app.base44.app/AdminBookings">View in dashboard</a>`,
-        });
-        // Email customer directly via notifyCustomer
-        await base44.functions.invoke('notifyCustomer', {
-          customer_id: booking.customer_id,
-          title: 'Your Move Has Been Accepted',
-          message: `Your move has been accepted by ${supplierData?.company_name}. Booking #${booking.booking_reference}`,
-          type: 'booking',
-          link_page: 'BookingDetails',
-          link_id: booking.id,
-          emailSubject: `🚛 Your Move Has Been Accepted – #${booking.booking_reference}`,
-          emailBody: `Hi there,\n\nYour move has been accepted by <strong>${supplierData?.company_name}</strong>!\n\n<strong>Booking:</strong> #${booking.booking_reference}<br/><strong>Move Date:</strong> ${booking.move_date}\n\nYou can track your move status in the app.\n\nHouse Movers Team`,
+          emailSubject: `✅ Supplier Accepted – #${booking.booking_reference}`,
+          emailBody: `Hi {adminName},\n\n<strong>${supplierData?.company_name}</strong> has accepted booking <strong>#${booking.booking_reference}</strong>. Awaiting customer payment.\n\n<a href="https://app.base44.app/AdminBookings">View in dashboard</a>`,
         });
       }
 
