@@ -191,7 +191,7 @@ export default function SupplierJobs() {
 
 function JobCard({ booking, moveRequest, active }) {
   const status = statusConfig[booking.status] || statusConfig.confirmed;
-  const needsAcceptance = booking.status === 'confirmed';
+  const needsAcceptance = booking.status === 'pending_supplier_acceptance';
 
   return (
     <Link to={createPageUrl('SupplierJobDetails') + `?id=${booking.id}`}>
