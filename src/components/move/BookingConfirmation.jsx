@@ -226,11 +226,11 @@ export default function BookingConfirmation({
 
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
             <div className="flex justify-between items-center">
-              <span className="font-medium text-blue-900">Pay Full Amount Now</span>
+              <span className="font-medium text-blue-900">Total (payable after mover confirms)</span>
               <span className="font-bold text-blue-900 text-lg">R{grandTotal.toFixed(2)}</span>
             </div>
             <p className="text-sm text-blue-700 mt-2">
-              Single payment for your complete move - no additional charges on arrival
+              Payment is only required once the moving company confirms they can do the job.
             </p>
           </div>
         </CardContent>
