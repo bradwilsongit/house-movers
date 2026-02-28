@@ -102,7 +102,7 @@ Deno.serve(async (req) => {
     // --- 4. Update booking payment status ---
     await base44.asServiceRole.entities.Booking.update(bookingId, {
       payment_status: 'paid',
-      status: (booking.status === 'pending_payment' || booking.status === 'pending_supplier_acceptance') ? 'confirmed' : booking.status,
+      status: booking.status === 'pending_payment' ? 'confirmed' : booking.status,
       payfast_payment_id: data.pf_payment_id,
       paid_at: new Date().toISOString(),
       // Split payment audit fields (already locked at checkout, just confirm via ITN data)
