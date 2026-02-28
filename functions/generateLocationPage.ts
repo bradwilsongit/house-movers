@@ -67,7 +67,7 @@ Write like a converting service page. Mention "House Movers" and "partnered supp
       }
     });
 
-    // 2) Generate popular routes via Distance Matrix
+    // 2) Generate popular routes via Distance Matrix or LLM fallback
     let popular_routes = [];
     if (lat && lng && apiKey) {
       const majorDestinations = [
@@ -95,6 +95,32 @@ Write like a converting service page. Mention "House Movers" and "partnered supp
             }
           });
         }
+      } catch (_e) { /* fall through to LLM */ }
+    }
+
+    // LLM fallback for routes if Distance Matrix returned nothing
+    if (popular_routes.length === 0) {
+      try {
+        const routeResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
+          prompt: `List 6 major long-distance routes from ${location_name}, South Africa to other major South African cities. Exclude ${location_name} itself. Return realistic approximate distances and driving times based on real South African road distances.`,
+          response_json_schema: {
+            type: 'object',
+            properties: {
+              routes: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    destination: { type: 'string' },
+                    distance_km: { type: 'number' },
+                    duration_minutes: { type: 'number' }
+                  }
+                }
+              }
+            }
+          }
+        });
+        popular_routes = routeResult.routes || [];
       } catch (_e) { /* Routes are optional */ }
     }
 
