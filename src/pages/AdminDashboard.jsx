@@ -243,10 +243,10 @@ export default function AdminDashboard() {
                   ) : reviews.map(r => (
                     <tr key={r.id} className="border-b last:border-0">
                       <td className="py-3 pr-4 font-medium">{r.customer_name || r.customer_id || '—'}</td>
-                      <td className="py-3 pr-4">{'★'.repeat(r.overall_rating || 0)}<span className="text-gray-300">{'★'.repeat(5 - (r.overall_rating || 0))}</span></td>
-                      <td className="py-3 pr-4">{'★'.repeat(r.punctuality_rating || 0)}<span className="text-gray-300">{'★'.repeat(5 - (r.punctuality_rating || 0))}</span></td>
-                      <td className="py-3 pr-4">{'★'.repeat(r.care_rating || 0)}<span className="text-gray-300">{'★'.repeat(5 - (r.care_rating || 0))}</span></td>
-                      <td className="py-3 pr-4">{'★'.repeat(r.communication_rating || 0)}<span className="text-gray-300">{'★'.repeat(5 - (r.communication_rating || 0))}</span></td>
+                      <td className="py-3 pr-4"><span className="text-yellow-400">{'★'.repeat(r.overall_rating || 0)}</span><span className="text-gray-200">{'★'.repeat(5 - (r.overall_rating || 0))}</span></td>
+                      <td className="py-3 pr-4"><span className="text-yellow-400">{'★'.repeat(r.punctuality_rating || 0)}</span><span className="text-gray-200">{'★'.repeat(5 - (r.punctuality_rating || 0))}</span></td>
+                      <td className="py-3 pr-4"><span className="text-yellow-400">{'★'.repeat(r.care_rating || 0)}</span><span className="text-gray-200">{'★'.repeat(5 - (r.care_rating || 0))}</span></td>
+                      <td className="py-3 pr-4"><span className="text-yellow-400">{'★'.repeat(r.communication_rating || 0)}</span><span className="text-gray-200">{'★'.repeat(5 - (r.communication_rating || 0))}</span></td>
                       <td className="py-3 pr-4 text-gray-600">{r.review_text || '—'}</td>
                       <td className="py-3 text-gray-500">{r.created_date ? format(new Date(r.created_date), 'M/d/yyyy') : '—'}</td>
                     </tr>
