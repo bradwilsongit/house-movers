@@ -23,8 +23,8 @@ Return a JSON object with EXACTLY these fields:
 
 - seo_title: "House Movers in ${location_name} | Book Vetted Movers Online" (max 65 chars)
 - meta_description: 150-160 chars; include location + booking angle, e.g. "Compare vetted moving companies in ${location_name}. Book online, get matched to the right truck size, and track your move. House Movers South Africa."
-- h1: "House Movers in ${location_name}" or "Moving Company in ${location_name}" (max 60 chars)
-- hero_paragraph: 2 sentences. Direct, service-led tone. Mention House Movers connects customers to partnered moving suppliers. Include: "Compare vetted movers. Book online. Track your move."
+- h1: MUST contain the phrase "moving companies" e.g. "Top Moving Companies in ${location_name}" or "Trusted Moving Companies in ${location_name}" (max 65 chars)
+- hero_paragraph: 2 sentences. Direct, service-led tone. First sentence: you can book online now your move with the top trusted local moving companies in ${location_name}. Second sentence: compare vetted movers and track your move through the House Movers platform.
 - local_intro: 3-4 paragraphs (300-400 words total). Direct, service-led tone — NOT bloggy, NOT "this guide will help you". Mention: (1) House Movers is a platform connecting customers to partnered moving suppliers, (2) we handle booking + coordination, (3) common move types in ${location_name} (home, office, small load, long-distance). End with: "Start your booking above to compare movers in ${location_name}."
 - service_blocks: Array of exactly 4 objects, each with: { title: string, description: string (2-3 sentences, service-led, mention platform), cta: "Book a move in minutes." }. Titles must be: "Home Moves in ${location_name}", "Office Moves in ${location_name}", "Small Loads & Single Items", "Long-distance Moves from ${location_name}"
 - moving_tips: Array of 5-6 practical, location-specific tips as strings. Each tip should be 1-2 sentences. Cover: best times to move (traffic/month-end/weekends), parking/access for apartments/complexes in ${location_name}, security considerations, weather if relevant, booking-ahead advice.
