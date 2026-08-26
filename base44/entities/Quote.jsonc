@@ -1,0 +1,71 @@
+{
+  "name": "Quote",
+  "type": "object",
+  "properties": {
+    "move_request_id": {
+      "type": "string"
+    },
+    "supplier_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "submitted",
+        "approved",
+        "selected",
+        "rejected",
+        "expired"
+      ],
+      "default": "pending"
+    },
+    "base_price": {
+      "type": "number"
+    },
+    "vehicle_type": {
+      "type": "string"
+    },
+    "crew_size": {
+      "type": "number"
+    },
+    "estimated_duration_hours": {
+      "type": "number"
+    },
+    "included_services": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "additional_charges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "total_price": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "move_request_id",
+    "supplier_id",
+    "total_price"
+  ]
+}

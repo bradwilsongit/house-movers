@@ -1,0 +1,51 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "The user this notification is for"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of the recipient"
+    },
+    "title": {
+      "type": "string",
+      "description": "Notification title"
+    },
+    "message": {
+      "type": "string",
+      "description": "Notification body"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "booking",
+        "payment",
+        "quote",
+        "support",
+        "system",
+        "extra"
+      ],
+      "default": "system"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false
+    },
+    "link_page": {
+      "type": "string",
+      "description": "Page name to navigate to (e.g. BookingDetails)"
+    },
+    "link_id": {
+      "type": "string",
+      "description": "ID to pass as param to the linked page"
+    }
+  },
+  "required": [
+    "user_email",
+    "title",
+    "message"
+  ]
+}

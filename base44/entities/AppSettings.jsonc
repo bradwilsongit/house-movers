@@ -1,0 +1,66 @@
+{
+  "name": "AppSettings",
+  "type": "object",
+  "properties": {
+    "logo_url": {
+      "type": "string",
+      "description": "URL of the app logo (header/navbar)"
+    },
+    "icon_url": {
+      "type": "string",
+      "description": "URL of the square app icon (used on login page etc.)"
+    },
+    "company_name": {
+      "type": "string",
+      "description": "Company name displayed in header"
+    },
+    "logo_height": {
+      "type": "number",
+      "description": "Logo height in pixels",
+      "default": 40
+    },
+    "commission_rate": {
+      "type": "number",
+      "description": "Platform commission rate as percentage (e.g., 10 for 10%)",
+      "default": 10
+    },
+    "google_maps_api_key": {
+      "type": "string",
+      "description": "Google Maps API key for distance calculations and address autocomplete"
+    },
+    "payfast_environment": {
+      "type": "string",
+      "enum": [
+        "sandbox",
+        "live"
+      ],
+      "default": "sandbox",
+      "description": "PayFast environment (sandbox for testing, live for production)"
+    },
+    "payfast_sandbox_merchant_id": {
+      "type": "string",
+      "description": "PayFast Sandbox Merchant ID"
+    },
+    "payfast_sandbox_merchant_key": {
+      "type": "string",
+      "description": "PayFast Sandbox Merchant Key"
+    },
+    "payfast_sandbox_passphrase": {
+      "type": "string",
+      "description": "PayFast Sandbox Security Passphrase"
+    },
+    "payfast_live_merchant_id": {
+      "type": "string",
+      "description": "PayFast Live Merchant ID"
+    },
+    "payfast_live_merchant_key": {
+      "type": "string",
+      "description": "PayFast Live Merchant Key"
+    },
+    "payfast_live_passphrase": {
+      "type": "string",
+      "description": "PayFast Live Security Passphrase"
+    }
+  },
+  "required": []
+}

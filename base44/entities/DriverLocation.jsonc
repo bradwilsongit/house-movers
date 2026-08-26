@@ -1,0 +1,31 @@
+{
+  "name": "DriverLocation",
+  "type": "object",
+  "properties": {
+    "booking_id": {
+      "type": "string",
+      "description": "Associated booking ID"
+    },
+    "driver_id": {
+      "type": "string",
+      "description": "Supplier user ID"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether tracking is currently active"
+    }
+  },
+  "required": [
+    "booking_id",
+    "driver_id",
+    "latitude",
+    "longitude"
+  ]
+}

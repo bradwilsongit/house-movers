@@ -1,0 +1,63 @@
+{
+  "name": "InventoryItem",
+  "type": "object",
+  "properties": {
+    "move_request_id": {
+      "type": "string"
+    },
+    "room": {
+      "type": "string",
+      "enum": [
+        "living_room",
+        "bedroom",
+        "kitchen",
+        "bathroom",
+        "dining_room",
+        "office",
+        "garage",
+        "outdoor",
+        "other"
+      ]
+    },
+    "item_name": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 1
+    },
+    "is_fragile": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_valuable": {
+      "type": "boolean",
+      "default": false
+    },
+    "needs_dismantling": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_oversized": {
+      "type": "boolean",
+      "default": false
+    },
+    "photo_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "estimated_volume_m3": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "move_request_id",
+    "room",
+    "item_name"
+  ]
+}

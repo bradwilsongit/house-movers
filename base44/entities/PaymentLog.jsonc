@@ -1,0 +1,52 @@
+{
+  "name": "PaymentLog",
+  "type": "object",
+  "properties": {
+    "booking_id": {
+      "type": "string",
+      "description": "Associated booking ID"
+    },
+    "payfast_reference": {
+      "type": "string",
+      "description": "PayFast transaction reference"
+    },
+    "payfast_payment_id": {
+      "type": "string",
+      "description": "PayFast payment ID"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Payment amount"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "initiated",
+        "completed",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "itn_payload": {
+      "type": "string",
+      "description": "Full ITN payload as JSON string"
+    },
+    "itn_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When ITN was received"
+    },
+    "signature_valid": {
+      "type": "boolean",
+      "description": "Whether PayFast signature validated"
+    },
+    "error_message": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "booking_id",
+    "amount",
+    "status"
+  ]
+}

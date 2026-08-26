@@ -1,0 +1,34 @@
+{
+  "name": "PackagingItem",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "boxes",
+        "wrapping",
+        "tape",
+        "blankets",
+        "specialty"
+      ]
+    },
+    "unit_price": {
+      "type": "number"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "unit_price",
+    "category"
+  ]
+}

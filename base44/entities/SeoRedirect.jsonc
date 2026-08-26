@@ -1,0 +1,33 @@
+{
+  "name": "SeoRedirect",
+  "type": "object",
+  "properties": {
+    "from_path": {
+      "type": "string",
+      "description": "Source path (e.g. /old-page)"
+    },
+    "to_path": {
+      "type": "string",
+      "description": "Destination path or URL"
+    },
+    "redirect_type": {
+      "type": "string",
+      "enum": [
+        "301",
+        "302"
+      ],
+      "default": "301"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "from_path",
+    "to_path"
+  ]
+}

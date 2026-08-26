@@ -1,0 +1,65 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "phone": {
+      "type": "string"
+    },
+    "user_type": {
+      "type": "string",
+      "enum": [
+        "customer",
+        "supplier",
+        "supplier_manager"
+      ],
+      "default": "customer"
+    },
+    "supplier_id": {
+      "type": "string",
+      "description": "Linked supplier ID for supplier users"
+    },
+    "saved_addresses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "postal_code": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "notification_preferences": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "boolean",
+          "default": true
+        },
+        "sms": {
+          "type": "boolean",
+          "default": false
+        },
+        "push": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    }
+  },
+  "required": [
+    "phone",
+    "supplier_id",
+    "saved_addresses",
+    "notification_preferences"
+  ]
+}

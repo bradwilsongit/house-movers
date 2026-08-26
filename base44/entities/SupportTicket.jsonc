@@ -1,0 +1,74 @@
+{
+  "name": "SupportTicket",
+  "type": "object",
+  "properties": {
+    "booking_id": {
+      "type": "string"
+    },
+    "customer_id": {
+      "type": "string"
+    },
+    "supplier_id": {
+      "type": "string"
+    },
+    "ticket_type": {
+      "type": "string",
+      "enum": [
+        "general",
+        "dispute",
+        "damage_claim",
+        "refund_request",
+        "complaint"
+      ]
+    },
+    "subject": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_progress",
+        "awaiting_response",
+        "resolved",
+        "closed"
+      ],
+      "default": "open"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium"
+    },
+    "evidence_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "resolution": {
+      "type": "string"
+    },
+    "resolved_by": {
+      "type": "string"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "customer_id",
+    "ticket_type",
+    "subject",
+    "description"
+  ]
+}

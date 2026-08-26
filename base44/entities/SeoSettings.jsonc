@@ -1,0 +1,127 @@
+{
+  "name": "SeoSettings",
+  "type": "object",
+  "properties": {
+    "page_name": {
+      "type": "string",
+      "description": "Internal page identifier (e.g. Home, About)"
+    },
+    "page_label": {
+      "type": "string",
+      "description": "Human-readable page name"
+    },
+    "is_indexable": {
+      "type": "boolean",
+      "default": true
+    },
+    "robots_directive": {
+      "type": "string",
+      "enum": [
+        "index, follow",
+        "noindex, follow",
+        "noindex, nofollow",
+        "index, nofollow"
+      ],
+      "default": "index, follow"
+    },
+    "seo_title": {
+      "type": "string",
+      "description": "Page title tag"
+    },
+    "meta_description": {
+      "type": "string",
+      "description": "Meta description"
+    },
+    "canonical_url": {
+      "type": "string",
+      "description": "Canonical URL override"
+    },
+    "h1_override": {
+      "type": "string",
+      "description": "H1 override (optional)"
+    },
+    "focus_keyword": {
+      "type": "string"
+    },
+    "secondary_keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "og_title": {
+      "type": "string"
+    },
+    "og_description": {
+      "type": "string"
+    },
+    "og_image_url": {
+      "type": "string"
+    },
+    "twitter_title": {
+      "type": "string"
+    },
+    "twitter_description": {
+      "type": "string"
+    },
+    "twitter_image_url": {
+      "type": "string"
+    },
+    "twitter_card_type": {
+      "type": "string",
+      "enum": [
+        "summary",
+        "summary_large_image"
+      ],
+      "default": "summary_large_image"
+    },
+    "include_in_sitemap": {
+      "type": "boolean",
+      "default": true
+    },
+    "sitemap_priority": {
+      "type": "number",
+      "default": 0.5
+    },
+    "sitemap_changefreq": {
+      "type": "string",
+      "enum": [
+        "always",
+        "hourly",
+        "daily",
+        "weekly",
+        "monthly",
+        "yearly",
+        "never"
+      ],
+      "default": "weekly"
+    },
+    "schema_type": {
+      "type": "string",
+      "enum": [
+        "none",
+        "WebPage",
+        "FAQPage",
+        "Article",
+        "LocalBusiness",
+        "Service",
+        "Product",
+        "BreadcrumbList",
+        "Review"
+      ],
+      "default": "WebPage"
+    },
+    "schema_fields": {
+      "type": "object",
+      "description": "Dynamic fields for the selected schema type"
+    },
+    "custom_json_ld": {
+      "type": "string",
+      "description": "Custom JSON-LD block (advanced)"
+    }
+  },
+  "required": [
+    "page_name",
+    "page_label"
+  ]
+}

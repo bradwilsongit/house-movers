@@ -1,0 +1,138 @@
+{
+  "name": "LocationPage",
+  "type": "object",
+  "properties": {
+    "location_name": {
+      "type": "string",
+      "description": "Display name of the location (e.g. Sandton, Cape Town)"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL slug (e.g. sandton, cape-town)"
+    },
+    "city": {
+      "type": "string",
+      "description": "City or metro area"
+    },
+    "province": {
+      "type": "string",
+      "description": "Province or region"
+    },
+    "lat": {
+      "type": "number"
+    },
+    "lng": {
+      "type": "number"
+    },
+    "place_id": {
+      "type": "string"
+    },
+    "seo_title": {
+      "type": "string"
+    },
+    "meta_description": {
+      "type": "string"
+    },
+    "h1": {
+      "type": "string"
+    },
+    "canonical_url": {
+      "type": "string"
+    },
+    "hero_paragraph": {
+      "type": "string",
+      "description": "Intro paragraph under the H1"
+    },
+    "local_intro": {
+      "type": "string",
+      "description": "300-400 word local intro section (service-led, not bloggy)"
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Simple list of service titles"
+    },
+    "service_blocks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "cta": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Rich service blocks with title, description, and CTA"
+    },
+    "moving_tips": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Practical, location-specific moving tips"
+    },
+    "nearby_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Nearby suburbs/cities"
+    },
+    "popular_routes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "destination": {
+            "type": "string"
+          },
+          "distance_km": {
+            "type": "number"
+          },
+          "duration_minutes": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "faqs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": true
+    },
+    "generation_status": {
+      "type": "string",
+      "enum": [
+        "generating",
+        "complete",
+        "error"
+      ],
+      "default": "generating"
+    }
+  },
+  "required": [
+    "location_name",
+    "slug"
+  ]
+}

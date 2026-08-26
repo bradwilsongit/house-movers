@@ -1,0 +1,84 @@
+{
+  "name": "SeoOrganization",
+  "type": "object",
+  "properties": {
+    "org_name": {
+      "type": "string"
+    },
+    "org_type": {
+      "type": "string",
+      "enum": [
+        "Organization",
+        "LocalBusiness",
+        "MovingCompany"
+      ],
+      "default": "LocalBusiness"
+    },
+    "website_url": {
+      "type": "string"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "address_street": {
+      "type": "string"
+    },
+    "address_city": {
+      "type": "string"
+    },
+    "address_region": {
+      "type": "string"
+    },
+    "address_postal_code": {
+      "type": "string"
+    },
+    "address_country": {
+      "type": "string",
+      "default": "ZA"
+    },
+    "service_area": {
+      "type": "string"
+    },
+    "social_profiles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "sameAs URLs (Facebook, Twitter, LinkedIn, etc.)"
+    },
+    "contact_type": {
+      "type": "string",
+      "enum": [
+        "customer service",
+        "sales",
+        "technical support",
+        "billing"
+      ],
+      "default": "customer service"
+    },
+    "founding_year": {
+      "type": "number"
+    },
+    "price_range": {
+      "type": "string",
+      "description": "e.g. $$ or R500-R5000"
+    },
+    "robots_txt_custom": {
+      "type": "string",
+      "description": "Custom robots.txt content"
+    }
+  },
+  "required": [
+    "org_name",
+    "website_url"
+  ]
+}

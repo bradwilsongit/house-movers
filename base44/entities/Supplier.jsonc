@@ -1,0 +1,195 @@
+{
+  "name": "Supplier",
+  "type": "object",
+  "properties": {
+    "company_name": {
+      "type": "string",
+      "description": "Registered company name"
+    },
+    "registration_number": {
+      "type": "string",
+      "description": "Company registration number"
+    },
+    "contact_person": {
+      "type": "string",
+      "description": "Primary contact person name"
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "Contact email address"
+    },
+    "contact_phone": {
+      "type": "string",
+      "description": "Contact phone number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "suspended"
+      ],
+      "default": "pending"
+    },
+    "service_regions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of service regions/areas"
+    },
+    "fleet": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "vehicle_type": {
+            "type": "string"
+          },
+          "make": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "year": {
+            "type": "number"
+          },
+          "capacity_m3": {
+            "type": "number"
+          },
+          "crew_size": {
+            "type": "number"
+          },
+          "rate_per_km": {
+            "type": "number"
+          },
+          "crew_member_rate": {
+            "type": "number"
+          },
+          "plate_number": {
+            "type": "string"
+          },
+          "front_photo_url": {
+            "type": "string"
+          },
+          "back_photo_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "crew_capacity": {
+      "type": "number",
+      "description": "Maximum crew members available"
+    },
+    "capability_classes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "apartment",
+          "house",
+          "office",
+          "long_distance"
+        ]
+      }
+    },
+    "pricing": {
+      "type": "object",
+      "properties": {
+        "base_rate_per_hour": {
+          "type": "number"
+        },
+        "rate_per_km": {
+          "type": "number"
+        },
+        "rate_per_m3": {
+          "type": "number"
+        },
+        "crew_member_rate": {
+          "type": "number"
+        },
+        "packaging_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "category": {
+                "type": "string"
+              },
+              "unit_price": {
+                "type": "number"
+              },
+              "in_stock": {
+                "type": "boolean",
+                "default": true
+              }
+            }
+          }
+        },
+        "packing_service_rate": {
+          "type": "number"
+        },
+        "shuttle_service_rate": {
+          "type": "number"
+        }
+      }
+    },
+    "payfast_merchant_id": {
+      "type": "string",
+      "description": "Supplier's PayFast merchant ID for split payments (numeric string)"
+    },
+    "payfast_split_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether PayFast split payment is enabled for this supplier"
+    },
+    "insurance_doc_url": {
+      "type": "string"
+    },
+    "compliance_doc_url": {
+      "type": "string"
+    },
+    "agreement_accepted": {
+      "type": "boolean",
+      "default": false
+    },
+    "agreement_accepted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rating_average": {
+      "type": "number",
+      "default": 0
+    },
+    "total_jobs": {
+      "type": "number",
+      "default": 0
+    },
+    "on_time_rate": {
+      "type": "number",
+      "default": 100
+    },
+    "completion_rate": {
+      "type": "number",
+      "default": 100
+    },
+    "dispute_rate": {
+      "type": "number",
+      "default": 0
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Linked user account ID"
+    }
+  },
+  "required": [
+    "company_name",
+    "contact_email",
+    "contact_phone"
+  ]
+}

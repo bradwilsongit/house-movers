@@ -1,0 +1,214 @@
+{
+  "name": "MoveRequest",
+  "type": "object",
+  "properties": {
+    "customer_id": {
+      "type": "string",
+      "description": "User ID of customer"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "requested",
+        "quoted",
+        "confirmed",
+        "arrived",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "draft"
+    },
+    "move_type": {
+      "type": "string",
+      "enum": [
+        "apartment",
+        "house",
+        "office",
+        "long_distance"
+      ]
+    },
+    "pickup_address": {
+      "type": "string"
+    },
+    "pickup_city": {
+      "type": "string"
+    },
+    "pickup_postal_code": {
+      "type": "string"
+    },
+    "pickup_place_id": {
+      "type": "string",
+      "description": "Google Places ID for accurate geocoding"
+    },
+    "pickup_lat": {
+      "type": "number",
+      "description": "Pickup latitude"
+    },
+    "pickup_lng": {
+      "type": "number",
+      "description": "Pickup longitude"
+    },
+    "dropoff_address": {
+      "type": "string"
+    },
+    "dropoff_city": {
+      "type": "string"
+    },
+    "dropoff_postal_code": {
+      "type": "string"
+    },
+    "dropoff_place_id": {
+      "type": "string",
+      "description": "Google Places ID for accurate geocoding"
+    },
+    "dropoff_lat": {
+      "type": "number",
+      "description": "Dropoff latitude"
+    },
+    "dropoff_lng": {
+      "type": "number",
+      "description": "Dropoff longitude"
+    },
+    "move_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "date_flexible": {
+      "type": "boolean",
+      "default": false,
+      "description": "Customer is flexible on the move date"
+    },
+    "time_window": {
+      "type": "string",
+      "enum": [
+        "morning",
+        "afternoon",
+        "full_day"
+      ]
+    },
+    "distance_km": {
+      "type": "number",
+      "description": "Distance in kilometers calculated via Google Maps"
+    },
+    "distance_duration_minutes": {
+      "type": "number",
+      "description": "Estimated duration in minutes"
+    },
+    "distance_calculation_status": {
+      "type": "string",
+      "description": "Status/error from Google Distance Matrix API"
+    },
+    "pickup_access": {
+      "type": "object",
+      "properties": {
+        "floor": {
+          "type": "number"
+        },
+        "has_lift": {
+          "type": "boolean"
+        },
+        "has_stairs": {
+          "type": "boolean"
+        },
+        "parking_available": {
+          "type": "boolean"
+        },
+        "distance_to_truck": {
+          "type": "string",
+          "enum": [
+            "close",
+            "medium",
+            "long_carry"
+          ]
+        },
+        "estate_restrictions": {
+          "type": "string"
+        },
+        "narrow_access": {
+          "type": "boolean"
+        },
+        "height_restrictions": {
+          "type": "boolean"
+        }
+      }
+    },
+    "dropoff_access": {
+      "type": "object",
+      "properties": {
+        "floor": {
+          "type": "number"
+        },
+        "has_lift": {
+          "type": "boolean"
+        },
+        "has_stairs": {
+          "type": "boolean"
+        },
+        "parking_available": {
+          "type": "boolean"
+        },
+        "distance_to_truck": {
+          "type": "string",
+          "enum": [
+            "close",
+            "medium",
+            "long_carry"
+          ]
+        },
+        "estate_restrictions": {
+          "type": "string"
+        },
+        "narrow_access": {
+          "type": "boolean"
+        },
+        "height_restrictions": {
+          "type": "boolean"
+        }
+      }
+    },
+    "special_requirements": {
+      "type": "object",
+      "properties": {
+        "dismantling_required": {
+          "type": "boolean"
+        },
+        "hoisting_required": {
+          "type": "boolean"
+        },
+        "shuttle_service": {
+          "type": "boolean"
+        },
+        "heavy_items": {
+          "type": "boolean"
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "estimated_volume_m3": {
+      "type": "number"
+    },
+    "selected_quote_id": {
+      "type": "string"
+    },
+    "tc_accepted": {
+      "type": "boolean",
+      "default": false
+    },
+    "tc_accepted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tc_version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "customer_id",
+    "pickup_address",
+    "dropoff_address"
+  ]
+}

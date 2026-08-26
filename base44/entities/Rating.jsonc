@@ -1,0 +1,62 @@
+{
+  "name": "Rating",
+  "type": "object",
+  "properties": {
+    "booking_id": {
+      "type": "string"
+    },
+    "supplier_id": {
+      "type": "string"
+    },
+    "customer_id": {
+      "type": "string"
+    },
+    "customer_name": {
+      "type": "string",
+      "description": "Name of the customer who submitted the rating"
+    },
+    "overall_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "punctuality_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "care_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "communication_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "review_text": {
+      "type": "string"
+    },
+    "is_moderated": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_visible": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "booking_id",
+    "supplier_id",
+    "customer_id",
+    "overall_rating"
+  ]
+}

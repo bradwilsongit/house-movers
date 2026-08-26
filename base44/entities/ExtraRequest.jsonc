@@ -1,0 +1,63 @@
+{
+  "name": "ExtraRequest",
+  "type": "object",
+  "properties": {
+    "booking_id": {
+      "type": "string"
+    },
+    "supplier_id": {
+      "type": "string"
+    },
+    "request_type": {
+      "type": "string",
+      "enum": [
+        "additional_materials",
+        "additional_trip",
+        "additional_service",
+        "other"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "paid"
+      ],
+      "default": "pending"
+    },
+    "photo_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "admin_notes": {
+      "type": "string"
+    },
+    "approved_by": {
+      "type": "string"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "payment_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "booking_id",
+    "supplier_id",
+    "request_type",
+    "description",
+    "amount"
+  ]
+}

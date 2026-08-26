@@ -1,0 +1,64 @@
+{
+  "name": "Payment",
+  "type": "object",
+  "properties": {
+    "booking_id": {
+      "type": "string"
+    },
+    "customer_id": {
+      "type": "string"
+    },
+    "payment_type": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "balance",
+        "extra"
+      ]
+    },
+    "amount": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "completed",
+        "failed",
+        "refunded"
+      ],
+      "default": "pending"
+    },
+    "payment_reference": {
+      "type": "string"
+    },
+    "payment_provider": {
+      "type": "string",
+      "default": "payfast"
+    },
+    "provider_reference": {
+      "type": "string"
+    },
+    "paid_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "refund_amount": {
+      "type": "number"
+    },
+    "refund_reason": {
+      "type": "string"
+    },
+    "refunded_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "booking_id",
+    "customer_id",
+    "payment_type",
+    "amount"
+  ]
+}
